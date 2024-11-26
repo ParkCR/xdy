@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>媒体瀑布流</title>
+<style>
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+    scroll-behavior: smooth;
+}
+
+#filter-bar {
+    display: flex;
+    justify-content: center;
+    background-color: #f1f1f1;
+    padding: 10px;
+}
+
+.filter-button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+#media-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+#media-grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1000px; /* 设置最大宽度，可以根据需要调整 */
+    justify-content: space-between;
+    contain: layout style; /* 限制影响范围 */
+}
+
+.media-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    transition: transform 0.2s;
+    margin: 10px; /* 增加上下和左右的缝隙 */
+    flex-basis: calc(25% - 20px); /* 调整宽度以适应更大的边距 */
+    padding-bottom: calc((25% - 20px) * 4 / 3); /* 固定宽高比为3:4 */
+    opacity: 0;
+    transform: translateX(-100%);
+    will-change: transform, opacity; /* 启用硬件加速 */
+    backface-visibility: hidden; /* 防止闪烁 */
+}
+
+.media-item:hover {
+    transform: scale(1.05);
+}
+
+.media-item img,
+.media-item video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    will-change: transform; /* 启用硬件加速 */
+}
+
+.loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.9);
+    contain: layout style; /* 限制影响范围 */
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    max-width: 80%;
+    max-height: 80%;
+    will-change: transform; /* 启用硬件加速 */
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    z-index: 99;
+    font-size: 18px;
+    width: 50px;
+    height: 50px;
+    border: none;
+    outline: none;
+    background-color: #555;
+    color: white;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 4px;
+    will-change: transform; /* 启用硬件加速 */
+}
+
+#back-to-top:hover {
+    background-color: #333;
+}
+
+#page-title {
+    text-align: center;
+    margin: 20px 0;
+}
+
+#page-title a {
+    color: #337ab7;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#page-title a:hover {
+    text-decoration: underline;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+</style>
+</head>
+<body>
+<div id="page-title">
+    <a href="https://example.com" target="_blank">20241126-mt</a>
+</div>
+<div id="filter-bar"></div>
+<div id="media-container">
+    <div id="media-grid"></div>
+</div>
+<div id="modal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+    <video class="modal-content" id="vid01" controls muted></video>
+</div>
+<button id="back-to-top">↑</button>
+
+<script>
+const resources = [
+//添加链接模板              ' ', 
+              'https://cdn.cdnjson.com/pic.html?url=https:/blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgydnpUNwGuLLT7jN6P1ghWhpvN0VQlkne73Knzg4_xbfwj-Iu7KGYTcdz1IubiDqk9iXfPZ18zqw6TTUZYA68aNYa91BPzs1gs77Ag43CAdPHj6myhv3tiK_VQOTNjF8dfX1PvS78NzdxbFd6JCdxIGCWZ3j_xg-pg5-xN8ebsXyMhclKLsstsa-AHOkw/s1600/ezgif.com-video-to-gif-converter%20(26).gif', 
+              'https://cdn.cdnjson.com/pic.html?url=https:/blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjKjaWQRx1ED1PH5MqiRYhwd15yQNtNScaAQR4h4dXGTtW7NxkLVaSE7JuHvOTdj80oHC4oWFoSWiUieBxFSfW4j2l6wdlxhZe1PDSe5_527RjZeeVaKKc2HGhYDgdw9MzexVaBEs2w8fTiFmG-_x9tV3LyMscu5-63oWtMc6N1FFZgcPn4yYgcdsWMpz8/s1600/ezgif.com-video-to-gif-converter%20(27).gif', 
+              'https://t1.daumcdn.net/thumb/R1000x0/?fname=https://etoland.co.kr/data/files/etohumor06/2024/1112/minify/1709928096_3mZHNjos_5hRBJFzlVWvrTA86.jpg', 
+              'https://cdn.cdnjson.com/pic.html?url=https:/blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHNIXTFySFx9JYD7JzXfszftSFxa7M8MoT8aCNoVmsy2yHET6WcSlMV3Ja6ob3rk7bzih85Z_ifiMcS3AZLg9pIs73HOULuKZEmUhrzT_dhFpJddtmCIfZ28rK2oOZP2nOWRIHGZXByiHo0b5i7D7vySj_KRo0GmSRdzAChy73C9TGEgHn0mrpN2ytDjk/s1600/ezgif.com-video-to-gif-converter%20(1).gif',
+              'https://cdn.cdnjson.com/pic.html?url=https:/blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiDAf2VhbD6rkek77GvpBg2mrdkV64pxxaViesV051mksIQEgy9d2Rh-gQkUwwjk1tKtAAcuI1bxh6LiC3q5fqLZ9ySqv7rlNIDlYp1BStWRaKE9FkuZxoZUI_SUmfcHm4XpIh0I8FT9w5M51e7OsX2hJpOr_zTk0kYfxIdEPOwNht9O7BgDyWTTzeDj6s/s1600/ezgif.com-video-to-gif-converter%20(24).gif',
+              'https://cdn.cdnjson.com/pic.html?url=https:/blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiHepQQC3pq3iJ0IWjMxu35iSR3by7FtyJpHtH_6j0_-jwXwK1bde4ke_PggXyGkBIA_z6VxszhHmH3Ar8aLg0-QSZ4ILwQDCR2WzzVofs-AngbuLR1y-PcD4GgWwxcETtKu9e92PtAZuJi6Np0qz98a3nDpKyslrp5ThKWMswTvYduJSBg-4yKbBoR0Xs/s1600/ezgif.com-video-to-gif-converter%20(34).gif',
+              'https://cdn.cdnjson.com/pic.html?url=https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzkFOEcZq_jxcAv2KW23j_J6ZjyvqEIQGQsSaD-0lDhkEIn9ICkKpicLNBlZTeDau8CJn52p0O0Ppidn2S5y4AV9c8DYi4fooIRIaxsi53td0iIThylU4gOjP0CoyUIoWjIKuh_AHqSvrNNOjDM7D-VUO5RMkMpYxpJA2c6X5fqs8OHMfOh3S0h9pLrTQ/s1600/ezgif.com-video-to-gif-converter%20%2810%29.gif',
+              'https://i3.wp.com/img10.joyreactor.cc/pics/post/full/Katielefit-%D0%90%D0%B7%D0%B8%D0%B0%D1%82%D0%BA%D0%B0-%D0%BF%D0%BE%D0%BF%D0%B5%D1%86-8685878.jpeg',
+              'https://t1.daumcdn.net/thumb/R1000x0/?fname=https://etoland.co.kr/data/files/etohumor06/2024/1119/gif/2949874259_WqwDYRnd_BrV8vePQ3Gk0bS7J.gif',
+              'https://cdn.cdnjson.com/pic.html?url=https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjMRvaeKya1GmjfVaEBdyo4Ahjk0avkMGV1cTFGrv68It3fDmcLKp2YvjALFsIAKNEqdwgf2yyaF8rh2SqpOp9JV4EZQ6XS9nuubwXGxyZnRjSFvcqiIW2P46ir5EkZY4FmCn6bbiZg7JJZrDYXAAAYHI61aOM6G1Wlm2Bc2JlKIVP7WeBffU7ZG8jAz1E/s1600/ezgif.com-video-to-gif-converter%20%2818%29.gif',
+              'https://cdn.cdnjson.com/pic.html?url=https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjKJRxXCf6VoAeoAfqnIk4fa7f878djCcL2fgUrExhuaEXxWebp0EU8OvMcl9Rh1Lq0bjEs_VXqM9nO0ZcUtZlO70pN-khD6aExraxjVD39o07fFjXf9Mj5LuiBmhNm0lrnXDz5n2hm4qGx-xDkr3aYnrZcxuxfABJQvj-CGs9DEAebxo8x3gvw827CoUg/s1600/ezgif.com-video-to-gif-converter%20%2817%29.gif',
+              'https://cdn.cdnjson.com/pic.html?url=https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgcdHR62nKPTNcsXHzBsY4oFn0G2g0EgaE-4UkFu8VdIUZ7CP_skxH5irqr8r7l7PyUL5iR6K8xUMHYebgRztpThvl8vMpsOqIg5Tj8Hhe6o5tMXqxYmgEOpH22Jygonlz0FvjBcuc6a_dSEvZDIUhOSLCQKsgggFh-nq8HTMQuM80lKGSnugZbsoGf40k/s1600/ezgif.com-video-to-gif-converter.gif',
+              'https://cdn.cdnjson.com/pic.html?url=https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhu3Xb7zrhjy2dO_-UNOLX7x6Cdb61oIVXpAcfzyqt-2gbewOESdCXDnbfBc60s296dxokqVj_apWJgsLL5ZQ74viv1mg9daIN0AB4MGZv9TaoKyVNLtYthY-ZJiZAESPHxV1Jj3MZeRO0bvhWwormGYnsm3QnI5zUhgcxPRO5ORAug4wx6BlOKt2JlSu8/s1600/ezgif.com-video-to-gif-converter%20%2814%29.gif',
+              'https://cdn.cdnjson.com/pic.html?url=https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgJtKbWjS5EPMNSV141278bbmmxUtmobLsucBtxC6FO-MGc_7oufjK8xGPb-8kaVEPIE8laRyt9mUzu-PumH-oMB4FmRTKOxE1JdJpB2BMxCDG2Km8KGgUuc9UGpvWJsIEitYGs_QjSmIHEHpAVYGFVg7vv_J2IxPziqbTVYIeelsqynjUg-LASJOWfIIY/s1600/ezgif.com-video-to-gif-converter%20%2816%29.gif',
+              'https://cdn.cdnjson.com/pic.html?url=https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg4VcHrCdMJgsq0VGczzTG3ArlyreAAt9gDw_sFpwG5xKUygLjcWQTjZ7nc9tR06U5-oi2iL-I9BmutDRUJIPcIMkcc0GrW5Vm02haoFgoxI_WgUoXfIKknCdEbovlYS2YW4Oi1MrdgtV2PViYbQ7UyiNzuUU_8OEncjELejKkZvUNMrZwsdlEx69j9ZqI/s1600/ezgif.com-video-to-gif-converter%20%2816%29.gif',
+              'https://cdn.cdnjson.com/pic.html?url=https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJ9KTAfyqes-uNrAUN_oGGKjRG4XDs-YdnaMvQFai7IgAHNDKsDfcGp213nXc5130F1bupbvpB0qLdmnYWumxcfdnzh2MOpZakWkLvY5N-gE4lXf8jHemLIz90D0Guh6G9_eZUbO2ys9X9mfy26KDTVZQyY32YG51b1ucxYpMth8WTWIeKyBFTjdFtE-A/s1600/ezgif.com-video-to-gif-converter.gif',
+              'https://i3.wp.com/etoland.co.kr/data/files/etohumor06/2024/1122/gif/988613224_le6s2mJo_Izw4TW8bgtuBScZi.gif',
+              'https://i3.wp.com/img10.joyreactor.cc/pics/post/full/Lingerie(PR)-Pleasure-Room-%D1%84%D1%8D%D0%BD%D0%B4%D0%BE%D0%BC%D1%8B-8682657.jpeg',
+              'https://i3.wp.com/img10.joyreactor.cc/pics/post/full/PIA-%ED%94%BC%EC%95%84-DjawaPhoto-%D0%90%D0%B7%D0%B8%D0%B0%D1%82%D0%BA%D0%B0-8646473.jpeg',
+              'https://i3.wp.com/img10.joyreactor.cc/pics/post/full/Stockings(PR)-Pleasure-Room-%D1%84%D1%8D%D0%BD%D0%B4%D0%BE%D0%BC%D1%8B-8224062.jpeg',
+              'https://i3.wp.com/wx2.sinaimg.cn/large/0074qDNwly1hvxlqh4cwkj316o1kwdxe.jpg',
+              'https://i3.wp.com/wx3.sinaimg.cn/large/0074qDNwly1hvxlqgq2slj30no0zk47b.jpg',
+              'https://i3.wp.com/wx3.sinaimg.cn/large/007LhHCyly1hvyveujkddj30u011i42o.jpg',
+              'https://cdn.ggoorr.net/files/attach/images/121/301/976/016/2e863a8ae17bf11ac1a6939370afc93f.mp4'
+];
+
+function loadMedia() {
+    const mediaGrid = document.getElementById('media-grid');
+    const filterBar = document.getElementById('filter-bar');
+
+    // 创建过滤按钮
+    const extensions = new Set();
+    resources.forEach(url => {
+        const ext = url.split('.').pop().toLowerCase();
+        extensions.add(ext);
+    });
+
+    // 添加“全部”按钮
+    const allButton = document.createElement('button');
+    allButton.className = 'filter-button';
+    allButton.innerText = '全部';
+    allButton.addEventListener('click', showAllMedia);
+    filterBar.appendChild(allButton);
+
+    const filterButtons = document.createDocumentFragment();
+    extensions.forEach(ext => {
+        const button = document.createElement('button');
+        button.className = 'filter-button';
+        button.innerText = `${ext.toUpperCase()} (${resources.filter(url => url.endsWith(`.${ext}`)).length})`;
+        button.addEventListener('click', () => filterMedia(ext));
+        filterButtons.appendChild(button);
+    });
+    filterBar.appendChild(filterButtons);
+
+    // 使用 DocumentFragment 批量插入媒体项
+    const mediaItemsFragment = document.createDocumentFragment();
+    resources.forEach((url, index) => {
+        const item = createMediaItem(url, index);
+        mediaItemsFragment.appendChild(item);
+    });
+    mediaGrid.appendChild(mediaItemsFragment);
+
+    // 默认显示所有媒体
+    showAllMedia();
+}
+
+function isImage(ext) {
+    return ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext); // 增加对 webp 的支持
+}
+
+function isVideo(ext) {
+    return ['mp4', 'webm', 'ogg', 'mov'].includes(ext);
+}
+
+function createMediaElement(tagName, src) {
+    const element = document.createElement(tagName);
+    element.src = src; // 直接设置 src 属性
+    return element;
+}
+
+function createMediaItem(url, index) {
+    const item = document.createElement('div');
+    item.className = 'media-item';
+
+    const ext = url.split('.').pop().toLowerCase();
+    let mediaElement;
+
+    if (isImage(ext)) {
+        mediaElement = createMediaElement('img', url);
+        mediaElement.addEventListener('load', () => {
+            item.style.animation = `slideIn 0.5s forwards ${index * 0.1}s`;
+            removeLoadingIndicator(item);
+        });
+    } else if (isVideo(ext)) {
+        mediaElement = createMediaElement('video', url);
+        mediaElement.controls = true;
+        mediaElement.muted = true;
+        mediaElement.preload = 'metadata'; // 预加载元数据
+        mediaElement.addEventListener('loadedmetadata', () => {
+            item.style.animation = `slideIn 0.5s forwards ${index * 0.1}s`;
+            removeLoadingIndicator(item);
+        });
+    }
+
+    mediaElement.addEventListener('error', (event) => {
+        console.error(`Failed to load media: ${url}`, event);
+        item.style.display = 'none'; // 隐藏加载失败的项目
+    });
+
+    mediaElement.addEventListener('click', () => openModal(mediaElement));
+
+    // 添加加载指示器
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'loading-indicator';
+    item.appendChild(loadingIndicator);
+    item.appendChild(mediaElement);
+
+    return item;
+}
+
+function removeLoadingIndicator(item) {
+    const loadingIndicator = item.querySelector('.loading-indicator');
+    if (loadingIndicator) {
+        loadingIndicator.remove();
+    }
+}
+
+function filterMedia(ext) {
+    const mediaItems = document.querySelectorAll('.media-item');
+    mediaItems.forEach(item => {
+        const mediaElement = item.querySelector('img, video');
+        if (mediaElement) {
+            const url = mediaElement.src;
+            const isMatch = url.endsWith(`.${ext}`);
+            item.style.display = isMatch ? 'block' : 'none';
+        } else {
+            item.style.display = 'none'; // 如果没有 src 属性，隐藏该元素
+        }
+    });
+}
+
+function showAllMedia() {
+    const mediaItems = document.querySelectorAll('.media-item');
+    mediaItems.forEach(item => {
+        item.style.display = 'block';
+    });
+}
+
+function openModal(content) {
+    const modal = document.getElementById('modal');
+    const img = document.getElementById('img01');
+    const vid = document.getElementById('vid01');
+    
+    if (content.tagName.toLowerCase() === 'img') {
+        img.src = content.src;
+        img.style.display = 'block';
+        vid.style.display = 'none';
+    } else if (content.tagName.toLowerCase() === 'video') {
+        vid.src = content.src;
+        vid.play();
+        vid.style.display = 'block';
+        img.style.display = 'none';
+    }
+    modal.style.display = "block";
+    document.querySelector('.close').addEventListener('click', closeModal);
+    window.addEventListener('click', outsideClick);
+}
+
+function closeModal() {
+    const modal = document.getElementById('modal');
+    const vid = document.getElementById('vid01');
+    vid.pause();
+    modal.style.display = "none";
+}
+
+function outsideClick(event) {
+    const modal = document.getElementById('modal');
+    if (event.target == modal) {
+        closeModal();
+    }
+}
+
+// 返回顶部按钮功能
+function backToTop() {
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+// 显示或隐藏返回顶部按钮
+window.onscroll = function() {
+    const backToTopButton = document.getElementById('back-to-top');
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        backToTopButton.style.display = "block";
+    } else {
+        backToTopButton.style.display = "none";
+    }
+};
+
+// 页面加载完成后调用
+document.addEventListener("DOMContentLoaded", function() {
+    loadMedia();
+    const backToTopButton = document.getElementById('back-to-top');
+    backToTopButton.addEventListener('click', backToTop);
+});
+</script>
+</body>
+</html>
