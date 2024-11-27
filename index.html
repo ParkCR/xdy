@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>网盘主页 - 网盘</title>
-<meta name="description" content="这是网盘的主页，包含多个文件夹和文件。">
+<title>美好收藏</title>
+<meta name="description" content="这是美好收藏的主页，包含多个文件夹和文件。">
 <meta name="keywords" content="网盘, 文件夹, 文件">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
@@ -32,6 +32,28 @@
     @keyframes slideInDown {
         from { transform: translateY(-20px); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
+    }
+
+    nav {
+        background-color: #3c76b0;
+        color: white;
+        padding: 10px 0;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    nav a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        margin: 5px;
+        transition: background-color 0.2s;
+    }
+
+    nav a:hover {
+        background-color: #4a90e2;
     }
 
     .container {
@@ -150,13 +172,31 @@
         .folder-name, .file-name {
             font-size: 14px;
         }
+
+        nav {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        nav a {
+            flex-basis: calc(25% - 10px); /* 每个链接占25%，减去左右各5px的margin */
+            margin: 5px;
+        }
     }
 </style>
 </head>
 <body>
+<nav>
+    <a href="index.html">主页</a>
+    <a href="mr.html">MR</a>
+    <a href="mt.html">MT</a>
+    <a href="mb.html">MB</a>
+    <a href="others.html">Others</a>
+    <a href="2024.html">2024</a>
+</nav>
 <header>
-    <h1>美丽收藏</h1>
-    <p>这是网盘的主页，包含多个文件夹和文件。</p>
+    <h1>美好收藏</h1>
+    <p>这是美好收藏的主页，包含多个文件夹和文件。</p>
 </header>
 <div class="container">
     <div class="folder-grid" id="folder-grid">

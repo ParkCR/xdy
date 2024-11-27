@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>Others 文件夹 - 网盘</title>
-<meta name="description" content="这是 Others文件夹的子页面，包含多个文件夹和文件。">
+<title>Others</title>
+<meta name="description" content="这是 Others 文件夹的子页面，包含多个文件夹和文件。">
 <meta name="keywords" content="网盘, 文件夹, 文件, Others">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
@@ -32,6 +32,28 @@
     @keyframes slideInDown {
         from { transform: translateY(-20px); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
+    }
+
+    nav {
+        background-color: #3c76b0;
+        color: white;
+        padding: 10px 0;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    nav a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        margin: 5px;
+        transition: background-color 0.2s;
+    }
+
+    nav a:hover {
+        background-color: #4a90e2;
     }
 
     .container {
@@ -129,6 +151,7 @@
         border-radius: 5px;
         transition: background-color 0.2s;
         font-size: 14px;
+        margin-right: 10px; /* 右边距 */
     }
 
     .back-link:hover {
@@ -171,10 +194,28 @@
         .folder-name, .file-name {
             font-size: 14px;
         }
+
+        nav {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        nav a {
+            flex-basis: calc(25% - 10px); /* 每个链接占25%，减去左右各5px的margin */
+            margin: 5px;
+        }
     }
 </style>
 </head>
 <body>
+<nav>
+    <a href="index.html">主页</a>
+    <a href="mr.html">MR</a>
+    <a href="mt.html">MT</a>
+    <a href="mb.html">MB</a>
+    <a href="others.html">Others</a>
+    <a href="2024.html">2024</a>
+</nav>
 <header>
     <h1>Others</h1>
     <p>这是 Others 文件夹的内容。</p>
@@ -182,25 +223,18 @@
 <div class="container">
     <div class="folder-grid" id="folder-grid">
         <!-- 示例文件夹和文件 -->
-        <a href="files/mr/20241126-mr.html" class="file">
+        <a href="sub-mr1.html" class="folder">
             <div class="icon"></div>
-            <div class="folder-name">20241126-mr</div>
+            <div class="folder-name">Sub-MR1</div>
         </a>
         <a href="sub-mr2.html" class="folder">
             <div class="icon"></div>
             <div class="folder-name">Sub-MR2</div>
         </a>
-        <a href="mr-file1.html" class="file">
-            <div class="icon"></div>
-            <div class="file-name">MR File 1.html</div>
-        </a>
-        <a href="mr-file2.html" class="file">
-            <div class="icon"></div>
-            <div class="file-name">MR File 2.html</div>
-        </a>
     </div>
     <div class="back-link-container">
         <a href="index.html" class="back-link">返回上一层</a>
+        <a href="index.html" class="back-link">返回首页</a>
     </div>
 </div>
 <a href="#top" class="back-to-top" id="back-to-top">返回顶部</a>
