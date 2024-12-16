@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>网盘首页</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    header {
+        background-color: #333;
+        color: white;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    .folder-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 20px;
+    }
+
+    .folder {
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .folder:hover {
+        background-color: #e0e0e0;
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>我的网盘</h1>
+</header>
+<div class="folder-grid">
+    <a href="mr.html" class="folder">MR</a>
+    <a href="mt.html" class="folder">MT</a>
+    <a href="mb.html" class="folder">MB</a>
+    <a href="other.html" class="folder">Other</a>
+    <a href="2024.html" class="folder">2024</a>
+</div>
+</body>
+</html>

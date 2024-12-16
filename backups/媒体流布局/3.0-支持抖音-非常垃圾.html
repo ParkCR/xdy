@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>媒体瀑布流</title>
+<style>
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+    scroll-behavior: smooth;
+}
+
+#filter-bar {
+    display: flex;
+    justify-content: center;
+    background-color: #f1f1f1;
+    padding: 10px;
+}
+
+.filter-button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+#columns-selector {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.columns-button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.columns-button:hover {
+    background-color: #0056b3;
+}
+
+#media-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+#media-grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1200px; /* 设置最大宽度，可以根据需要调整 */
+    justify-content: space-between;
+    contain: layout style; /* 限制影响范围 */
+}
+
+.media-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    transition: transform 0.2s, flex-basis 0.3s, padding-bottom 0.3s; /* 添加过渡效果 */
+    margin: 10px; /* 增加上下和左右的缝隙 */
+    flex-basis: calc(25% - 20px); /* 默认每行4个 */
+    padding-bottom: calc((25% - 20px) * 4 / 3); /* 固定宽高比为3:4 */
+    opacity: 0;
+    transform: translateX(-100%);
+    will-change: transform, opacity; /* 启用硬件加速 */
+    backface-visibility: hidden; /* 防止闪烁 */
+}
+
+@media (max-width: 1200px) {
+    .media-item {
+        flex-basis: calc(33.333% - 20px); /* 每行3个 */
+        padding-bottom: calc((33.333% - 20px) * 4 / 3); /* 固定宽高比为3:4 */
+    }
+}
+
+@media (max-width: 900px) {
+    .media-item {
+        flex-basis: calc(50% - 20px); /* 每行2个 */
+        padding-bottom: calc((50% - 20px) * 4 / 3); /* 固定宽高比为3:4 */
+    }
+}
+
+@media (max-width: 600px) {
+    .media-item {
+        flex-basis: calc(100% - 20px); /* 每行1个 */
+        padding-bottom: calc((100% - 20px) * 4 / 3); /* 固定宽高比为3:4 */
+    }
+}
+
+.media-item:hover {
+    transform: scale(1.05);
+}
+
+.media-item img,
+.media-item video,
+.media-item iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    will-change: transform; /* 启用硬件加速 */
+}
+
+.loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+    contain: layout style; /* 限制影响范围 */
+    transition: all 0.3s ease;
+}
+
+.modal.show {
+    display: block;
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    max-width: 80%;
+    max-height: 80%;
+    will-change: transform; /* 启用硬件加速 */
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.modal.show .modal-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    z-index: 99;
+    font-size: 18px;
+    width: 50px;
+    height: 50px;
+    border: none;
+    outline: none;
+    background-color: #555;
+    color: white;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 4px;
+    will-change: transform; /* 启用硬件加速 */
+}
+
+#back-to-top:hover {
+    background-color: #333;
+}
+
+#page-title {
+    text-align: center;
+    margin: 20px 0;
+}
+
+#page-title a {
+    color: #337ab7;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#page-title a:hover {
+    text-decoration: underline;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+</style>
+</head>
+<body>
+<div id="page-title">
+    <a href="https://example.com" target="_blank">媒体瀑布流</a>
+</div>
+<div id="filter-bar"></div>
+<div id="columns-selector">
+    <button class="columns-button" onclick="setColumns(1)">1p</button>
+    <button class="columns-button" onclick="setColumns(2)">2p</button>
+    <button class="columns-button" onclick="setColumns(3)">3p</button>
+    <button class="columns-button" onclick="setColumns(4)">4p</button>
+</div>
+<div id="media-container">
+    <div id="media-grid"></div>
+</div>
+<div id="modal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+    <video class="modal-content" id="vid01" controls muted></video>
+    <iframe class="modal-content" id="douyin-modal" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+</div>
+<button id="back-to-top">↑</button>
+
+<script>
+const resources = [
+    'https://xxx.com/wp-content/uploads/2024/07/nsegz09c26.gif', // 静态图片
+    'https://xxx.net/wp-content/uploads/2024/07/nsegz09c26.mp4',
+    'https://www.douyin.com/video/7435575006190505273', // 抖音视频链接
+    'https://www.douyin.com/video/7435575006190505273', // 抖音视频链接
+    'https://www.douyin.com/video/7435575006190505273', // 抖音视频链接
+    'https://www.douyin.com/video/7435575006190505273', // 抖音视频链接
+              'https://manpeace.org/data/video/rndnjftlqdlf/asdasdafdsqlzlssl%20(1).mp4',
+              'https://manpeace.org/data/video/rndnjftlqdlf/asdasdafdsqlzlssl%20(5).mp4',
+              'https://manpeace.org/data/video/rndnjftlqdlf/asdasdafdsqlzlssl%20(3).mp4',
+              'https://manpeace.org/data/video/rndnjftlqdlf/asdasdafdsqlzlssl%20(6).mp4',
+              'https://manpeace.org/data/video/rndnjftlqdlf/asdasdafdsqlzlssl%20(2).mp4'
+];
+
+function loadMedia() {
+    const mediaGrid = document.getElementById('media-grid');
+    const filterBar = document.getElementById('filter-bar');
+
+    // 创建过滤按钮
+    const extensions = new Set();
+    resources.forEach(url => {
+        if (!isDouyinVideo(url)) {
+            const ext = url.split('.').pop().toLowerCase();
+            extensions.add(ext);
+        } else {
+            extensions.add('douyin');
+        }
+    });
+
+    // 添加“全部”按钮
+    const allButton = document.createElement('button');
+    allButton.className = 'filter-button';
+    allButton.innerText = '全部';
+    allButton.addEventListener('click', showAllMedia);
+    filterBar.appendChild(allButton);
+
+    const filterButtons = document.createDocumentFragment();
+    extensions.forEach(ext => {
+        const button = document.createElement('button');
+        button.className = 'filter-button';
+        let label = ext.toUpperCase();
+        if (ext === 'douyin') {
+            label = 'DOUYIN';
+        }
+        button.innerText = `${label} (${resources.filter(url => isDouyinVideo(url) ? ext === 'douyin' : url.endsWith(`.${ext}`)).length})`;
+        button.addEventListener('click', () => filterMedia(ext));
+        filterButtons.appendChild(button);
+    });
+    filterBar.appendChild(filterButtons);
+
+    // 使用 DocumentFragment 批量插入媒体项
+    const mediaItemsFragment = document.createDocumentFragment();
+    resources.forEach((url, index) => {
+        const item = createMediaItem(url, index);
+        mediaItemsFragment.appendChild(item);
+    });
+    mediaGrid.appendChild(mediaItemsFragment);
+
+    // 默认显示所有媒体
+    showAllMedia();
+}
+
+function isImage(ext) {
+    return ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext); // 增加对 webp 的支持
+}
+
+function isVideo(ext) {
+    return ['mp4', 'webm', 'ogg', 'mov'].includes(ext);
+}
+
+function isDouyinVideo(url) {
+    return url.includes('www.douyin.com/video/');
+}
+
+function getDouyinEmbedUrl(url) {
+    const videoId = url.match(/\/(\d+)\/?$/)[1];
+    return `https://open.douyin.com/player/video?vid=${videoId}&autoplay=0&referrerpolicy=unsafe-url&allowfullscreen`;
+}
+
+function createMediaElement(tagName, src) {
+    const element = document.createElement(tagName);
+    element.src = src; // 直接设置 src 属性
+    return element;
+}
+
+function createMediaItem(url, index) {
+    const item = document.createElement('div');
+    item.className = 'media-item';
+
+    if (isDouyinVideo(url)) {
+        const iframe = document.createElement('iframe');
+        iframe.frameBorder = "0";
+        iframe.src = getDouyinEmbedUrl(url);
+        iframe.style.position = 'absolute';
+        iframe.style.top = '0';
+        iframe.style.left = '0';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.objectFit = 'cover';
+        iframe.style.cursor = 'pointer';
+        iframe.style.willChange = 'transform'; // 启用硬件加速
+
+        iframe.addEventListener('load', () => {
+            item.style.animation = `slideIn 0.5s forwards ${index * 0.1}s`;
+            removeLoadingIndicator(item);
+            iframe.addEventListener('click', () => openModal(iframe));
+        });
+
+        item.appendChild(iframe);
+    } else {
+        const ext = url.split('.').pop().toLowerCase();
+        let mediaElement;
+
+        if (isImage(ext)) {
+            mediaElement = createMediaElement('img', url);
+            mediaElement.addEventListener('load', () => {
+                item.style.animation = `slideIn 0.5s forwards ${index * 0.1}s`;
+                removeLoadingIndicator(item);
+                mediaElement.addEventListener('click', () => openModal(mediaElement));
+            });
+        } else if (isVideo(ext)) {
+            mediaElement = createMediaElement('video', url);
+            mediaElement.controls = true;
+            mediaElement.muted = true;
+            mediaElement.preload = 'metadata'; // 预加载元数据
+            mediaElement.addEventListener('loadedmetadata', () => {
+                item.style.animation = `slideIn 0.5s forwards ${index * 0.1}s`;
+                removeLoadingIndicator(item);
+                mediaElement.addEventListener('click', () => openModal(mediaElement));
+            });
+        }
+
+        mediaElement.addEventListener('error', (event) => {
+            console.error(`Failed to load media: ${url}`, event);
+            item.style.display = 'none'; // 隐藏加载失败的项目
+        });
+
+        // 添加加载指示器
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'loading-indicator';
+        item.appendChild(loadingIndicator);
+        item.appendChild(mediaElement);
+    }
+
+    return item;
+}
+
+function removeLoadingIndicator(item) {
+    const loadingIndicator = item.querySelector('.loading-indicator');
+    if (loadingIndicator) {
+        loadingIndicator.remove();
+    }
+}
+
+function filterMedia(ext) {
+    const mediaItems = document.querySelectorAll('.media-item');
+    mediaItems.forEach(item => {
+        const mediaElement = item.querySelector('img, video, iframe');
+        if (mediaElement) {
+            const url = mediaElement.tagName.toLowerCase() === 'iframe' ? mediaElement.src : mediaElement.src;
+            let isMatch;
+            if (ext === 'douyin') {
+                isMatch = isDouyinVideo(url);
+            } else {
+                isMatch = url.endsWith(`.${ext}`);
+            }
+            item.style.display = isMatch ? 'block' : 'none';
+        } else {
+            item.style.display = 'none'; // 如果没有 src 属性，隐藏该元素
+        }
+    });
+}
+
+function showAllMedia() {
+    const mediaItems = document.querySelectorAll('.media-item');
+    mediaItems.forEach(item => {
+        item.style.display = 'block';
+    });
+}
+
+function openModal(content) {
+    const modal = document.getElementById('modal');
+    const img = document.getElementById('img01');
+    const vid = document.getElementById('vid01');
+    const douyinIframe = document.getElementById('douyin-modal');
+    
+    if (content.tagName.toLowerCase() === 'img') {
+        img.src = content.src;
+        img.style.display = 'block';
+        img.style.transform = ''; // 确保每次打开图片时都是正常大小
+        vid.style.display = 'none';
+        douyinIframe.style.display = 'none';
+        img.addEventListener('click', () => toggleZoom(img));
+    } else if (content.tagName.toLowerCase() === 'video') {
+        vid.src = content.src;
+        vid.load(); // 确保视频重新加载
+        vid.play();
+        vid.style.display = 'block';
+        img.style.display = 'none';
+        douyinIframe.style.display = 'none';
+    } else if (content.tagName.toLowerCase() === 'iframe') {
+        vid.src = '';
+        vid.style.display = 'none';
+        img.style.display = 'none';
+        douyinIframe.src = content.src;
+        douyinIframe.style.display = 'block';
+    }
+    modal.classList.add('show');
+    document.querySelector('.close').addEventListener('click', closeModal);
+    window.addEventListener('click', outsideClick);
+}
+
+function closeModal() {
+    const modal = document.getElementById('modal');
+    const img = document.getElementById('img01');
+    const vid = document.getElementById('vid01');
+    const douyinIframe = document.getElementById('douyin-modal');
+    vid.pause();
+    modal.classList.remove('show');
+    document.querySelector('.close').removeEventListener('click', closeModal);
+    window.removeEventListener('click', outsideClick);
+    img.removeEventListener('click', () => toggleZoom(img)); // 移除点击事件
+    img.style.transform = ''; // 重置图片缩放状态
+    douyinIframe.src = '';
+}
+
+function outsideClick(event) {
+    const modal = document.getElementById('modal');
+    if (event.target == modal) {
+        closeModal();
+    }
+}
+
+function toggleZoom(img) {
+    const isZoomed = img.classList.contains('zoomed');
+    if (isZoomed) {
+        img.style.transform = '';
+        img.classList.remove('zoomed');
+    } else {
+        img.style.transform = 'scale(1.3)';
+        img.classList.add('zoomed');
+    }
+}
+
+// 返回顶部按钮功能
+function backToTop() {
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+// 显示或隐藏返回顶部按钮
+window.onscroll = function() {
+    const backToTopButton = document.getElementById('back-to-top');
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        backToTopButton.style.display = "block";
+    } else {
+        backToTopButton.style.display = "none";
+    }
+};
+
+// 设置每行显示的媒体项个数
+function setColumns(columns) {
+    const mediaItems = document.querySelectorAll('.media-item');
+    mediaItems.forEach(item => {
+        item.style.flexBasis = `calc(${100 / columns}% - 20px)`;
+        item.style.paddingBottom = `calc((${100 / columns}% - 20px) * 4 / 3)`;
+    });
+}
+
+// 页面加载完成后调用
+document.addEventListener("DOMContentLoaded", function() {
+    loadMedia();
+    const backToTopButton = document.getElementById('back-to-top');
+    backToTopButton.addEventListener('click', backToTop);
+});
+</script>
+</body>
+</html>
+
+
+

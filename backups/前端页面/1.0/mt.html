@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>文件夹 MT</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    header {
+        background-color: #333;
+        color: white;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    .folder-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 20px;
+    }
+
+    .folder {
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .folder:hover {
+        background-color: #e0e0e0;
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>文件夹 MR</h1>
+</header>
+<div class="folder-grid">
+    <!-- 示例文件夹或文件 -->
+    <a href="#" class="folder">文件1</a>
+    <a href="#" class="folder">文件2</a>
+    <a href="#" class="folder">文件3</a>
+</div>
+<!-- 返回按钮 -->
+<a href="index.html" style="display: block; text-align: center; margin-top: 20px;">返回上一级</a>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>网盘首页</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    header {
+        background-color: #333;
+        color: white;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    .folder-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 20px;
+    }
+
+    .folder, .file {
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .folder:hover, .file:hover {
+        background-color: #e0e0e0;
+    }
+
+    .icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 10px;
+    }
+
+    .folder .icon {
+        background-image: url('folder-icon.png');
+    }
+
+    .file .icon {
+        background-image: url('file-icon.png');
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>我的网盘</h1>
+    <p>欢迎来到我的网盘！</p>
+</header>
+<!-- 文件夹网格布局 -->
+<div class="folder-grid">
+    <!-- 示例文件夹链接 -->
+    <a href="mr.html" class="folder">
+        <div class="icon"></div>
+        <span>MR</span>
+    </a>
+    <a href="mt.html" class="folder">
+        <div class="icon"></div>
+        <span>MT</span>
+    </a>
+    <a href="mb.html" class="folder">
+        <div class="icon"></div>
+        <span>MB</span>
+    </a>
+    <a href="other.html" class="folder">
+        <div class="icon"></div>
+        <span>Other</span>
+    </a>
+    <a href="2024.html" class="folder">
+        <div class="icon"></div>
+        <span>2024</span>
+    </a>
+    <!-- 新增文件夹或文件链接的地方 -->
+    <!-- 示例：新增一个文件夹 -->
+    <a href="new-folder.html" class="folder">
+        <div class="icon"></div>
+        <span>New Folder</span>
+    </a>
+    <!-- 示例：新增一个文件 -->
+    <a href="new-file.html" class="file">
+        <div class="icon"></div>
+        <span>New File.html</span>
+    </a>
+</div>
+</body>
+</html>

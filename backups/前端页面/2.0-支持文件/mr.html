@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>文件夹 MR</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    header {
+        background-color: #333;
+        color: white;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    .folder-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 20px;
+    }
+
+    .folder, .file {
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .folder:hover, .file:hover {
+        background-color: #e0e0e0;
+    }
+
+    .icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 10px;
+    }
+
+    .folder .icon {
+        background-image: url('folder-icon.png');
+    }
+
+    .file .icon {
+        background-image: url('file-icon.png');
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>文件夹 MR</h1>
+    <p>这是 MR 文件夹的内容。</p>
+</header>
+<!-- 文件夹网格布局 -->
+<div class="folder-grid">
+    <!-- 示例文件夹链接 -->
+    <a href="subfolder1.html" class="folder">
+        <div class="icon"></div>
+        <span>Subfolder1</span>
+    </a>
+    <!-- 示例文件链接 -->
+    <a href="example.html" class="file">
+        <div class="icon"></div>
+        <span>Example.html</span>
+    </a>
+    <!-- 更多文件夹或文件链接 -->
+    <a href="subfolder2.html" class="folder">
+        <div class="icon"></div>
+        <span>Subfolder2</span>
+    </a>
+    <a href="document.pdf" class="file">
+        <div class="icon"></div>
+        <span>Document.pdf</span>
+    </a>
+    <!-- 新增文件夹或文件链接的地方 -->
+    <!-- 示例：新增一个文件夹 -->
+    <a href="new-subfolder.html" class="folder">
+        <div class="icon"></div>
+        <span>New Subfolder</span>
+    </a>
+    <!-- 示例：新增一个文件 -->
+    <a href="new-document.html" class="file">
+        <div class="icon"></div>
+        <span>New Document.html</span>
+    </a>
+</div>
+<!-- 返回按钮 -->
+<a href="index.html" style="display: block; text-align: center; margin-top: 20px;">返回上一级</a>
+</body>
+</html>
