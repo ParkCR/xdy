@@ -10,24 +10,34 @@
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
     background-color: #f4f4f4;
+  }
+  .header {
+    margin-top: 30px; /* 增加顶部边距 */
+    font-size: 2em;
+    color: #333;
+    text-align: center;
   }
   .container {
     width: 90%;
     max-width: 1200px;
     display: flex;
+    flex-wrap: wrap; /* 允许容器内的元素换行 */
     gap: 20px;
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    margin-bottom: 30px; /* 增加底部边距 */
   }
   .text-box {
     flex: 1;
+    min-width: 100%; /* 确保每个文本框至少占满一行 */
     position: relative;
+    padding: 10px;
+    box-sizing: border-box;
   }
   textarea {
     width: 100%;
@@ -36,30 +46,34 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     resize: none;
+    box-sizing: border-box;
   }
   .controls, #exportControls {
     margin-top: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap; /* 在小屏幕上允许按钮换行 */
+    gap: 10px; /* 按钮之间的间距 */
   }
   #cdnSelect, #exportFormatSelect {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
     flex: 1;
-    min-width: 150px; /* Set a minimum width for select elements */
-    max-width: 30%; /* Limit the maximum width of select elements */
+    min-width: 150px;
+    max-width: 100%; /* 在小屏幕上全宽 */
+    box-sizing: border-box;
   }
   button {
     padding: 8px 16px;
-    margin-left: 5px; /* Add some space between elements */
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    flex: 1; /* Make buttons take up equal space */
-    min-width: 150px; /* Set a minimum width for buttons */
-    max-width: 30%; /* Limit the maximum width of buttons */
+    flex: 1;
+    min-width: 150px;
+    max-width: 100%; /* 在小屏幕上全宽 */
+    box-sizing: border-box;
   }
   #copyButton {
     background-color: #28a745;
@@ -74,28 +88,41 @@
     color: white;
   }
   #generateButton {
-    background-color: #007bff; /* Blue background */
-    color: white; /* White text */
+    background-color: #007bff;
+    color: white;
   }
-  #exportControls {
-    gap: 10px; /* Space between export controls */
+  footer {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #777;
+    text-align: center;
+    width: 90%;
+    max-width: 1200px;
+    margin-bottom: 30px;
+    padding: 10px;
+    box-sizing: border-box;
   }
+
   @media (max-width: 768px) {
-    .container {
-      flex-direction: column;
+    .header {
+      font-size: 1.5em; /* 减小标题字体大小 */
+    }
+    .text-box {
+      min-width: 100%; /* 确保每个文本框至少占满一行 */
     }
     .controls, #exportControls {
-      flex-wrap: wrap; /* Allow wrapping on smaller screens */
-      gap: 10px; /* Space between elements when wrapped */
+      flex-direction: column; /* 将按钮垂直排列 */
+      gap: 10px; /* 增加按钮之间的间距 */
     }
     #cdnSelect, button, #exportFormatSelect, #exportButton {
-      width: 100%; /* Make select and buttons full width on mobile */
-      margin-bottom: 10px;
+      width: 100%; /* 使选择器和按钮在小屏幕上全宽 */
     }
   }
 </style>
 </head>
 <body>
+
+<h1 class="header">图片缓存2.3</h1>
 
 <div class="container">
   <div class="text-box">
@@ -116,6 +143,14 @@
         <optgroup label="Daum CDN 服务">
           <option value="t1">Daum CDN - t1</option>
           <option value="t2">Daum CDN - t2</option>
+          <option value="img1">Daum CDN - img1</option>
+          <option value="img3">Daum CDN - img3</option>
+          <option value="img4">Daum CDN - img4</option>
+        </optgroup>
+        <optgroup label="Wsrv.nl 服务">
+          <option value="weserv-old">Wsrv.nl - weserv(旧)</option>
+          <option value="wsrv-new">Wsrv.nl - wsrv(新)</option>
+          <option value="wsrv-gif">Wsrv.nl - wsrv(gif)</option>
         </optgroup>
       </select>
       <button id="generateButton" onclick="generateText()">生成文本</button>
@@ -137,6 +172,10 @@
   </div>
 </div>
 
+<footer>
+  在Daum服务中，t1,t2可自选更换为i1,i2,n1,n2,u1,u2；将地址栏中的R1000x0，改为C800x800，可以直接裁切图片，支持gif格式。
+</footer>
+
 <script>
 function generateText() {
   const inputText = document.getElementById('inputText').value;
@@ -144,25 +183,38 @@ function generateText() {
   let outputText = inputText;
 
   if (cdnOption.startsWith('i') && ['i0', 'i1', 'i2', 'i3'].includes(cdnOption)) {
-    // Regular expression to match image URLs
     const imgUrlRegex = /https?:\/\/[^\s]+/g;
-    // Replace matched URLs with the WordPress CDN URL
     outputText = inputText.replace(imgUrlRegex, (match) => {
       return `https://${cdnOption}.wp.com/${match.slice(match.indexOf('/') + 2)}`;
     });
   } else if (cdnOption === 'cdnjson') {
-    // Regular expression to match image URLs
     const imgUrlRegex = /https?:\/\/[^\s]+/g;
-    // Replace matched URLs with the CDNJSON URL
     outputText = inputText.replace(imgUrlRegex, (match) => {
       return `https://cdn.cdnjson.com/pic.html?url=${encodeURIComponent(match)}`;
     });
-  } else if (['t1', 't2'].includes(cdnOption)) {
-    // Regular expression to match image URLs
+  } else if (['t1', 't2', 'img1', 'img3', 'img4'].includes(cdnOption)) {
     const imgUrlRegex = /https?:\/\/[^\s]+/g;
-    // Replace matched URLs with the Daum CDN URL
     outputText = inputText.replace(imgUrlRegex, (match) => {
-      return `https://${cdnOption}.daumcdn.net/thumb/R1000x0/?fname=${encodeURIComponent(match)}`;
+      return `https://${cdnOption}.daumcdn.net/thumb/R2000x0/?fname=${encodeURIComponent(match)}`;
+    });
+  } else if (cdnOption === 'weserv-old') {
+    const imgUrlRegex = /https?:\/\/[^\s]+/g;
+    outputText = inputText.replace(imgUrlRegex, (match) => {
+      return `https://images.weserv.nl/?url=${encodeURIComponent(match)}`;
+    });
+  } else if (cdnOption === 'wsrv-new') {
+    const imgUrlRegex = /https?:\/\/[^\s]+/g;
+    outputText = inputText.replace(imgUrlRegex, (match) => {
+      return `https://wsrv.nl/?url=${match.replace(/^https?:\/\//, '')}`;
+    });
+  } else if (cdnOption === 'wsrv-gif') {
+    const imgUrlRegex = /https?:\/\/[^\s]+/g;
+    outputText = inputText.replace(imgUrlRegex, (match) => {
+      if (match.toLowerCase().endsWith('.gif')) {
+        return `https://wsrv.nl/?url=${match.replace(/^https?:\/\//, '')}&n=-1`;
+      } else {
+        return `https://wsrv.nl/?url=${match.replace(/^https?:\/\//, '')}`;
+      }
     });
   }
 
@@ -172,12 +224,11 @@ function generateText() {
 function copyToClipboard() {
   const outputText = document.getElementById('outputText');
   outputText.select();
-  outputText.setSelectionRange(0, 99999); // For mobile devices
+  outputText.setSelectionRange(0, 99999); 
   navigator.clipboard.writeText(outputText.value).then(() => {
     alert('文本已复制到剪贴板！');
   }).catch(err => {
     console.error('未能复制文本: ', err);
-    // Fallback for older browsers that do not support navigator.clipboard
     document.execCommand('copy');
     alert('文本已复制到剪贴板！');
   });
@@ -185,7 +236,7 @@ function copyToClipboard() {
 
 function clearInputText() {
   document.getElementById('inputText').value = '';
-  document.getElementById('outputText').value = ''; // Also clear the output text area
+  document.getElementById('outputText').value = ''; 
 }
 
 function exportFile() {
@@ -201,7 +252,6 @@ function exportFile() {
       break;
     case 'json':
       fileName += '.json';
-      // Split the output text into an array of URLs
       const urls = outputText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
       if (urls.length === 0) {
         alert('没有有效的URL可以导出为JSON。');
@@ -211,7 +261,6 @@ function exportFile() {
       break;
     case 'md':
       fileName += '.md';
-      // Convert each URL to Markdown link format and ensure each link is on a new line
       const mdLinks = outputText.split('\n')
                                 .map(url => url.trim())
                                 .filter(url => url.length > 0)
@@ -233,7 +282,7 @@ function exportFile() {
   link.href = URL.createObjectURL(blob);
   link.download = fileName;
   link.click();
-  URL.revokeObjectURL(link.href); // Clean up the URL object
+  URL.revokeObjectURL(link.href); 
 }
 </script>
 
