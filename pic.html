@@ -120,7 +120,7 @@
             }
             .time-display {
                 top: 8%;
-                font-size: 80px; /* 减小字体大小以适应移动端 */
+                font-size: 40px; /* 减小字体大小以适应移动端 */
             }
         }
         @media (max-width: 400px) {
@@ -129,7 +129,7 @@
             }
             .time-display {
                 top: 3%;
-                font-size: 60px; /* 进一步减小字体大小 */
+                font-size: 30px; /* 进一步减小字体大小 */
             }
         }
     </style>
@@ -145,14 +145,14 @@
     <div class="options">
         <div class="option-group">
             <label><input type="radio" name="service" value="daum" onclick="selectService('daum')">Daum节点</label>
-            <label><input type="radio" name="service" value="weserv" onclick="selectService('weserv')">Weserv节点</label>
-            <label><input type="radio" name="service" value="wsrv" onclick="selectService('wsrv')">wsrv节点</label>
             <label><input type="radio" name="service" value="flyimg" onclick="selectService('flyimg')">Flyimg节点</label>
             <label><input type="radio" name="service" value="imagizer" onclick="selectService('imagizer')">Imagizer节点</label>
             <label><input type="radio" name="service" value="picseed" onclick="selectService('picseed')">Picseed节点</label>
             <label><input type="radio" name="service" value="cdnjson" onclick="selectService('cdnjson')">CDNjson节点</label>
             <label><input type="radio" name="service" value="zeroms" onclick="selectService('zeroms')">0ms节点</label>
             <label><input type="radio" name="service" value="ezgif" onclick="selectService('ezgif')">Ezgif节点</label>
+            <label><input type="radio" name="service" value="weserv" onclick="selectService('weserv')">Weserv节点</label>
+            <label><input type="radio" name="service" value="wsrv" onclick="selectService('wsrv')">Wsrv节点</label>
         </div>
     </div>
 </div>
@@ -173,7 +173,7 @@
 
         let convertedUrl = url;
         if (selectedService === 'daum') {
-            convertedUrl = `https://t2.daumcdn.net/thumb/R1000x0/?fname=${encodeURIComponent(url)}`;
+            convertedUrl = `https://t2.daumcdn.net/thumb/R2000x0/?fname=${encodeURIComponent(url)}`;
         } else if (selectedService === 'weserv') {
             convertedUrl = `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
         } else if (selectedService === 'wsrv') {
