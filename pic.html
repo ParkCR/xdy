@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片查看器1.5</title>
+    <title>图片查看器1.6</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,7 +33,7 @@
             position: relative;
             flex-direction: column;
         }
-        .time-display {
+      .time-display {
             position: absolute;
             top: 10%;
             left: 50%;
@@ -43,7 +43,7 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             z-index: 2;
         }
-        .container {
+      .container {
             width: 90%;
             max-width: 800px;
             background-color: rgba(0, 0, 0, 0.2);/* 容器背景颜色和透明度效果 */
@@ -88,12 +88,12 @@
         #openButton:hover {
             background-color: #0056b3;
         }
-        .clearfix::after {
+      .clearfix::after {
             content: "";
             clear: both;
             display: table;
         }
-        .options {
+      .options {
             margin-top: 30px;
         }
         label {
@@ -105,41 +105,41 @@
         input[type="radio"] {
             margin-right: 5px;
         }
-        .option-group {
+      .option-group {
             display: flex;
             flex-wrap: wrap;
         }
-        .option-group label {
+      .option-group label {
             width: 33.33%;
             margin-bottom: 20px;
             box-sizing: border-box;
             padding: 0 10px;
         }
         @media (max-width: 600px) {
-            .option-group label {
+          .option-group label {
                 width: 50%;
             }
-            .time-display {
+          .time-display {
                 top: 8%;
                 font-size: 40px; /* 减小字体大小以适应移动端 */
             }
-            .footer-text {
+          .footer-text {
             font-size: 8px;
             }
         }
         @media (max-width: 400px) {
-            .option-group label {
+          .option-group label {
                 width: 100%;
             }
-            .time-display {
+          .time-display {
                 top: 3%;
                 font-size: 30px; /* 进一步减小字体大小 */
             }
-            .footer-text {
+          .footer-text {
             font-size: 6px;
             }
         }
-        .footer-text {
+      .footer-text {
             position: absolute;
             bottom: 20px;
             left: 50%;
@@ -172,10 +172,11 @@
             <label><input type="radio" name="service" value="ezgif" onclick="selectService('ezgif')">Ezgif节点</label>
             <label><input type="radio" name="service" value="weserv" onclick="selectService('weserv')">Weserv节点</label>
             <label><input type="radio" name="service" value="wsrv" onclick="selectService('wsrv')">Wsrv节点</label>
+            <label><input type="radio" name="service" value="wp" onclick="selectService('wp')">WP节点</label>
         </div>
     </div>
 </div>
-<div class="footer-text">2025.1.23，新增Imagecdn服务</div>
+<div class="footer-text">2025.1.28，新增WP服务</div>
 
 <script>
     let selectedService = '';
@@ -186,7 +187,7 @@
 
     function openConvertedPage() {
         const url = document.getElementById('urlInput').value;
-        if (!url || !selectedService) {
+        if (!url ||!selectedService) {
             alert('请输入链接并选择服务');
             return;
         }
@@ -225,6 +226,10 @@
             }
         } else if (selectedService === 'imagecdn') {
             convertedUrl = `https://imagecdn.app/v2/image/${encodeURIComponent(url)}`;
+        } else if (selectedService === 'wp') {
+            // 去掉协议部分 (http/https)
+            const cleanedUrl = url.replace(/^https?:\/\//, '');
+            convertedUrl = `https://i1.wp.com/${cleanedUrl}`;
         } else {
             // 这里可以添加其他服务的转换逻辑
             convertedUrl = `${url}?service=${selectedService}`;
@@ -252,6 +257,3 @@
 </script>
 </body>
 </html>
-
-
-
