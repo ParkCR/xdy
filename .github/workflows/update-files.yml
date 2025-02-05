@@ -1,66 +1,39 @@
 name: Update Files JSON
 
 on:
+  # 添加 workflow_dispatch 事件，允许手动触发工作流
+  workflow_dispatch:
   push:
     paths:
-      - 'xdy/files/mr/**'
-      - 'xdy/files/mb/**'
-      - 'xdy/files/mt/**'
-      - 'xdy/files/others/**'
-  workflow_dispatch:
+      - 'files/**/*.html'
 
 jobs:
   update-json:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Cache Node.js modules
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '14'
+      - name: Install dependencies
+        run: npm install
 
-    - name: Install dependencies
-      run: npm install
+      - name: Generate files JSON
+        run: npm run generate
 
-    - name: List files in xdy/files/mb
-      run: |
-        echo "Listing files in xdy/files/mb:"
-        ls -la xdy/files/mb || echo "Directory xdy/files/mb does not exist or is empty."
-
-    - name: Run script to generate files JSONs
-      run: |
-        echo "Starting to generate JSON files..."
-        node scripts/generate-files.js
-        echo "JSON files generated successfully."
-
-    - name: Commit and push changes
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git config --global user.name github-actions
-        git config --global user.email github-actions@github.com
-        # 撤销 package.json 和 package-lock.json 的更改
-        git restore package.json
-        git clean -f package-lock.json
-        git add xdy/files-mr.json xdy/files-mb.json xdy/files-mt.json xdy/files-others.json
-        if [ -n "$(git status --porcelain)" ]; then
-          git commit -m "Automatically update files JSONs"
-          if ! git push; then
-            echo "Failed to push changes to the repository."
-            exit 1
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add files-*.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update files JSON"
+            git push
           fi
-        fi
-
-
-
