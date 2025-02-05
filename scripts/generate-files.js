@@ -1,55 +1,33 @@
 const fs = require('fs');
 const path = require('path');
 
+const filesDir = path.join(__dirname, '../files');
+const jsonFilesDir = path.join(__dirname, '../');
 
-const directories = [
-  { dir: 'mr', jsonPath: 'xdy/files-mr.json' },
-  { dir: 'mb', jsonPath: 'xdy/files-mb.json' },
-  { dir: 'mt', jsonPath: 'xdy/files-mt.json' },
-  { dir: 'others', jsonPath: 'xdy/files-others.json' }
-];
+// 定义子目录名称
+const subDirs = ['mr', 'mb', 'mt', 'others'];
 
-directories.forEach(({ dir, jsonPath }) => {
+subDirs.forEach((subDir) => {
+  const subDirPath = path.join(filesDir, subDir);
+  const jsonFilePath = path.join(jsonFilesDir, `files-${subDir}.json`);
 
-  const targetDir = path.join(__dirname, `../xdy/files/${dir}`);
-
-  console.log(`Processing directory: ${targetDir}`);
-
-  if (!fs.existsSync(targetDir)) {
-    console.warn(`Directory ${targetDir} does not exist.`);
-    return;
-  }
-
-
-  fs.readdir(targetDir, (err, files) => {
+  // 读取子目录中的文件
+  fs.readdir(subDirPath, (err, files) => {
     if (err) {
-      console.error(`Error reading directory ${targetDir}:`, err);
-      process.exit(1);
+      console.error(`Error reading ${subDirPath}:`, err);
+      return;
     }
 
-    console.log(`Files in ${targetDir}:`, files);
+    // 过滤出 HTML 文件
+    const htmlFiles = files.filter((file) => path.extname(file) === '.html');
 
-
-    const fileNames = files.filter(file => {
-      const filePath = path.join(targetDir, file);
-      return fs.statSync(filePath).isFile();
-    });
-
-    console.log(`Filtered files in ${targetDir}:`, fileNames);
-
-
-    const jsonData = JSON.stringify(fileNames, null, 2);
-
-
-    fs.writeFile(jsonPath, jsonData, (err) => {
+    // 将文件信息写入对应的 JSON 文件
+    fs.writeFile(jsonFilePath, JSON.stringify(htmlFiles, null, 2), (err) => {
       if (err) {
-        console.error(`Error writing ${jsonPath}:`, err);
-        process.exit(1);
+        console.error(`Error writing ${jsonFilePath}:`, err);
+      } else {
+        console.log(`Updated ${jsonFilePath}`);
       }
-      console.log(`Successfully updated ${jsonPath}`);
     });
   });
 });
-
-
-
