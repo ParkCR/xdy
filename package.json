@@ -1,0 +1,14 @@
+{
+  "name": "update-files",
+  "version": "1.0.0",
+  "description": "Scripts to update files JSONs",
+  "main": "index.js",
+  "scripts": {
+    "generate": "node scripts/generate-files.js"
+  },
+  "author": "ParkCR",
+  "license": "MIT"
+}
+
+
+
