@@ -238,9 +238,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     const folderGrid = document.querySelector('#folder-grid');
 
-    // 加载文件列表 JSON 文件
-    fetch('/files-mt.json')
-        .then(response => response.json())
+    // 使用相对路径加载文件列表 JSON 文件
+    fetch('./files-mt.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
         .then(data => {
             data.forEach((item, index) => {
                 const itemLink = document.createElement('a');
