@@ -33,6 +33,11 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: List files in xdy/files/mb
+      run: |
+        echo "Listing files in xdy/files/mb:"
+        ls -la xdy/files/mb || echo "Directory xdy/files/mb does not exist or is empty."
+
     - name: Run script to generate files JSONs
       run: |
         echo "Starting to generate JSON files..."
@@ -45,9 +50,10 @@ jobs:
       run: |
         git config --global user.name github-actions
         git config --global user.email github-actions@github.com
+        # 撤销 package.json 和 package-lock.json 的更改
         git restore package.json
         git clean -f package-lock.json
-        git add files-mr.json files-mb.json files-mt.json files-others.json
+        git add xdy/files-mr.json xdy/files-mb.json xdy/files-mt.json xdy/files-others.json
         if [ -n "$(git status --porcelain)" ]; then
           git commit -m "Automatically update files JSONs"
           if ! git push; then
@@ -55,3 +61,6 @@ jobs:
             exit 1
           fi
         fi
+
+
+
