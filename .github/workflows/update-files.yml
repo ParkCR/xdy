@@ -7,7 +7,7 @@ on:
       - 'xdy/files/mb/**'
       - 'xdy/files/mt/**'
       - 'xdy/files/others/**'
-  workflow_dispatch:
+ workflow_dispatch:
 
 jobs:
   update-json:
@@ -17,27 +17,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Cache Node.js modules
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '14'
 
-    - name: Install dependencies
-      run: npm install
-
     - name: Run script to generate files JSONs
+      run: node scripts/generate-files.js
+
+    - name: Check generated JSON files
       run: |
-        echo "Starting to generate JSON files..."
-        node scripts/generate-files.js
-        echo "JSON files generated successfully."
+        ls xdy/files-mr.json xdy/files-mb.json xdy/files-mt.json xdy/files-others.json || echo "JSON files not found"
 
     - name: Commit and push changes
       env:
@@ -48,8 +38,10 @@ jobs:
         git add xdy/files-mr.json xdy/files-mb.json xdy/files-mt.json xdy/files-others.json
         if [ -n "$(git status --porcelain)" ]; then
           git commit -m "Automatically update files JSONs"
-          if ! git push; then
-            echo "Failed to push changes to the repository."
-            exit 1
-          fi
+          git push
+        else
+          echo "No changes to commit."
         fi
+
+
+
