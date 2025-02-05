@@ -10,18 +10,17 @@ const directories = [
 ];
 
 directories.forEach(({ dir, jsonPath }) => {
-  
+
   const targetDir = path.join(__dirname, `../xdy/files/${dir}`);
 
   console.log(`Processing directory: ${targetDir}`);
 
-  
   if (!fs.existsSync(targetDir)) {
     console.warn(`Directory ${targetDir} does not exist.`);
     return;
   }
 
- 
+
   fs.readdir(targetDir, (err, files) => {
     if (err) {
       console.error(`Error reading directory ${targetDir}:`, err);
@@ -30,7 +29,7 @@ directories.forEach(({ dir, jsonPath }) => {
 
     console.log(`Files in ${targetDir}:`, files);
 
-    
+
     const fileNames = files.filter(file => {
       const filePath = path.join(targetDir, file);
       return fs.statSync(filePath).isFile();
@@ -38,10 +37,10 @@ directories.forEach(({ dir, jsonPath }) => {
 
     console.log(`Filtered files in ${targetDir}:`, fileNames);
 
-    
+
     const jsonData = JSON.stringify(fileNames, null, 2);
 
-    
+
     fs.writeFile(jsonPath, jsonData, (err) => {
       if (err) {
         console.error(`Error writing ${jsonPath}:`, err);
