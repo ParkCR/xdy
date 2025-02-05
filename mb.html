@@ -110,7 +110,7 @@
     }
 
     .folder .icon {
-        background-image: url('folder-icon.png'); /* 文件夹图标 */
+        background-image: url('/xdy/folder-icon.png'); /* 文件夹图标 */
     }
 
     .file .icon {
@@ -209,12 +209,12 @@
 </head>
 <body>
 <nav>
-    <a href="index.html">主页</a>
-    <a href="mr.html">MR</a>
-    <a href="mt.html">MT</a>
-    <a href="mb.html">MB</a>
-    <a href="others.html">Others</a>
-    <a href="2024.html">2024</a>
+    <a href="/xdy/index.html">主页</a>
+    <a href="/xdy/mr.html">MR</a>
+    <a href="/xdy/mt.html">MT</a>
+    <a href="/xdy/mb.html">MB</a>
+    <a href="/xdy/others.html">Others</a>
+    <a href="/xdy/2024.html">2024</a>
 </nav>
 <header>
     <h1>MB</h1>
@@ -222,40 +222,45 @@
 </header>
 <div class="container">
     <div class="folder-grid" id="folder-grid">
-        <!-- 示例文件夹和文件 -->
-        <a href="sub-mr1.html" class="folder">
-            <div class="icon"></div>
-            <div class="folder-name">Sub-MR1</div>
-        </a>
-        <a href="sub-mr2.html" class="folder">
+        <!-- 示例文件夹 -->
+        <a href="/xdy/sub-mr2.html" target="_blank" class="folder">
             <div class="icon"></div>
             <div class="folder-name">Sub-MR2</div>
         </a>
     </div>
     <div class="back-link-container">
-        <a href="index.html" class="back-link">返回上一层</a>
-        <a href="index.html" class="back-link">返回首页</a>
+        <a href="/xdy/index.html" class="back-link">返回上一层</a>
+        <a href="/xdy/index.html" class="back-link">返回首页</a>
     </div>
 </div>
 <a href="#top" class="back-to-top" id="back-to-top">返回顶部</a>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const folderGrid = document.querySelector('#folder-grid');
-    fetch('/api/mr-folders') // 假设有一个API可以获取MR文件夹的数据
-        .then(response => response.json())
+
+    // 使用相对路径加载文件列表 JSON 文件
+    fetch('/xdy/files-mb.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
         .then(data => {
             data.forEach((item, index) => {
                 const itemLink = document.createElement('a');
-                itemLink.href = item.url;
-                itemLink.className = item.type; // 使用类型作为类名
+                itemLink.href = `/xdy/files/mb/${item}`;
+                itemLink.target = '_blank'; // 确保链接在新页面打开
+                itemLink.className = 'file';
                 itemLink.style.animationDelay = `${index * 0.1}s`; // 延迟每个项目的动画
                 itemLink.innerHTML = `
                     <div class="icon"></div>
-                    <div class="${item.type}-name">${item.name}</div>
+                    <div class="file-name">${item}</div>
                 `;
                 folderGrid.appendChild(itemLink);
             });
-        });
+        })
+        .catch(error => console.error('Error fetching files:', error));
 
     // 返回顶部功能
     const backToTopButton = document.getElementById('back-to-top');
@@ -266,12 +271,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 返回上一层功能
-    const backLink = document.querySelector('.back-link');
-    backLink.addEventListener('click', function(event) {
-        event.preventDefault();
-        history.back();
+    const backLinks = document.querySelectorAll('.back-link');
+    backLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            history.back();
+        });
     });
 });
 </script>
 </body>
 </html>
+
+
+
