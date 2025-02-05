@@ -6,7 +6,7 @@ on:
   # 当 files 目录下的 HTML 文件有更改时触发工作流
   push:
     paths:
-      - 'files/**/*.html'
+      - 'files/**'
 
 jobs:
   update-json:
