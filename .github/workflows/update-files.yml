@@ -43,15 +43,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-            git config --global user.name github-actions
-    git config --global user.email github-actions@github.com
-    git restore package.json
-    git clean -f package-lock.json
-    git add files-mr.json files-mb.json files-mt.json files-others.json
-    if [ -n "$(git status --porcelain)" ]; then
-      git commit -m "Automatically update files JSONs"
-      if ! git push; then
-        echo "Failed to push changes to the repository."
-        exit 1
-      fi
-    fi
+        git config --global user.name github-actions
+        git config --global user.email github-actions@github.com
+        git add .
+        if [ -n "$(git status --porcelain)" ]; then
+          git commit -m "Automatically update files and dependencies JSONs"
+          if ! git push; then
+            echo "Failed to push changes to the repository."
+            exit 1
+          fi
+        fi
