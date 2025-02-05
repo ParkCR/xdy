@@ -1,8 +1,9 @@
 name: Update Files JSON
 
 on:
-  # 添加 workflow_dispatch 事件，允许手动触发工作流
+  # 允许手动触发工作流
   workflow_dispatch:
+  # 当 files 目录下的 HTML 文件有更改时触发工作流
   push:
     paths:
       - 'files/**/*.html'
@@ -10,30 +11,45 @@ on:
 jobs:
   update-json:
     runs-on: ubuntu-latest
-
+    # 授予工作流写入仓库内容的权限
+    permissions:
+      contents: write
     steps:
+      # 检出仓库代码到运行环境
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 设置 Node.js 环境
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
+          # 指定 Node.js 版本
           node-version: 18
 
+      # 安装项目依赖
       - name: Install dependencies
         run: npm install
 
+      # 运行脚本生成文件信息并更新到 JSON 文件
       - name: Generate files JSON
         run: npm run generate
 
+      # 提交并推送更改到仓库
       - name: Commit and push changes
+        env:
+          # 将 GITHUB_TOKEN 作为环境变量传递
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # 配置 Git 用户信息
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
+          # 添加需要提交的文件
           git add files-*.json
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
+            # 提交更改
             git commit -m "Update files JSON"
-            git push
+            # 使用 GITHUB_TOKEN 进行身份验证并推送更改
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
           fi
