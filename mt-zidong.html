@@ -110,7 +110,7 @@
     }
 
     .folder .icon {
-        background-image: url('folder-icon.png'); /* 文件夹图标 */
+        background-image: url('/xdy/folder-icon.png'); /* 文件夹图标 */
     }
 
     .file .icon {
@@ -209,12 +209,12 @@
 </head>
 <body>
 <nav>
-    <a href="index.html">主页</a>
-    <a href="mr.html">MR</a>
-    <a href="mt.html">MT</a>
-    <a href="mb.html">MB</a>
-    <a href="others.html">Others</a>
-    <a href="2024.html">2024</a>
+    <a href="/xdy/index.html">主页</a>
+    <a href="/xdy/mr.html">MR</a>
+    <a href="/xdy/mt.html">MT</a>
+    <a href="/xdy/mb.html">MB</a>
+    <a href="/xdy/others.html">Others</a>
+    <a href="/xdy/2024.html">2024</a>
 </nav>
 <header>
     <h1>MT</h1>
@@ -223,14 +223,14 @@
 <div class="container">
     <div class="folder-grid" id="folder-grid">
         <!-- 示例文件夹 -->
-        <a href="sub-mr2.html" class="folder">
+        <a href="/xdy/sub-mr2.html" class="folder">
             <div class="icon"></div>
             <div class="folder-name">Sub-MR2</div>
         </a>
     </div>
     <div class="back-link-container">
-        <a href="index.html" class="back-link">返回上一层</a>
-        <a href="index.html" class="back-link">返回首页</a>
+        <a href="/xdy/index.html" class="back-link">返回上一层</a>
+        <a href="/xdy/index.html" class="back-link">返回首页</a>
     </div>
 </div>
 <a href="#top" class="back-to-top" id="back-to-top">返回顶部</a>
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const folderGrid = document.querySelector('#folder-grid');
 
     // 使用相对路径加载文件列表 JSON 文件
-    fetch('./files-mt.json')
+    fetch('/xdy/files-mt.json')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok ' + response.statusText);
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             data.forEach((item, index) => {
                 const itemLink = document.createElement('a');
-                itemLink.href = `/files/mt/${item}`;
+                itemLink.href = `/xdy/files/mt/${item}`;
                 itemLink.className = 'file';
                 itemLink.style.animationDelay = `${index * 0.1}s`; // 延迟每个项目的动画
                 itemLink.innerHTML = `
