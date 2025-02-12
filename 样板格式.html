@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>媒体瀑布流</title>
+    <!-- 引用 GitHub 上的样式文件 -->
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/ParkCR/Config@main/ParkCR-Tampermonkey/%E5%AA%92%E4%BD%93%E9%93%BE%E6%8E%A5%E5%AF%BC%E5%87%BA/styles.css">
+</head>
+<body>
+    <div id="page-title">
+        <a href="${currentPageUrl}" target="_blank">${document.title}</a>
+    </div>
+    <div id="filter-bar"></div>
+    <div id="columns-selector">
+        <button class="columns-button" onclick="setColumns(1)">1p</button>
+        <button class="columns-button" onclick="setColumns(2)">2p</button>
+        <button class="columns-button" onclick="setColumns(3)">3p</button>
+        <button class="columns-button" onclick="setColumns(4)">4p</button>
+    </div>
+    <div id="media-container">
+        <div id="media-grid"></div>
+    </div>
+    <div id="modal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="img01">
+        <video class="modal-content" id="vid01" controls muted></video>
+    </div>
+    <button id="back-to-top">↑</button>
+    <!-- 引用 GitHub 上的脚本文件 -->
+    <script>
+        // 将选中的媒体链接赋值给 resources 数组
+        const resources = [
+        
+         //添加链接模板              ' ', 
+        "https://images2.imgbox.com/64/ae/oQCJaw2d_o.jpg",
+        "https://images2.imgbox.com/e9/11/9h6cFx7X_o.jpg",
+        "https://images2.imgbox.com/fa/01/8oZ4IMPv_o.jpg",
+        "https://images2.imgbox.com/38/40/LrL9ubJt_o.jpg",
+        "https://images2.imgbox.com/8c/70/OnPRJ8Ux_o.jpg",
+        "https://images2.imgbox.com/e1/07/4vnf19ak_o.jpg",
+        "https://images2.imgbox.com/ec/b2/QRWLyhz8_o.jpg",
+        "https://images2.imgbox.com/45/de/sfMSGwsc_o.jpg",
+        "https://images2.imgbox.com/01/a4/9kPN6Li9_o.jpg",
+        "https://images2.imgbox.com/9c/fb/9rnBM9X9_o.jpg",
+        "https://images2.imgbox.com/af/44/MkNwnPhu_o.jpg",
+        "https://images2.imgbox.com/00/4c/MGhxLFyQ_o.jpg",
+        "https://images2.imgbox.com/1c/2b/cP9ATnMJ_o.jpg",
+        "https://images2.imgbox.com/cf/06/FqVMMmgF_o.jpg",
+        "https://images2.imgbox.com/2e/cc/pZ9EXUj1_o.jpg",
+        "https://images2.imgbox.com/5c/40/BhmeJTJo_o.jpg",
+        "https://images2.imgbox.com/48/31/GPSCD136_o.jpg",
+        "https://images2.imgbox.com/de/75/ShrNyAWm_o.jpg",
+        "https://images2.imgbox.com/2a/3d/6jXGrrnq_o.jpg",
+        "https://images2.imgbox.com/c2/f4/jZPMtIlk_o.jpg",
+        "https://images2.imgbox.com/e6/13/RFGcmIcN_o.jpg",
+        "https://images2.imgbox.com/1a/33/k59ac8kD_o.jpg",
+        "https://images2.imgbox.com/5c/ea/FYMMZemM_o.jpg",
+        "https://images2.imgbox.com/cb/e0/XvuPQbyF_o.jpg",
+        "https://images2.imgbox.com/e1/58/C93dn0qL_o.jpg",
+        "https://images2.imgbox.com/49/5e/GnumGRka_o.jpg",
+        "https://images2.imgbox.com/e4/3d/iaLkntXx_o.jpg",
+        "https://images2.imgbox.com/ba/42/pk24tP2H_o.jpg",
+        "https://images2.imgbox.com/e0/da/fgZHQSxi_o.jpg",
+        "https://images2.imgbox.com/b5/72/JHfDMvbP_o.jpg",
+        "https://images2.imgbox.com/0d/65/CGXZH8V5_o.jpg",
+        "https://images2.imgbox.com/3e/c8/H5Tg1cLi_o.jpg",
+        "https://images2.imgbox.com/36/61/K42zRPQE_o.jpg",
+        "https://images2.imgbox.com/5e/62/zeqtuDj4_o.jpg",
+        "https://images2.imgbox.com/79/3e/n8nVroH4_o.jpg",
+        "https://images2.imgbox.com/25/ec/2vyJqPcb_o.jpg",
+        "https://images2.imgbox.com/36/39/zQMlalSF_o.jpg",
+        "https://images2.imgbox.com/59/c6/ykOAw1ow_o.jpg",
+        "https://images2.imgbox.com/9e/bc/AgIaBqkJ_o.jpg",
+        "https://images2.imgbox.com/68/09/UKdyfZdy_o.jpg",
+        "https://images2.imgbox.com/a7/ef/YTiHh4VW_o.jpg",
+        "https://images2.imgbox.com/f7/e0/zBP6a1u0_o.jpg",
+        "https://images2.imgbox.com/aa/3d/vAVBcMFV_o.jpg",
+        "https://nonstoperogazou.com/wp-content/uploads/2024/07/nsegz09c28.gif",
+        "https://nonstoperogazou.com/wp-content/uploads/2024/07/nsegz09c29.gif",
+        "https://nonstoperogazou.com/wp-content/uploads/2024/07/nsegz09c31.gif",
+        "https://images2.imgbox.com/cf/18/fRiTVrim_o.jpg"
+      ];
+    </script>
+    <script src="https://fastly.jsdelivr.net/gh/ParkCR/Config@main/ParkCR-Tampermonkey/%E5%AA%92%E4%BD%93%E9%93%BE%E6%8E%A5%E5%AF%BC%E5%87%BA/script.js"></script>
+</body>
+</html>
