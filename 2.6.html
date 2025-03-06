@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片查看器2.4</title>
+    <title>图片查看器2.6</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -119,34 +119,47 @@
         }
         /* 新增滚动条容器样式 */
       .scrollable-container {
-            max-height: 300px; /* 设置最大高度，超过此高度显示滚动条 */
+            max-height: 250px; /* 设置最大高度，超过此高度显示滚动条 */
             overflow-y: auto; /* 垂直方向滚动 */
             margin-top: 20px;
         }
-        @media (max-width: 600px) {
-          .option-group label {
-                width: 100%;
-            }
-          .time-display {
-                top: 5%;
-                font-size: 40px; /* 减小字体大小以适应移动端 */
-            }
-          .footer-text {
-            font-size: 8px;
-            }
-        }
-        @media (max-width: 400px) {
-          .option-group label {
-                width: 100%;
-            }
-          .time-display {
-                top: 3%;
-                font-size: 30px; /* 进一步减小字体大小 */
-            }
-          .footer-text {
-            font-size: 5px;
-            }
-        }
+/* 其余样式保持不变 */
+@media (max-width: 600px) {
+    .option-group label {
+        width: 100%;
+    }
+    .time-display {
+        top: 5%;
+        font-size: 40px; /* 减小字体大小以适应移动端 */
+    }
+    .footer-text {
+        font-size: 8px;
+    }
+    .container {
+        padding: 2.5%; /* 缩小内边距为 2.5% */
+        margin: 1.25%; /* 缩小外边距为 1.25% */
+        max-height: 80vh; /* 设置最大高度为视口高度的 80% */
+        overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
+    }
+}
+@media (max-width: 400px) {
+    .option-group label {
+        width: 100%;
+    }
+    .time-display {
+        top: 3%;
+        font-size: 30px; /* 进一步减小字体大小 */
+    }
+    .footer-text {
+        font-size: 5px;
+    }
+    .container {
+        padding: 1.875%; /* 进一步缩小内边距为 1.875% */
+        margin: 1%; /* 进一步缩小外边距为 1% */
+        max-height: 85vh; /* 在更小屏幕上适当增大最大高度为视口高度的 85% */
+        overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
+    }
+}
       .footer-text {
             position: absolute;
             bottom: 20px;
@@ -164,7 +177,7 @@
 <body>
     <div class="time-display" id="timeDisplay"></div>
     <div class="container">
-        <h2>图片查看器2.4</h2>
+        <h2>图片查看器2.6</h2>
         <div class="clearfix">
             <input type="text" id="urlInput" placeholder="请输入链接" onkeypress="handleKeyPress(event)">
             <button id="openButton" onclick="openConvertedPage()">打开</button>
