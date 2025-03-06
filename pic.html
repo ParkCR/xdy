@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片查看器2.1</title>
+    <title>图片查看器2.2</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,32 +61,40 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        input[type="text"] {
-            width: calc(100% - 160px);
-            padding: 15px;
-            margin-bottom: 20px;
-            float: left;
-            border: 1px solid #ccc;
-            border-radius: 30px;
-            transition: border-color 0.3s ease;
-            background-color: #fff;
-            color: #333;
-        }
+        .clearfix {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 确保子元素垂直居中对齐 */
+    gap: 10px; /* 设置元素之间的间距 */
+}
+       input[type="text"] {
+    width: calc(100% - 160px);
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    transition: border-color 0.3s ease;
+    background-color: #fff;
+    color: #333;
+    float: none; /* 移除浮动 */
+    box-sizing: border-box; /* 确保内边距和边框包含在宽度内 */
+}
         input[type="text"]:focus {
             border-color: #007bff;
             outline: none;
         }
         #openButton {
-            padding: 15px 30px;
-            margin-left: 10px;
-            float: left;
-            cursor: pointer;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            transition: background-color 0.3s ease;
-        }
+    padding: 15px 30px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    transition: background-color 0.3s ease;
+    float: none; /* 移除浮动 */
+    box-sizing: border-box; /* 确保内边距和边框包含在宽度内 */
+    height: auto; /* 让按钮高度自动适应 */
+    align-self: center; /* 确保按钮自身垂直居中 */
+}
         #openButton:hover {
             background-color: #0056b3;
         }
@@ -117,36 +125,55 @@
             box-sizing: border-box;
             padding: 0 10px;
         }
-        @media (max-width: 600px) {
-          .option-group label {
-                width: 100%;
-            }
-          .time-display {
-                top: 5%;
-                font-size: 40px; /* 减小字体大小以适应移动端 */
-            }
-          .footer-text {
-            font-size: 8px;
-            }
+        /* 新增滚动条容器样式 */
+      .scrollable-container {
+            max-height: 250px; /* 设置最大高度，超过此高度显示滚动条 */
+            overflow-y: auto; /* 垂直方向滚动 */
+            margin-top: 20px;
         }
-        @media (max-width: 400px) {
-          .option-group label {
-                width: 100%;
-            }
-          .time-display {
-                top: 3%;
-                font-size: 30px; /* 进一步减小字体大小 */
-            }
-          .footer-text {
-            font-size: 5px;
-            }
-        }
+/* 其余样式保持不变 */
+@media (max-width: 600px) {
+    .option-group label {
+        width: 100%;
+    }
+    .time-display {
+        top: 8%;
+        font-size: 40px; /* 减小字体大小以适应移动端 */
+    }
+    .footer-text {
+        font-size: 13px;
+    }
+    .container {
+        padding: 2.5%; /* 缩小内边距为 2.5% */
+        margin: 1.25%; /* 缩小外边距为 1.25% */
+        max-height: 80vh; /* 设置最大高度为视口高度的 80% */
+        overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
+    }
+}
+@media (max-width: 400px) {
+    .option-group label {
+        width: 100%;
+    }
+    .time-display {
+        top: 6%;
+        font-size: 30px; /* 进一步减小字体大小 */
+    }
+    .footer-text {
+        font-size: 10px;
+    }
+    .container {
+        padding: 1.875%; /* 进一步缩小内边距为 1.875% */
+        margin: 1%; /* 进一步缩小外边距为 1% */
+        max-height: 85vh; /* 在更小屏幕上适当增大最大高度为视口高度的 85% */
+        overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
+    }
+}
       .footer-text {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 8px;
+            font-size: 15px;
             color: #fff;/* 黑色字体 */
             //color: #777;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
@@ -158,35 +185,38 @@
 <body>
     <div class="time-display" id="timeDisplay"></div>
     <div class="container">
-        <h2>图片查看器2.1</h2>
+        <h2>图片查看器2.2</h2>
         <div class="clearfix">
             <input type="text" id="urlInput" placeholder="请输入链接" onkeypress="handleKeyPress(event)">
             <button id="openButton" onclick="openConvertedPage()">打开</button>
         </div>
-        <div class="options">
-            <div class="option-group">
-                <label><input type="radio" name="service" value="daum" onclick="selectService('daum')">Daum节点</label>
-                <label><input type="radio" name="service" value="flyimg" onclick="selectService('flyimg')">Flyimg节点</label>
-                <label><input type="radio" name="service" value="imagizer" onclick="selectService('imagizer')">Imagizer节点</label>
-                <label><input type="radio" name="service" value="imagecdn" onclick="selectService('imagecdn')">Imagecdn节点</label>
-                <label><input type="radio" name="service" value="picseed" onclick="selectService('picseed')">Picseed节点</label>
-                <label><input type="radio" name="service" value="cdnjson" onclick="selectService('cdnjson')">CDNjson节点</label>
-                <label><input type="radio" name="service" value="zeroms" onclick="selectService('zeroms')">0ms节点</label>
-                <label><input type="radio" name="service" value="blozoo" onclick="selectService('blozoo')">Blozoo节点</label>
-                <label><input type="radio" name="service" value="wp" onclick="selectService('wp')">WP节点</label>
-                <label><input type="radio" name="service" value="wsrv" onclick="selectService('wsrv')">Wsrv节点</label>
-                <label><input type="radio" name="service" value="weserv" onclick="selectService('weserv')">Weserv节点</label>
-                <label><input type="radio" name="service" value="lightspeed" onclick="selectService('lightspeed')">Lightspeed节点</label>
-                <label><input type="radio" name="service" value="footballtransfers" onclick="selectService('footballtransfers')">Footballtransfers节点</label>
-                <label><input type="radio" name="service" value="ezgif" onclick="selectService('ezgif')">Ezgif节点</label>
-                <label><input type="radio" name="service" value="4get1" onclick="selectService('4get1')">4get1节点</label>
-                <label><input type="radio" name="service" value="4get2" onclick="selectService('4get2')">4get2节点</label>
-                <label><input type="radio" name="service" value="4get3" onclick="selectService('4get3')">4get3节点</label>
-                <label><input type="radio" name="service" value="4get4" onclick="selectService('4get4')">4get4节点</label>
+        <!-- 新增滚动条容器 -->
+        <div class="scrollable-container">
+            <div class="options">
+                <div class="option-group">
+                    <label><input type="radio" name="service" value="daum" onclick="selectService('daum')">Daum节点</label>
+                    <label><input type="radio" name="service" value="flyimg" onclick="selectService('flyimg')">Flyimg节点</label>
+                    <label><input type="radio" name="service" value="imagizer" onclick="selectService('imagizer')">Imagizer节点</label>
+                    <label><input type="radio" name="service" value="imagecdn" onclick="selectService('imagecdn')">Imagecdn节点</label>
+                    <label><input type="radio" name="service" value="picseed" onclick="selectService('picseed')">Picseed节点</label>
+                    <label><input type="radio" name="service" value="cdnjson" onclick="selectService('cdnjson')">CDNjson节点</label>
+                    <label><input type="radio" name="service" value="zeroms" onclick="selectService('zeroms')">0ms节点</label>
+                    <label><input type="radio" name="service" value="blozoo" onclick="selectService('blozoo')">Blozoo节点</label>
+                    <label><input type="radio" name="service" value="wp" onclick="selectService('wp')">WP节点</label>
+                    <label><input type="radio" name="service" value="wsrv" onclick="selectService('wsrv')">Wsrv节点</label>
+                    <label><input type="radio" name="service" value="weserv" onclick="selectService('weserv')">Weserv节点</label>
+                    <label><input type="radio" name="service" value="lightspeed" onclick="selectService('lightspeed')">Lightspeed节点</label>
+                    <label><input type="radio" name="service" value="footballtransfers" onclick="selectService('footballtransfers')">Footballtransfers节点</label>
+                    <label><input type="radio" name="service" value="ezgif" onclick="selectService('ezgif')">Ezgif节点</label>
+                    <label><input type="radio" name="service" value="4get1" onclick="selectService('4get1')">4get1节点</label>
+                    <label><input type="radio" name="service" value="4get2" onclick="selectService('4get2')">4get2节点</label>
+                    <label><input type="radio" name="service" value="4get3" onclick="selectService('4get3')">4get3节点</label>
+                    <label><input type="radio" name="service" value="4get4" onclick="selectService('4get4')">4get4节点</label>
+                </div>
             </div>
         </div>
     </div>
-    <div class="footer-text">2025.3.5，新增4get节点服务</div>
+    <div class="footer-text">2025.3.6，适配了手机端外观</div>
 
     <script>
         let selectedService = '';
