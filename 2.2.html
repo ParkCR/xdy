@@ -23,7 +23,7 @@
             flex-direction: column;
         }
 
-      .time-display {
+       .time-display {
             position: absolute;
             top: 10%;
             left: 50%;
@@ -34,7 +34,7 @@
             z-index: 2;
         }
 
-      .container {
+       .container {
             width: 90%;
             max-width: 800px;
             background-color: rgba(0, 0, 0, 0.2);
@@ -47,8 +47,6 @@
             z-index: 1;
             display: flex;
             flex-direction: column;
-            max-height: 80vh; /* 限制容器最大高度 */
-            overflow-y: auto; /* 超出高度时显示滚动条 */
         }
 
         h2 {
@@ -56,7 +54,7 @@
             margin-bottom: 30px;
         }
 
-      .input-group {
+       .input-group {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
@@ -91,8 +89,10 @@
             background-color: #0056b3;
         }
 
-      .options {
-            margin-top: 30px;
+       .options {
+            max-height: 300px; /* 限制节点部分的最大高度 */
+            overflow-y: auto; /* 超出高度时显示垂直滚动条 */
+            margin-top: 20px;
         }
 
         label {
@@ -106,12 +106,12 @@
             margin-right: 5px;
         }
 
-      .option-group {
+       .option-group {
             display: flex;
             flex-wrap: wrap;
         }
 
-      .option-group label {
+       .option-group label {
             width: 33.33%;
             margin-bottom: 20px;
             box-sizing: border-box;
@@ -119,36 +119,36 @@
         }
 
         @media (max-width: 600px) {
-          .option-group label {
+           .option-group label {
                 width: 100%;
             }
 
-          .time-display {
+           .time-display {
                 top: 5%;
                 font-size: 40px;
             }
 
-          .footer-text {
+           .footer-text {
                 font-size: 8px;
             }
         }
 
         @media (max-width: 400px) {
-          .option-group label {
+           .option-group label {
                 width: 100%;
             }
 
-          .time-display {
+           .time-display {
                 top: 3%;
                 font-size: 30px;
             }
 
-          .footer-text {
+           .footer-text {
                 font-size: 5px;
             }
         }
 
-      .footer-text {
+       .footer-text {
             position: absolute;
             bottom: 20px;
             left: 50%;
