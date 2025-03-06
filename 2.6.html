@@ -61,32 +61,40 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        input[type="text"] {
-            width: calc(100% - 160px);
-            padding: 15px;
-            margin-bottom: 20px;
-            float: left;
-            border: 1px solid #ccc;
-            border-radius: 30px;
-            transition: border-color 0.3s ease;
-            background-color: #fff;
-            color: #333;
-        }
+        .clearfix {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 确保子元素垂直居中对齐 */
+    gap: 10px; /* 设置元素之间的间距 */
+}
+       input[type="text"] {
+    width: calc(100% - 160px);
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    transition: border-color 0.3s ease;
+    background-color: #fff;
+    color: #333;
+    float: none; /* 移除浮动 */
+    box-sizing: border-box; /* 确保内边距和边框包含在宽度内 */
+}
         input[type="text"]:focus {
             border-color: #007bff;
             outline: none;
         }
         #openButton {
-            padding: 15px 30px;
-            margin-left: 10px;
-            float: left;
-            cursor: pointer;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            transition: background-color 0.3s ease;
-        }
+    padding: 15px 30px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    transition: background-color 0.3s ease;
+    float: none; /* 移除浮动 */
+    box-sizing: border-box; /* 确保内边距和边框包含在宽度内 */
+    height: auto; /* 让按钮高度自动适应 */
+    align-self: center; /* 确保按钮自身垂直居中 */
+}
         #openButton:hover {
             background-color: #0056b3;
         }
@@ -129,7 +137,7 @@
         width: 100%;
     }
     .time-display {
-        top: 5%;
+        top: 8%;
         font-size: 40px; /* 减小字体大小以适应移动端 */
     }
     .footer-text {
@@ -147,7 +155,7 @@
         width: 100%;
     }
     .time-display {
-        top: 3%;
+        top: 6%;
         font-size: 30px; /* 进一步减小字体大小 */
     }
     .footer-text {
@@ -208,7 +216,7 @@
             </div>
         </div>
     </div>
-    <div class="footer-text">2025.3.5，新增4get节点服务</div>
+    <div class="footer-text">2025.3.6，优化适配了手机端外观尺寸</div>
 
     <script>
         let selectedService = '';
