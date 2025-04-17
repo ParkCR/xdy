@@ -211,12 +211,11 @@
                     <label><input type="radio" name="service" value="4get1" onclick="selectService('4get1')">4get1节点</label>
                     <label><input type="radio" name="service" value="4get2" onclick="selectService('4get2')">4get2节点</label>
                     <label><input type="radio" name="service" value="4get3" onclick="selectService('4get3')">4get3节点</label>
-                    <label><input type="radio" name="service" value="4get4" onclick="selectService('4get4')">4get4节点</label>
                 </div>
             </div>
         </div>
     </div>
-    <div class="footer-text">2025.3.6，适配了手机端外观</div>
+    <div class="footer-text">2025.3.6，适配了手机端</div>
 
     <script>
         let selectedService = '';
@@ -298,15 +297,12 @@
                     convertedUrl = `https://image.blozoo.info/v2/thumb/900/1200/?url=${encodeURIComponent(url)}`;
                     break;
                 case '4get1':
-                    convertedUrl = `https://s.futureofthe.tech/proxy?i=${encodeURIComponent(url)}`;
-                    break;
-                case '4get2':
                     convertedUrl = `https://4get.ch/proxy?i=${encodeURIComponent(url)}`;
                     break;
-                case '4get3':
+                case '4get2':
                     convertedUrl = `https://4.nboeck.de/proxy?i=${encodeURIComponent(url)}`;
                     break;
-                case '4get4':
+                case '4get3':
                     convertedUrl = `https://4get.tux.pizza/proxy?i=${encodeURIComponent(url)}`;
                     break;
                 default:
