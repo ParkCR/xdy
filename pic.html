@@ -185,7 +185,7 @@
 <body>
     <div class="time-display" id="timeDisplay"></div>
     <div class="container">
-        <h2>图片查看器2.2</h2>
+        <h2>图片查看器2.2 2025.4.17</h2>
         <div class="clearfix">
             <input type="text" id="urlInput" placeholder="请输入链接" onkeypress="handleKeyPress(event)">
             <button id="openButton" onclick="openConvertedPage()">打开</button>
@@ -211,11 +211,16 @@
                     <label><input type="radio" name="service" value="4get1" onclick="selectService('4get1')">4get1节点</label>
                     <label><input type="radio" name="service" value="4get2" onclick="selectService('4get2')">4get2节点</label>
                     <label><input type="radio" name="service" value="4get3" onclick="selectService('4get3')">4get3节点</label>
+                    <label><input type="radio" name="service" value="4get4" onclick="selectService('4get4')">4get4节点</label>
+                    <label><input type="radio" name="service" value="4get5" onclick="selectService('4get5')">4get5节点</label>
+                    <label><input type="radio" name="service" value="4get6" onclick="selectService('4get6')">4get6节点</label>
+                    <label><input type="radio" name="service" value="4get7" onclick="selectService('4get7')">4get7节点</label>
+                    <label><input type="radio" name="service" value="4get8" onclick="selectService('4get8')">4get8节点</label>
                 </div>
             </div>
         </div>
     </div>
-    <div class="footer-text">2025.3.6，适配了手机端</div>
+    <div class="footer-text">2025.4.17，优化增加4get节点</div>
 
     <script>
         let selectedService = '';
@@ -304,6 +309,21 @@
                     break;
                 case '4get3':
                     convertedUrl = `https://4get.tux.pizza/proxy?i=${encodeURIComponent(url)}`;
+                    break;
+                case '4get4':
+                    convertedUrl = `https://search.fzorb.xyz/proxy?i=${encodeURIComponent(url)}`;
+                    break;
+                case '4get5':
+                    convertedUrl = `https://search.yonderly.org/proxy?i=${encodeURIComponent(url)}`;
+                    break;
+                case '4get6':
+                    convertedUrl = `https://4get.sudovanilla.org/proxy?i=${encodeURIComponent(url)}`;
+                    break;
+                case '4get7':
+                    convertedUrl = `https://4get.lumaeris.com/proxy?i=${encodeURIComponent(url)}`;
+                    break;
+                case '4get8':
+                    convertedUrl = `https://4get.sijh.net/proxy?i=${encodeURIComponent(url)}`;
                     break;
                 default:
                     convertedUrl = `${url}?service=${selectedService}`;
