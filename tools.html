@@ -4,155 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片转换2.7</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f4f4f4;
-        }
-
-       .header {
-            margin-top: 30px;
-            font-size: 2em;
-            color: #333;
-            text-align: center;
-        }
-
-       .container {
-            width: 90%;
-            max-width: 1200px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-
-       .text-box {
-            flex: 1;
-            min-width: 100%;
-            position: relative;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        textarea {
-            width: 100%;
-            height: 300px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: none;
-            box-sizing: border-box;
-        }
-
-       .controls,
-        #exportControls {
-            margin-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        #cdnSelect,
-        #exportFormatSelect {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            flex: 1;
-            min-width: 150px;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            flex: 1;
-            min-width: 150px;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        #copyButton {
-            background-color: #28a745;
-            color: white;
-        }
-
-        #clearButton {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        #exportButton {
-            background-color: #007bff;
-            color: white;
-        }
-
-        #generateButton {
-            background-color: #007bff;
-            color: white;
-        }
-
-        footer {
-            margin-top: 30px;
-            font-size: 0.9em;
-            color: #777;
-            text-align: center;
-            width: 90%;
-            max-width: 1200px;
-            margin-bottom: 30px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        @media (max-width: 768px) {
-           .header {
-                font-size: 1.5em;
-            }
-
-           .text-box {
-                min-width: 100%;
-            }
-
-           .controls,
-            #exportControls {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            #cdnSelect,
-            button,
-            #exportFormatSelect,
-            #exportButton {
-                width: 100%;
-            }
-        }
-    </style>
+    <title>图片转换2.8</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="font-sans bg-gray-100 flex flex-col items-center">
 
-    <h1 class="header">图片转换2.7</h1>
+    <h1 class="text-3xl text-gray-700 text-center mt-8">图片转换2.8</h1>
 
-    <div class="container">
-        <div class="text-box">
-            <h3>粘贴文本链接</h3>
-            <textarea id="inputText" placeholder="在这里粘贴你的文本..."></textarea>
-            <div class="controls">
-                <select id="cdnSelect">
+    <div class="w-9/12 max-w-6xl bg-white shadow-md rounded-md p-6 mt-6 mb-6 space-y-6">
+        <div class="space-y-2">
+            <h3 class="text-lg text-gray-700">粘贴文本链接</h3>
+            <textarea id="inputText" class="w-full h-48 border border-gray-300 rounded-md p-2 resize-none" placeholder="在这里粘贴你的文本..."></textarea>
+            <div class="flex flex-wrap gap-2">
+                <select id="cdnSelect" class="flex-1 min-w-[150px] border border-gray-300 rounded-md p-2">
                     <option value="none">请选择图片CDN加速服务</option>
                     <optgroup label="WordPress 服务">
                         <option value="i0">WordPress - i0</option>
@@ -175,44 +41,43 @@
                         <option value="wsrv-new">Wsrv.nl - wsrv(新)</option>
                         <option value="wsrv-gif">Wsrv.nl - wsrv(gif)</option>
                     </optgroup>
-                    <!-- 新增 Weserv 节点选项 -->
                     <optgroup label="Weserv 服务">
                         <option value="weserv">Weserv</option>
                     </optgroup>
-                    <!-- 新增 Flyimg 节点选项 -->
                     <optgroup label="Flyimg 服务">
                         <option value="flyimg">Flyimg</option>
                     </optgroup>
-                    <!-- 新增 Picseed 节点选项 -->
                     <optgroup label="Picseed 服务">
                         <option value="picseed">Picseed</option>
                     </optgroup>
-                    <!-- 新增 ImageCDN 节点选项 -->
                     <optgroup label="ImageCDN 服务">
                         <option value="imagecdn">ImageCDN</option>
                     </optgroup>
+                    <optgroup label="微博专用服务">
+                        <option value="weibo">Weibo</option>
+                    </optgroup>
                 </select>
-                <button id="generateButton" onclick="generateText()">生成文本</button>
-                <button id="clearButton" onclick="clearInputText()">清除</button>
+                <button id="generateButton" class="flex-1 min-w-[150px] bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600" onclick="generateText()">生成文本</button>
+                <button id="clearButton" class="flex-1 min-w-[150px] bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600" onclick="clearInputText()">清除</button>
             </div>
         </div>
-        <div class="text-box">
-            <h3>生成的文本</h3>
-            <textarea id="outputText" readonly></textarea>
-            <div id="exportControls">
-                <button id="copyButton" onclick="copyToClipboard()">复制到剪贴板</button>
-                <select id="exportFormatSelect">
+        <div class="space-y-2">
+            <h3 class="text-lg text-gray-700">生成的文本</h3>
+            <textarea id="outputText" class="w-full h-48 border border-gray-300 rounded-md p-2 resize-none" readonly></textarea>
+            <div class="flex flex-wrap gap-2">
+                <button id="copyButton" class="flex-1 min-w-[150px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600" onclick="copyToClipboard()">复制到剪贴板</button>
+                <select id="exportFormatSelect" class="flex-1 min-w-[150px] border border-gray-300 rounded-md p-2">
                     <option value="txt">导出为 .txt 文件</option>
                     <option value="json">导出为 .json 文件</option>
                     <option value="md">导出为 .md 文件</option>
                     <option value="html">导出为 .html 文件</option>
                 </select>
-                <button id="exportButton" onclick="exportFile()">导出</button>
+                <button id="exportButton" class="flex-1 min-w-[150px] bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600" onclick="exportFile()">导出</button>
             </div>
         </div>
     </div>
 
-    <footer>
+    <footer class="text-sm text-gray-600 text-center w-9/12 max-w-6xl mb-8">
         在Daum服务中，t1,t2可自选更换为i1,i2,n1,n2,u1,u2；将地址栏中的R1000x0，改为C800x800，可以直接裁切图片，支持gif格式。
     </footer>
 
@@ -281,7 +146,6 @@
             });
         }
 
-        // 新增 Weserv 转换函数
         function convertWeserv(inputText) {
             return inputText.replace(imgUrlRegex, (match) => {
                 if (shouldSkipLink(match)) {
@@ -291,7 +155,6 @@
             });
         }
 
-        // 新增 Flyimg 转换函数
         function convertFlyimg(inputText) {
             return inputText.replace(imgUrlRegex, (match) => {
                 if (shouldSkipLink(match)) {
@@ -301,7 +164,6 @@
             });
         }
 
-        // 新增 Picseed 转换函数
         function convertPicseed(inputText) {
             return inputText.replace(imgUrlRegex, (match) => {
                 if (shouldSkipLink(match)) {
@@ -311,13 +173,26 @@
             });
         }
 
-        // 新增 ImageCDN 转换函数
         function convertImageCDN(inputText) {
             return inputText.replace(imgUrlRegex, (match) => {
                 if (shouldSkipLink(match)) {
                     return match;
                 }
                 return `https://imagecdn.app/v2/image/${encodeURIComponent(match)}`;
+            });
+        }
+
+        function convertWeibo(inputText) {
+            return inputText.replace(imgUrlRegex, (match) => {
+                if (shouldSkipLink(match)) {
+                    return match;
+                }
+                let cleanedUrl = match.replace(/^https?:\/\//, '');
+                cleanedUrl = cleanedUrl.replace(
+                    /(sinaimg\.cn\/)[^\/]+\/(.+)/, 
+                    '$1large/$2'
+                );
+                return `https://i1.wp.com/${cleanedUrl}`;
             });
         }
 
@@ -352,21 +227,20 @@
                 case 'wsrv-gif':
                     outputText = convertWsrvGif(inputText);
                     break;
-                // 新增 Weserv 节点处理分支
                 case 'weserv':
                     outputText = convertWeserv(inputText);
                     break;
-                // 新增 Flyimg 节点处理分支
                 case 'flyimg':
                     outputText = convertFlyimg(inputText);
                     break;
-                // 新增 Picseed 节点处理分支
                 case 'picseed':
                     outputText = convertPicseed(inputText);
                     break;
-                // 新增 ImageCDN 节点处理分支
                 case 'imagecdn':
                     outputText = convertImageCDN(inputText);
+                    break;
+                case 'weibo':
+                    outputText = convertWeibo(inputText);
                     break;
             }
 
@@ -435,7 +309,6 @@
                         alert('没有有效的URL可以导出为HTML。');
                         return;
                     }
-                    // 添加 CSS 样式来实现网格布局，一排四个图片
                     const css = `
                     <style>
                        .image-grid {
@@ -480,3 +353,4 @@
 </body>
 
 </html>
+    
