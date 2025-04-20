@@ -297,7 +297,7 @@
                     break;
                 case 'wp':
                     const wpCleanedUrl = url.replace(/^https?:\/\//, '');
-                    convertedUrl = `https://i1.wp.com/${wpCleanedUrl}`;
+                    convertedUrl = `https://i3.wp.com/${wpCleanedUrl}`;
                     break;
                 case 'weibo':
                     let cleanedUrl = url.replace(/^https?:\/\//, '');
@@ -306,7 +306,7 @@
                     /(sinaimg\.cn\/)[^\/]+\/(.+)/, 
                      '$1large/$2'
                         );
-                     convertedUrl = `https://i1.wp.com/${cleanedUrl}`;
+                     convertedUrl = `https://i3.wp.com/${cleanedUrl}`;
                      break; 
                 case 'blozoo':
                     convertedUrl = `https://image.blozoo.info/v2/thumb/900/1200/?url=${encodeURIComponent(url)}`;
