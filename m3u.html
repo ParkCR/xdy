@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <title>M3U 编辑器</title>
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <header class="bg-blue-600 text-white p-4 flex justify-center">
+        <h1 class="text-2xl font-bold">M3U 编辑器</h1>
+    </header>
+    <main class="p-4">
+        <!-- 让按钮容器水平居中 -->
+        <div class="flex justify-center space-x-4 mb-4">
+            <button id="open-file" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                <i class="fa-solid fa-folder-open"></i> 打开文件
+            </button>
+            <button id="save-file" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                <i class="fa-solid fa-save"></i> 保存文件
+            </button>
+            <button id="new-file" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                <i class="fa-solid fa-file"></i> 新建文件
+            </button>
+            <button id="import-from-clipboard" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">
+                <i class="fa-solid fa-clipboard"></i> 从剪贴板导入
+            </button>
+            <button id="clear-list" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                <i class="fa-solid fa-trash"></i> 清空列表
+            </button>
+            <input type="file" id="file-input" class="hidden" multiple>
+        </div>
+        <div class="flex justify-center space-x-4 mb-4">
+            <button id="add-entry" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <i class="fa-solid fa-plus"></i> 添加条目
+            </button>
+            <button id="delete-entry" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                <i class="fa-solid fa-trash"></i> 删除条目
+            </button>
+            <button id="move-up" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+                <i class="fa-solid fa-arrow-up"></i> 上移条目
+            </button>
+            <button id="move-down" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+                <i class="fa-solid fa-arrow-down"></i> 下移条目
+            </button>
+            <button id="edit-entry" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600">
+                <i class="fa-solid fa-pencil"></i> 编辑条目信息
+            </button>
+        </div>
+        <div class="mb-4">
+            <input type="text" id="search-input" placeholder="搜索条目"
+                class="border border-gray-300 px-4 py-2 rounded w-full">
+        </div>
+        <div class="mb-4 flex items-center">
+            <select id="group-filter" class="border border-gray-300 px-4 py-2 rounded">
+                <option value="all">全部</option>
+            </select>
+            <span id="group-count" class="ml-2 text-gray-600">(0)</span>
+        </div>
+        <!-- 新增的添加条目的输入框 -->
+        <div id="add-entry-form" class="mb-4 hidden">
+            <label for="add-group" class="block text-sm font-medium text-gray-700">选择分组</label>
+            <select id="add-group" class="border border-gray-300 px-4 py-2 rounded w-full">
+                <option value="无分组">无分组</option>
+                <option value="add-new-group">增加分组</option>
+            </select>
+        </div>
+        <div id="add-title-container" class="mb-4 hidden">
+            <label for="add-title" class="block text-sm font-medium text-gray-700">标题</label>
+            <input type="text" id="add-title" placeholder="输入标题"
+                class="border border-gray-300 px-4 py-2 rounded w-full">
+        </div>
+        <div id="add-m3u8-container" class="mb-4 hidden">
+            <label for="add-m3u8" class="block text-sm font-medium text-gray-700">M3U8 地址</label>
+            <input type="text" id="add-m3u8" placeholder="输入 M3U8 地址"
+                class="border border-gray-300 px-4 py-2 rounded w-full">
+        </div>
+        <div id="confirm-add-container" class="mb-4 hidden">
+            <button id="confirm-add-entry" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <i class="fa-solid fa-check"></i> 确认添加
+            </button>
+        </div>
+        <!-- 新增的编辑条目的输入框 -->
+        <div id="edit-entry-form" class="mb-4 hidden">
+            <label for="edit-group" class="block text-sm font-medium text-gray-700">选择分组</label>
+            <select id="edit-group" class="border border-gray-300 px-4 py-2 rounded w-full">
+                <option value="无分组">无分组</option>
+            </select>
+        </div>
+        <div id="edit-title-container" class="mb-4 hidden">
+            <label for="edit-title" class="block text-sm font-medium text-gray-700">标题</label>
+            <input type="text" id="edit-title" placeholder="输入标题"
+                class="border border-gray-300 px-4 py-2 rounded w-full">
+        </div>
+        <div id="edit-m3u8-container" class="mb-4 hidden">
+            <label for="edit-m3u8" class="block text-sm font-medium text-gray-700">M3U8 地址</label>
+            <input type="text" id="edit-m3u8" placeholder="输入 M3U8 地址"
+                class="border border-gray-300 px-4 py-2 rounded w-full">
+        </div>
+        <div id="confirm-edit-container" class="mb-4 hidden">
+            <button id="confirm-edit-entry" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600">
+                <i class="fa-solid fa-check"></i> 确认修改
+            </button>
+        </div>
+        <ul id="playlist" class="border border-gray-300 p-4 rounded max-h-96 overflow-y-auto">
+            <!-- 播放列表条目将在这里显示 -->
+        </ul>
+    </main>
+    <script>
+        const openFileButton = document.getElementById('open-file');
+        const saveFileButton = document.getElementById('save-file');
+        const newFileButton = document.getElementById('new-file');
+        const addEntryButton = document.getElementById('add-entry');
+        const deleteEntryButton = document.getElementById('delete-entry');
+        const moveUpButton = document.getElementById('move-up');
+        const moveDownButton = document.getElementById('move-down');
+        const editEntryButton = document.getElementById('edit-entry');
+        const fileInput = document.getElementById('file-input');
+        const searchInput = document.getElementById('search-input');
+        const groupFilter = document.getElementById('group-filter');
+        const playlist = document.getElementById('playlist');
+        const addGroupSelect = document.getElementById('add-group');
+        const addTitleInput = document.getElementById('add-title');
+        const addM3u8Input = document.getElementById('add-m3u8');
+        const confirmAddEntryButton = document.getElementById('confirm-add-entry');
+        const addEntryForm = document.getElementById('add-entry-form');
+        const addTitleContainer = document.getElementById('add-title-container');
+        const addM3u8Container = document.getElementById('add-m3u8-container');
+        const confirmAddContainer = document.getElementById('confirm-add-container');
+        const importFromClipboardButton = document.getElementById('import-from-clipboard');
+        const editGroupSelect = document.getElementById('edit-group');
+        const editTitleInput = document.getElementById('edit-title');
+        const editM3u8Input = document.getElementById('edit-m3u8');
+        const confirmEditEntryButton = document.getElementById('confirm-edit-entry');
+        const editEntryForm = document.getElementById('edit-entry-form');
+        const editTitleContainer = document.getElementById('edit-title-container');
+        const editM3u8Container = document.getElementById('edit-m3u8-container');
+        const confirmEditContainer = document.getElementById('confirm-edit-container');
+        const groupCountSpan = document.getElementById('group-count');
+        const clearListButton = document.getElementById('clear-list');
+
+        let playlistData = [];
+        let groups = new Set();
+        let isAddFormVisible = false;
+        let isEditFormVisible = false;
+        let editedIndex = null;
+
+        openFileButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const content = event.target.result;
+                    parseM3U(content);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        saveFileButton.addEventListener('click', () => {
+            const m3uContent = generateM3U();
+            const blob = new Blob([m3uContent], { type: 'application/vnd.apple.mpegurl' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'playlist.m3u';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        newFileButton.addEventListener('click', () => {
+            playlistData = [];
+            groups = new Set();
+            updatePlaylist();
+            updateGroupFilter();
+            updateAddGroupSelect();
+            updateEditGroupSelect();
+            updateGroupCount();
+        });
+
+        addEntryButton.addEventListener('click', () => {
+            isAddFormVisible = !isAddFormVisible;
+            if (isAddFormVisible) {
+                addEntryForm.classList.remove('hidden');
+                addTitleContainer.classList.remove('hidden');
+                addM3u8Container.classList.remove('hidden');
+                confirmAddContainer.classList.remove('hidden');
+            } else {
+                addEntryForm.classList.add('hidden');
+                addTitleContainer.classList.add('hidden');
+                addM3u8Container.classList.add('hidden');
+                confirmAddContainer.classList.add('hidden');
+            }
+        });
+
+        deleteEntryButton.addEventListener('click', () => {
+            const selectedIndices = [];
+            const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
+            selectedItems.forEach((item) => {
+                const index = parseInt(item.dataset.index);
+                selectedIndices.push(index);
+            });
+            // 按降序排序，确保删除时索引不会混乱
+            selectedIndices.sort((a, b) => b - a);
+            selectedIndices.forEach((index) => {
+                playlistData.splice(index, 1);
+            });
+            updatePlaylist();
+            updateGroupFilter();
+            updateAddGroupSelect();
+            updateEditGroupSelect();
+            updateGroupCount();
+        });
+
+        moveUpButton.addEventListener('click', () => {
+            const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
+            selectedItems.forEach((item) => {
+                const index = parseInt(item.dataset.index);
+                if (index > 0) {
+                    [playlistData[index], playlistData[index - 1]] = [playlistData[index - 1], playlistData[index]];
+                }
+            });
+            updatePlaylist();
+        });
+
+        moveDownButton.addEventListener('click', () => {
+            const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
+            selectedItems.reverse().forEach((item) => {
+                const index = parseInt(item.dataset.index);
+                if (index < playlistData.length - 1) {
+                    [playlistData[index], playlistData[index + 1]] = [playlistData[index + 1], playlistData[index]];
+                }
+            });
+            updatePlaylist();
+        });
+
+        editEntryButton.addEventListener('click', () => {
+            const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
+            if (selectedItems.length === 1) {
+                isEditFormVisible = !isEditFormVisible;
+                if (isEditFormVisible) {
+                    editedIndex = parseInt(selectedItems[0].dataset.index);
+                    const entry = playlistData[editedIndex];
+                    editTitleInput.value = entry.title;
+                    editM3u8Input.value = entry.path;
+                    editGroupSelect.value = entry.group;
+                    editEntryForm.classList.remove('hidden');
+                    editTitleContainer.classList.remove('hidden');
+                    editM3u8Container.classList.remove('hidden');
+                    confirmEditContainer.classList.remove('hidden');
+                } else {
+                    editEntryForm.classList.add('hidden');
+                    editTitleContainer.classList.add('hidden');
+                    editM3u8Container.classList.add('hidden');
+                    confirmEditContainer.classList.add('hidden');
+                }
+            }
+        });
+
+        searchInput.addEventListener('input', () => {
+            updatePlaylist();
+            updateGroupCount();
+        });
+
+        groupFilter.addEventListener('change', () => {
+            updatePlaylist();
+            updateGroupCount();
+        });
+
+        addGroupSelect.addEventListener('change', () => {
+            if (addGroupSelect.value === 'add-new-group') {
+                const newGroupName = prompt('请输入新的分组名称');
+                if (newGroupName) {
+                    groups.add(newGroupName);
+                    updateAddGroupSelect();
+                    addGroupSelect.value = newGroupName;
+                } else {
+                    addGroupSelect.value = '无分组';
+                }
+            }
+        });
+
+        confirmAddEntryButton.addEventListener('click', () => {
+            const title = addTitleInput.value;
+            const m3u8 = addM3u8Input.value;
+            const group = addGroupSelect.value;
+            if (title && m3u8) {
+                const newEntry = { title, duration: '0', path: m3u8, group };
+                let insertIndex = 0;
+                for (let i = 0; i < playlistData.length; i++) {
+                    if (playlistData[i].group === group) {
+                        insertIndex = i;
+                        break;
+                    }
+                }
+                playlistData.splice(insertIndex, 0, newEntry);
+                groups.add(group);
+                updatePlaylist();
+                updateGroupFilter();
+                updateAddGroupSelect();
+                updateEditGroupSelect();
+                addTitleInput.value = '';
+                addM3u8Input.value = '';
+                updateGroupCount();
+            }
+        });
+
+        importFromClipboardButton.addEventListener('click', async () => {
+            try {
+                const clipboardText = await navigator.clipboard.readText();
+                parseM3U(clipboardText);
+            } catch (error) {
+                console.error('无法从剪贴板读取内容:', error);
+            }
+        });
+
+        confirmEditEntryButton.addEventListener('click', () => {
+            if (editedIndex!== null) {
+                const title = editTitleInput.value;
+                const m3u8 = editM3u8Input.value;
+                const newGroup = editGroupSelect.value;
+                if (title && m3u8) {
+                    const entry = playlistData[editedIndex];
+                    const oldGroup = entry.group;
+                    entry.title = title;
+                    entry.path = m3u8;
+                    entry.group = newGroup;
+                    groups.add(newGroup);
+
+                    // 移除原位置的条目
+                    playlistData.splice(editedIndex, 1);
+
+                    // 找到新分组的插入位置
+                    let insertIndex = 0;
+                    for (let i = 0; i < playlistData.length; i++) {
+                        if (playlistData[i].group === newGroup) {
+                            insertIndex = i;
+                            break;
+                        }
+                    }
+                    // 插入到新分组位置
+                    playlistData.splice(insertIndex, 0, entry);
+
+                    updatePlaylist();
+                    updateGroupFilter();
+                    updateAddGroupSelect();
+                    updateEditGroupSelect();
+                    updateGroupCount();
+                }
+                editEntryForm.classList.add('hidden');
+                editTitleContainer.classList.add('hidden');
+                editM3u8Container.classList.add('hidden');
+                confirmEditContainer.classList.add('hidden');
+                isEditFormVisible = false;
+                editedIndex = null;
+            }
+        });
+
+        clearListButton.addEventListener('click', () => {
+            playlistData = [];
+            groups = new Set();
+            updatePlaylist();
+            updateGroupFilter();
+            updateAddGroupSelect();
+            updateEditGroupSelect();
+            updateGroupCount();
+        });
+
+        function parseM3U(content) {
+            const lines = content.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].startsWith('#EXTINF:')) {
+                    const parts = lines[i].split(',');
+                    const duration = parts[0].split(':')[1].split(' ')[0];
+                    const title = parts[1];
+                    const path = lines[i + 1];
+                    const group = extractGroup(parts[0]);
+                    groups.add(group);
+                    playlistData.push({ title, duration, path, group });
+                    i++;
+                }
+            }
+            updatePlaylist();
+            updateGroupFilter();
+            updateAddGroupSelect();
+            updateEditGroupSelect();
+            updateGroupCount();
+        }
+
+        function generateM3U() {
+            let m3uContent = '#EXTM3U\n';
+            // 按分组对条目进行排序
+            const groupedEntries = {};
+            playlistData.forEach((entry) => {
+                if (!groupedEntries[entry.group]) {
+                    groupedEntries[entry.group] = [];
+                }
+                groupedEntries[entry.group].push(entry);
+            });
+
+            // 遍历分组并生成 M3U 内容
+            Object.keys(groupedEntries).forEach((group) => {
+                m3uContent += `\n#-------------------------------  ${group}   -------------------------------#\n`;
+                groupedEntries[group].forEach((entry) => {
+                    const groupInfo = entry.group === '无分组' ? '' : `group-title="${entry.group}"`;
+                    m3uContent += `#EXTINF:${entry.duration} ${groupInfo},${entry.title}\n`;
+                    m3uContent += `${entry.path}\n`;
+                });
+            });
+
+            return m3uContent;
+        }
+
+        function updatePlaylist() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedGroup = groupFilter.value;
+            playlist.innerHTML = '';
+            playlistData.forEach((entry, index) => {
+                if ((searchTerm === '' || entry.title.toLowerCase().includes(searchTerm)) &&
+                    (selectedGroup === 'all' || entry.group === selectedGroup)) {
+                    const li = document.createElement('li');
+                    li.classList.add('flex', 'items-center', 'mb-2');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.dataset.index = index;
+                    checkbox.classList.add('mr-2');
+                    li.appendChild(checkbox);
+                    const span = document.createElement('span');
+                    // 显示分组信息
+                    span.textContent = `${entry.title} (${entry.duration}s) - ${entry.path} [分组: ${entry.group}]`;
+                    li.appendChild(span);
+                    playlist.appendChild(li);
+                }
+            });
+        }
+
+        function updateGroupFilter() {
+            const currentSelectedGroup = groupFilter.value;
+            groupFilter.innerHTML = '<option value="all">全部</option>';
+            groups.forEach((group) => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupFilter.appendChild(option);
+            });
+            // 恢复之前的选择
+            groupFilter.value = currentSelectedGroup;
+        }
+
+        function updateAddGroupSelect() {
+            addGroupSelect.innerHTML = '<option value="无分组">无分组</option>';
+            addGroupSelect.innerHTML += '<option value="add-new-group">增加分组</option>';
+            groups.forEach((group) => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                addGroupSelect.appendChild(option);
+            });
+        }
+
+        function updateEditGroupSelect() {
+            editGroupSelect.innerHTML = '<option value="无分组">无分组</option>';
+            groups.forEach((group) => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                editGroupSelect.appendChild(option);
+            });
+        }
+
+        function extractGroup(extinf) {
+            const match = extinf.match(/group-title="([^"]+)"/);
+            return match ? match[1] : '无分组';
+        }
+
+        function updateGroupCount() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedGroup = groupFilter.value;
+            let count = 0;
+            playlistData.forEach((entry) => {
+                if ((searchTerm === '' || entry.title.toLowerCase().includes(searchTerm)) &&
+                    (selectedGroup === 'all' || entry.group === selectedGroup)) {
+                    count++;
+                }
+            });
+            groupCountSpan.textContent = `(${count})`;
+        }
+    </script>
+</body>
+
+</html>
+    
