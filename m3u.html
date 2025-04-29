@@ -7,13 +7,325 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     <title>M3U 编辑器</title>
+    <style>
+        /* 自定义苹果风格字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f7;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #000;
+            color: #fff;
+            padding: 1.5rem 0;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 600;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-top: 80px;
+            flex: 1;
+        }
+
+        button {
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        input[type="text"],
+        select {
+            border: 1px solid #d2d2d7;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #0071e3;
+        }
+
+        ul {
+            border: 1px solid #d2d2d7;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            max-height: 30rem;
+            overflow-y: auto;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        li input[type="checkbox"] {
+            margin-right: 1rem;
+        }
+
+        /* 苹果风格按钮颜色 */
+        .bg-green-500 {
+            background-color: #0071e3;
+        }
+
+        .bg-green-500:hover {
+            background-color: #0051a3;
+        }
+
+        .bg-yellow-500 {
+            background-color: #0071e3;
+        }
+
+        .bg-yellow-500:hover {
+            background-color: #0051a3;
+        }
+
+        .bg-purple-500 {
+            background-color: #0071e3;
+        }
+
+        .bg-purple-500:hover {
+            background-color: #0051a3;
+        }
+
+        .bg-pink-500 {
+            background-color: #0071e3;
+        }
+
+        .bg-pink-500:hover {
+            background-color: #0051a3;
+        }
+
+        .bg-red-500 {
+            background-color: #ff3b30;
+        }
+
+        .bg-red-500:hover {
+            background-color: #e3261a;
+        }
+
+        .bg-blue-500 {
+            background-color: #0071e3;
+        }
+
+        .bg-blue-500:hover {
+            background-color: #0051a3;
+        }
+
+        .bg-orange-500 {
+            background-color: #ff9500;
+        }
+
+        .bg-orange-500:hover {
+            background-color: #e37e00;
+        }
+
+        .bg-teal-500 {
+            background-color: #0071e3;
+        }
+
+        .bg-teal-500:hover {
+            background-color: #0051a3;
+        }
+
+        /* 视频播放图标样式 */
+        .video-play-icon {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            color: #0071e3;
+            transition: color 0.2s ease;
+        }
+
+        .video-play-icon:hover {
+            color: #0051a3;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 280px;
+            background-color: #fff;
+            border-right: 1px solid #d2d2d7;
+            padding: 1rem;
+            margin-top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            position: fixed;
+            right: 0;
+        }
+
+        .sidebar-header {
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #d2d2d7;
+        }
+
+        .group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: background-color 0.2s ease;
+            cursor: move;
+        }
+
+        .group-item:hover {
+            background-color: #f5f5f7;
+        }
+
+        .group-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .group-number {
+            font-weight: 600;
+            margin-right: 0.5rem;
+            color: #0071e3;
+            min-width: 20px;
+        }
+
+        .group-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .group-count {
+            color: #86868b;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+
+        .group-actions {
+            display: flex;
+            margin-left: 0.5rem;
+        }
+
+        .group-action {
+            cursor: pointer;
+            padding: 0.25rem;
+            color: #86868b;
+            transition: color 0.2s ease;
+        }
+
+        .group-action:hover {
+            color: #0071e3;
+        }
+
+        .add-group-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #f5f5f7;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .add-group-btn:hover {
+            background-color: #e5e5e7;
+        }
+
+        .add-group-icon {
+            margin-right: 0.5rem;
+            color: #0071e3;
+        }
+
+        /* 新增分组输入框 */
+        .add-group-input-container {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .add-group-input {
+            display: flex;
+            align-items: center;
+        }
+
+        .add-group-input input {
+            flex: 1;
+            margin-right: 0.5rem;
+        }
+
+        .add-group-confirm {
+            background-color: #0071e3;
+            color: white;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .add-group-confirm:hover {
+            background-color: #0051a3;
+        }
+
+        /* 拖拽样式 */
+        .group-item.dragging {
+            opacity: 0.5;
+            background-color: #e5e5e7;
+        }
+
+        .group-item.over {
+            border-top: 2px solid #0071e3;
+        }
+
+        /* 新增的移动分组下拉框样式 */
+        .move-to-container {
+            display: none;
+            align-items: center;
+            margin-left: 1rem;
+        }
+
+        .move-to-container.visible {
+            display: flex;
+        }
+
+/* 新增按钮容器的间距调整 */
+#selection-actions {
+    margin-left: 1rem;
+}
+        .move-to-label {
+            margin-right: 0.5rem;
+            font-size: 0.875rem;
+            color: #86868b;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 font-sans">
-    <header class="bg-blue-600 text-white p-4 flex justify-center">
-        <h1 class="text-2xl font-bold">M3U 编辑器</h1>
+<body>
+    <header>
+        <h1>M3U 编辑器</h1>
     </header>
-    <main class="p-4">
+    <main>
         <!-- 让按钮容器水平居中 -->
         <div class="flex justify-center space-x-4 mb-4">
             <button id="open-file" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
@@ -49,6 +361,24 @@
             <button id="edit-entry" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600">
                 <i class="fa-solid fa-pencil"></i> 编辑条目信息
             </button>
+
+            <!-- 新增的移动分组下拉框 -->
+            <div id="move-to-container" class="move-to-container">
+                <span class="move-to-label">移动到:</span>
+                <select id="move-to-group" class="border border-gray-300 px-3 py-2 rounded">
+                    <option value="">选择分组</option>
+                </select>
+            </div>
+    <!-- ▼▼▼ 新增的按钮容器（和移动到下拉框并列）▼▼▼ -->
+    <div id="selection-actions" class="move-to-container">
+        <button id="select-all" class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600">
+            <i class="fa-solid fa-check-double"></i> 全选
+        </button>
+        <button id="invert-selection" class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600 ml-2">
+            <i class="fa-solid fa-exchange-alt"></i> 反选
+        </button>
+    </div>
+    <!-- ▲▲▲ 新增结束 ▲▲▲ -->
         </div>
         <div class="mb-4">
             <input type="text" id="search-input" placeholder="搜索条目"
@@ -109,6 +439,27 @@
             <!-- 播放列表条目将在这里显示 -->
         </ul>
     </main>
+
+    <!-- 新增的侧边栏 -->
+    <div class="sidebar">
+        <div class="sidebar-header">分组管理</div>
+        <div id="groups-list">
+            <!-- 分组列表将在这里显示 -->
+        </div>
+        <div class="add-group-btn" id="add-group-btn">
+            <i class="fas fa-plus add-group-icon"></i>
+            <span>添加分组</span>
+        </div>
+        <div class="add-group-input-container" id="add-group-input-container">
+            <div class="add-group-input">
+                <input type="text" id="new-group-name" placeholder="输入新分组名称" class="border border-gray-300 px-3 py-2 rounded w-full">
+                <div class="add-group-confirm" id="confirm-add-group">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const openFileButton = document.getElementById('open-file');
         const saveFileButton = document.getElementById('save-file');
@@ -141,240 +492,416 @@
         const confirmEditContainer = document.getElementById('confirm-edit-container');
         const groupCountSpan = document.getElementById('group-count');
         const clearListButton = document.getElementById('clear-list');
+        const groupsList = document.getElementById('groups-list');
+        const addGroupBtn = document.getElementById('add-group-btn');
+        const addGroupInputContainer = document.getElementById('add-group-input-container');
+        const newGroupNameInput = document.getElementById('new-group-name');
+        const confirmAddGroupBtn = document.getElementById('confirm-add-group');
+        const moveToContainer = document.getElementById('move-to-container');
+        const moveToGroupSelect = document.getElementById('move-to-group');
 
         let playlistData = [];
         let groups = new Set();
+        let groupOrder = []; // 用于保存分组顺序
         let isAddFormVisible = false;
         let isEditFormVisible = false;
         let editedIndex = null;
+        let draggedItem = null;
 
-        openFileButton.addEventListener('click', () => {
-            fileInput.click();
-        });
+        // 初始化事件监听
+        function initEventListeners() {
+            document.getElementById('selection-actions').classList.remove('visible');
+            openFileButton.addEventListener('click', () => {
+                fileInput.click();
+            });
 
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const content = event.target.result;
-                    parseM3U(content);
-                };
-                reader.readAsText(file);
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const content = event.target.result;
+                        parseM3U(content);
+                    };
+                    reader.readAsText(file);
+                }
+            });
+
+            saveFileButton.addEventListener('click', () => {
+                const m3uContent = generateM3U();
+                const blob = new Blob([m3uContent], { type: 'application/vnd.apple.mpegurl' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'playlist.m3u';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            newFileButton.addEventListener('click', () => {
+                playlistData = [];
+                groups = new Set();
+                groupOrder = [];
+                updatePlaylist();
+                updateGroupFilter();
+                updateAddGroupSelect();
+                updateEditGroupSelect();
+                updateMoveToGroupSelect();
+                updateGroupCount();
+                updateGroupsList();
+            });
+
+            addEntryButton.addEventListener('click', () => {
+                isAddFormVisible = !isAddFormVisible;
+                if (isAddFormVisible) {
+                    addEntryForm.classList.remove('hidden');
+                    addTitleContainer.classList.remove('hidden');
+                    addM3u8Container.classList.remove('hidden');
+                    confirmAddContainer.classList.remove('hidden');
+                } else {
+                    addEntryForm.classList.add('hidden');
+                    addTitleContainer.classList.add('hidden');
+                    addM3u8Container.classList.add('hidden');
+                    confirmAddContainer.classList.add('hidden');
+                }
+            });
+
+            deleteEntryButton.addEventListener('click', () => {
+                const selectedIndices = getSelectedIndices();
+                // 按降序排序，确保删除时索引不会混乱
+                selectedIndices.sort((a, b) => b - a);
+                selectedIndices.forEach((index) => {
+                    playlistData.splice(index, 1);
+                });
+                updatePlaylist();
+                updateGroupFilter();
+                updateAddGroupSelect();
+                updateEditGroupSelect();
+                updateMoveToGroupSelect();
+                updateGroupCount();
+                updateGroupsList();
+                checkSelectedItems();
+            });
+
+            moveUpButton.addEventListener('click', () => {
+                const selectedIndices = getSelectedIndices();
+                selectedIndices.forEach((index) => {
+                    if (index > 0) {
+                        [playlistData[index], playlistData[index - 1]] = [playlistData[index - 1], playlistData[index]];
+                    }
+                });
+                updatePlaylist();
+                checkSelectedItems();
+            });
+
+            moveDownButton.addEventListener('click', () => {
+                const selectedIndices = getSelectedIndices().reverse();
+                selectedIndices.forEach((index) => {
+                    if (index < playlistData.length - 1) {
+                        [playlistData[index], playlistData[index + 1]] = [playlistData[index + 1], playlistData[index]];
+                    }
+                });
+                updatePlaylist();
+                checkSelectedItems();
+            });
+
+            editEntryButton.addEventListener('click', () => {
+                const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
+                if (selectedItems.length === 1) {
+                    isEditFormVisible = !isEditFormVisible;
+                    if (isEditFormVisible) {
+                        editedIndex = parseInt(selectedItems[0].dataset.index);
+                        const entry = playlistData[editedIndex];
+                        editTitleInput.value = entry.title;
+                        editM3u8Input.value = entry.path;
+                        editGroupSelect.value = entry.group;
+                        editEntryForm.classList.remove('hidden');
+                        editTitleContainer.classList.remove('hidden');
+                        editM3u8Container.classList.remove('hidden');
+                        confirmEditContainer.classList.remove('hidden');
+                    } else {
+                        editEntryForm.classList.add('hidden');
+                        editTitleContainer.classList.add('hidden');
+                        editM3u8Container.classList.add('hidden');
+                        confirmEditContainer.classList.add('hidden');
+                    }
+                }
+            });
+
+            searchInput.addEventListener('input', () => {
+                updatePlaylist();
+                updateGroupCount();
+            });
+
+            groupFilter.addEventListener('change', () => {
+                updatePlaylist();
+                updateGroupCount();
+            });
+
+            addGroupSelect.addEventListener('change', () => {
+                if (addGroupSelect.value === 'add-new-group') {
+                    const newGroupName = prompt('请输入新的分组名称');
+                    if (newGroupName) {
+                        addNewGroup(newGroupName);
+                        addGroupSelect.value = newGroupName;
+                    } else {
+                        addGroupSelect.value = '无分组';
+                    }
+                }
+            });
+
+            confirmAddEntryButton.addEventListener('click', () => {
+    const title = addTitleInput.value;
+    const m3u8 = addM3u8Input.value;
+    const group = addGroupSelect.value;
+    if (title && m3u8) {
+        const newEntry = { title, duration: '0', path: m3u8, group };
+        
+        // 如果分组不存在，添加到分组顺序中
+        if (!groups.has(group)) {
+            addNewGroup(group);
+        }
+        
+        // 找到分组的第一个位置插入
+        let insertIndex = playlistData.length;
+        for (let i = 0; i < playlistData.length; i++) {
+            if (playlistData[i].group === group) {
+                insertIndex = i;
+                break;
             }
-        });
+        }
+        
+        playlistData.splice(insertIndex, 0, newEntry);
+        updatePlaylist();
+        updateGroupFilter();
+        updateAddGroupSelect();
+        updateEditGroupSelect();
+        updateMoveToGroupSelect();
+        updateGroupsList();
+        addTitleInput.value = '';
+        addM3u8Input.value = '';
+        updateGroupCount();
+    }
+});
 
-        saveFileButton.addEventListener('click', () => {
-            const m3uContent = generateM3U();
-            const blob = new Blob([m3uContent], { type: 'application/vnd.apple.mpegurl' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'playlist.m3u';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
+            importFromClipboardButton.addEventListener('click', async () => {
+                try {
+                    const clipboardText = await navigator.clipboard.readText();
+                    parseM3U(clipboardText);
+                } catch (error) {
+                    console.error('无法从剪贴板读取内容:', error);
+                }
+            });
 
-        newFileButton.addEventListener('click', () => {
-            playlistData = [];
-            groups = new Set();
+            confirmEditEntryButton.addEventListener('click', () => {
+    if (editedIndex !== null) {
+        const title = editTitleInput.value;
+        const m3u8 = editM3u8Input.value;
+        const newGroup = editGroupSelect.value;
+        if (title && m3u8) {
+            const entry = playlistData[editedIndex];
+            const oldGroup = entry.group;
+            entry.title = title;
+            entry.path = m3u8;
+            entry.group = newGroup;
+            
+            // 如果新分组不存在，添加到分组顺序中
+            if (!groups.has(newGroup)) {
+                addNewGroup(newGroup);
+            }
+
+            // 移除原位置的条目
+            playlistData.splice(editedIndex, 1);
+
+            // 找到新分组的插入位置
+            let insertIndex = playlistData.length;
+            for (let i = 0; i < playlistData.length; i++) {
+                if (playlistData[i].group === newGroup) {
+                    insertIndex = i;
+                    break;
+                }
+            }
+            
+            // 插入到新分组位置
+            playlistData.splice(insertIndex, 0, entry);
+
             updatePlaylist();
             updateGroupFilter();
             updateAddGroupSelect();
             updateEditGroupSelect();
+            updateMoveToGroupSelect();
+            updateGroupsList();
             updateGroupCount();
-        });
+        }
+        editEntryForm.classList.add('hidden');
+        editTitleContainer.classList.add('hidden');
+        editM3u8Container.classList.add('hidden');
+        confirmEditContainer.classList.add('hidden');
+        isEditFormVisible = false;
+        editedIndex = null;
+    }
+});
 
-        addEntryButton.addEventListener('click', () => {
-            isAddFormVisible = !isAddFormVisible;
-            if (isAddFormVisible) {
-                addEntryForm.classList.remove('hidden');
-                addTitleContainer.classList.remove('hidden');
-                addM3u8Container.classList.remove('hidden');
-                confirmAddContainer.classList.remove('hidden');
-            } else {
-                addEntryForm.classList.add('hidden');
-                addTitleContainer.classList.add('hidden');
-                addM3u8Container.classList.add('hidden');
-                confirmAddContainer.classList.add('hidden');
+            clearListButton.addEventListener('click', () => {
+                playlistData = [];
+                groups = new Set();
+                groupOrder = [];
+                updatePlaylist();
+                updateGroupFilter();
+                updateAddGroupSelect();
+                updateEditGroupSelect();
+                updateMoveToGroupSelect();
+                updateGroupsList();
+                updateGroupCount();
+                checkSelectedItems();
+            });
+
+            // 新增分组按钮点击事件
+            addGroupBtn.addEventListener('click', () => {
+                addGroupInputContainer.style.display = 'block';
+                newGroupNameInput.focus();
+            });
+
+            // 确认添加分组按钮点击事件
+            confirmAddGroupBtn.addEventListener('click', () => {
+                const newGroupName = newGroupNameInput.value.trim();
+                if (newGroupName) {
+                    addNewGroup(newGroupName);
+                    newGroupNameInput.value = '';
+                    addGroupInputContainer.style.display = 'none';
+                }
+            });
+
+            // 按Enter键确认添加分组
+            newGroupNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    confirmAddGroupBtn.click();
+                }
+            });
+
+// 移动分组下拉框变化事件
+moveToGroupSelect.addEventListener('change', () => {
+    const selectedGroup = moveToGroupSelect.value;
+    if (selectedGroup) {
+        const selectedIndices = getSelectedIndices();
+        
+        // 先收集要移动的条目
+        const movedItems = [];
+        selectedIndices.forEach(index => {
+            movedItems.push(playlistData[index]);
+        });
+        
+        // 按降序排序索引，以便从后往前删除
+        selectedIndices.sort((a, b) => b - a);
+        
+        // 从原位置删除条目
+        selectedIndices.forEach(index => {
+            playlistData.splice(index, 1);
+        });
+        
+        // 找到新分组的插入位置
+        let insertIndex = playlistData.length;
+        for (let i = 0; i < playlistData.length; i++) {
+            if (playlistData[i].group === selectedGroup) {
+                insertIndex = i;
+                break;
             }
+        }
+        
+        // 更新分组并插入到新位置
+        movedItems.forEach(item => {
+            item.group = selectedGroup;
+            playlistData.splice(insertIndex, 0, item);
         });
+        
+        updatePlaylist();
+        updateGroupsList();
+        updateGroupCount();
+        moveToGroupSelect.value = ''; // 重置选择
+        checkSelectedItems(); // 更新移动分组下拉框的显示状态
+    }
+});
 
-        deleteEntryButton.addEventListener('click', () => {
+            // 监听复选框变化，显示/隐藏移动分组下拉框
+            playlist.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    checkSelectedItems();
+                }
+            });
+    // 全选按钮事件
+    document.getElementById('select-all').addEventListener('click', () => {
+        const checkboxes = playlist.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        checkSelectedItems();
+    });
+
+    // 反选按钮事件
+    document.getElementById('invert-selection').addEventListener('click', () => {
+        const checkboxes = playlist.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !checkbox.checked;
+        });
+        checkSelectedItems();
+    });
+        }
+
+        // 获取选中的条目索引
+        function getSelectedIndices() {
             const selectedIndices = [];
             const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
             selectedItems.forEach((item) => {
                 const index = parseInt(item.dataset.index);
                 selectedIndices.push(index);
             });
-            // 按降序排序，确保删除时索引不会混乱
-            selectedIndices.sort((a, b) => b - a);
-            selectedIndices.forEach((index) => {
-                playlistData.splice(index, 1);
+            return selectedIndices;
+        }
+
+        // 检查是否有选中的条目，显示/隐藏移动分组下拉框
+ 
+function checkSelectedItems() {
+
+    const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
+    const hasSelection = selectedItems.length > 0;
+
+    // 统一控制"移动到"下拉框和操作按钮的显示
+    moveToContainer.classList.toggle('visible', hasSelection);
+    document.getElementById('selection-actions').classList.toggle('visible', hasSelection);
+
+    // 只有选中项时才更新分组下拉框
+    if (hasSelection) updateMoveToGroupSelect();
+
+}
+
+        // 更新移动分组下拉框
+        function updateMoveToGroupSelect() {
+            moveToGroupSelect.innerHTML = '<option value="">选择分组</option>';
+            
+            // 按照 groupOrder 的顺序添加分组选项
+            groupOrder.forEach((group) => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                moveToGroupSelect.appendChild(option);
             });
-            updatePlaylist();
-            updateGroupFilter();
+        }
+
+        // 添加新分组的通用函数
+        function addNewGroup(groupName) {
+            groups.add(groupName);
+            groupOrder.push(groupName);
             updateAddGroupSelect();
             updateEditGroupSelect();
-            updateGroupCount();
-        });
-
-        moveUpButton.addEventListener('click', () => {
-            const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
-            selectedItems.forEach((item) => {
-                const index = parseInt(item.dataset.index);
-                if (index > 0) {
-                    [playlistData[index], playlistData[index - 1]] = [playlistData[index - 1], playlistData[index]];
-                }
-            });
-            updatePlaylist();
-        });
-
-        moveDownButton.addEventListener('click', () => {
-            const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
-            selectedItems.reverse().forEach((item) => {
-                const index = parseInt(item.dataset.index);
-                if (index < playlistData.length - 1) {
-                    [playlistData[index], playlistData[index + 1]] = [playlistData[index + 1], playlistData[index]];
-                }
-            });
-            updatePlaylist();
-        });
-
-        editEntryButton.addEventListener('click', () => {
-            const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
-            if (selectedItems.length === 1) {
-                isEditFormVisible = !isEditFormVisible;
-                if (isEditFormVisible) {
-                    editedIndex = parseInt(selectedItems[0].dataset.index);
-                    const entry = playlistData[editedIndex];
-                    editTitleInput.value = entry.title;
-                    editM3u8Input.value = entry.path;
-                    editGroupSelect.value = entry.group;
-                    editEntryForm.classList.remove('hidden');
-                    editTitleContainer.classList.remove('hidden');
-                    editM3u8Container.classList.remove('hidden');
-                    confirmEditContainer.classList.remove('hidden');
-                } else {
-                    editEntryForm.classList.add('hidden');
-                    editTitleContainer.classList.add('hidden');
-                    editM3u8Container.classList.add('hidden');
-                    confirmEditContainer.classList.add('hidden');
-                }
-            }
-        });
-
-        searchInput.addEventListener('input', () => {
-            updatePlaylist();
-            updateGroupCount();
-        });
-
-        groupFilter.addEventListener('change', () => {
-            updatePlaylist();
-            updateGroupCount();
-        });
-
-        addGroupSelect.addEventListener('change', () => {
-            if (addGroupSelect.value === 'add-new-group') {
-                const newGroupName = prompt('请输入新的分组名称');
-                if (newGroupName) {
-                    groups.add(newGroupName);
-                    updateAddGroupSelect();
-                    addGroupSelect.value = newGroupName;
-                } else {
-                    addGroupSelect.value = '无分组';
-                }
-            }
-        });
-
-        confirmAddEntryButton.addEventListener('click', () => {
-            const title = addTitleInput.value;
-            const m3u8 = addM3u8Input.value;
-            const group = addGroupSelect.value;
-            if (title && m3u8) {
-                const newEntry = { title, duration: '0', path: m3u8, group };
-                let insertIndex = 0;
-                for (let i = 0; i < playlistData.length; i++) {
-                    if (playlistData[i].group === group) {
-                        insertIndex = i;
-                        break;
-                    }
-                }
-                playlistData.splice(insertIndex, 0, newEntry);
-                groups.add(group);
-                updatePlaylist();
-                updateGroupFilter();
-                updateAddGroupSelect();
-                updateEditGroupSelect();
-                addTitleInput.value = '';
-                addM3u8Input.value = '';
-                updateGroupCount();
-            }
-        });
-
-        importFromClipboardButton.addEventListener('click', async () => {
-            try {
-                const clipboardText = await navigator.clipboard.readText();
-                parseM3U(clipboardText);
-            } catch (error) {
-                console.error('无法从剪贴板读取内容:', error);
-            }
-        });
-
-        confirmEditEntryButton.addEventListener('click', () => {
-            if (editedIndex!== null) {
-                const title = editTitleInput.value;
-                const m3u8 = editM3u8Input.value;
-                const newGroup = editGroupSelect.value;
-                if (title && m3u8) {
-                    const entry = playlistData[editedIndex];
-                    const oldGroup = entry.group;
-                    entry.title = title;
-                    entry.path = m3u8;
-                    entry.group = newGroup;
-                    groups.add(newGroup);
-
-                    // 移除原位置的条目
-                    playlistData.splice(editedIndex, 1);
-
-                    // 找到新分组的插入位置
-                    let insertIndex = 0;
-                    for (let i = 0; i < playlistData.length; i++) {
-                        if (playlistData[i].group === newGroup) {
-                            insertIndex = i;
-                            break;
-                        }
-                    }
-                    // 插入到新分组位置
-                    playlistData.splice(insertIndex, 0, entry);
-
-                    updatePlaylist();
-                    updateGroupFilter();
-                    updateAddGroupSelect();
-                    updateEditGroupSelect();
-                    updateGroupCount();
-                }
-                editEntryForm.classList.add('hidden');
-                editTitleContainer.classList.add('hidden');
-                editM3u8Container.classList.add('hidden');
-                confirmEditContainer.classList.add('hidden');
-                isEditFormVisible = false;
-                editedIndex = null;
-            }
-        });
-
-        clearListButton.addEventListener('click', () => {
-            playlistData = [];
-            groups = new Set();
-            updatePlaylist();
+            updateMoveToGroupSelect();
             updateGroupFilter();
-            updateAddGroupSelect();
-            updateEditGroupSelect();
-            updateGroupCount();
-        });
+            updateGroupsList();
+        }
 
         function parseM3U(content) {
             const lines = content.split('\n');
+            groupOrder = []; // 重置分组顺序
+            
             for (let i = 0; i < lines.length; i++) {
                 if (lines[i].startsWith('#EXTINF:')) {
                     const parts = lines[i].split(',');
@@ -382,6 +909,12 @@
                     const title = parts[1];
                     const path = lines[i + 1];
                     const group = extractGroup(parts[0]);
+                    
+                    // 记录分组顺序（按首次出现的顺序）
+                    if (!groups.has(group)) {
+                        groupOrder.push(group);
+                    }
+                    
                     groups.add(group);
                     playlistData.push({ title, duration, path, group });
                     i++;
@@ -391,12 +924,15 @@
             updateGroupFilter();
             updateAddGroupSelect();
             updateEditGroupSelect();
+            updateMoveToGroupSelect();
+            updateGroupsList();
             updateGroupCount();
         }
 
         function generateM3U() {
             let m3uContent = '#EXTM3U\n';
-            // 按分组对条目进行排序
+            
+            // 按自定义分组顺序生成内容
             const groupedEntries = {};
             playlistData.forEach((entry) => {
                 if (!groupedEntries[entry.group]) {
@@ -405,59 +941,100 @@
                 groupedEntries[entry.group].push(entry);
             });
 
-            // 遍历分组并生成 M3U 内容
-            Object.keys(groupedEntries).forEach((group) => {
-                m3uContent += `\n#-------------------------------  ${group}   -------------------------------#\n`;
-                groupedEntries[group].forEach((entry) => {
-                    const groupInfo = entry.group === '无分组' ? '' : `group-title="${entry.group}"`;
-                    m3uContent += `#EXTINF:${entry.duration} ${groupInfo},${entry.title}\n`;
-                    m3uContent += `${entry.path}\n`;
-                });
+            // 按照 groupOrder 的顺序输出分组
+            groupOrder.forEach((group) => {
+                if (groupedEntries[group] && groupedEntries[group].length > 0) {
+                    m3uContent += `\n#-------------------------------  ${group}   -------------------------------#\n`;
+                    groupedEntries[group].forEach((entry) => {
+                        const groupInfo = entry.group === '无分组'? '' : `group-title="${entry.group}"`;
+                        m3uContent += `#EXTINF:${entry.duration} ${groupInfo},${entry.title}\n`;
+                        m3uContent += `${entry.path}\n`;
+                    });
+                }
             });
 
             return m3uContent;
         }
 
-        function updatePlaylist() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const selectedGroup = groupFilter.value;
-            playlist.innerHTML = '';
-            playlistData.forEach((entry, index) => {
-                if ((searchTerm === '' || entry.title.toLowerCase().includes(searchTerm)) &&
-                    (selectedGroup === 'all' || entry.group === selectedGroup)) {
-                    const li = document.createElement('li');
-                    li.classList.add('flex', 'items-center', 'mb-2');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.dataset.index = index;
-                    checkbox.classList.add('mr-2');
-                    li.appendChild(checkbox);
-                    const span = document.createElement('span');
-                    // 显示分组信息
-                    span.textContent = `${entry.title} (${entry.duration}s) - ${entry.path} [分组: ${entry.group}]`;
-                    li.appendChild(span);
-                    playlist.appendChild(li);
-                }
-            });
+
+function updatePlaylist() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedGroup = groupFilter.value;
+    
+    // 保存当前选中的索引
+    const selectedIndices = new Set();
+    const checkboxes = playlist.querySelectorAll('input[type="checkbox"]:checked');
+    checkboxes.forEach(checkbox => {
+        selectedIndices.add(parseInt(checkbox.dataset.index));
+    });
+    
+    playlist.innerHTML = '';
+    
+    const filteredData = playlistData.filter(entry => {
+        return (searchTerm === '' || entry.title.toLowerCase().includes(searchTerm)) &&
+               (selectedGroup === 'all' || entry.group === selectedGroup);
+    });
+    
+    filteredData.forEach((entry, index) => {
+        const originalIndex = playlistData.indexOf(entry);
+        const li = document.createElement('li');
+        li.classList.add('flex', 'items-center', 'mb-2');
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.dataset.index = originalIndex;
+        checkbox.classList.add('mr-2');
+        
+        // 恢复选中状态
+        if (selectedIndices.has(originalIndex)) {
+            checkbox.checked = true;
         }
+        
+        li.appendChild(checkbox);
+        
+        const span = document.createElement('span');
+        span.textContent = `${entry.title} (${entry.duration}s) - ${entry.path} [分组: ${entry.group}]`;
+        li.appendChild(span);
+
+        const playIcon = document.createElement('i');
+        playIcon.classList.add('fa-solid', 'fa-play', 'video-play-icon');
+        playIcon.addEventListener('click', () => {
+            const playerUrl = `https://m3u8player.org/player.html?url=${entry.path}`;
+            window.open(playerUrl, '_blank');
+        });
+        li.appendChild(playIcon);
+
+        playlist.appendChild(li);
+    });
+    
+    checkSelectedItems();
+}
+
 
         function updateGroupFilter() {
             const currentSelectedGroup = groupFilter.value;
             groupFilter.innerHTML = '<option value="all">全部</option>';
-            groups.forEach((group) => {
+            
+            // 按照 groupOrder 的顺序添加分组选项
+            groupOrder.forEach((group) => {
                 const option = document.createElement('option');
                 option.value = group;
                 option.textContent = group;
                 groupFilter.appendChild(option);
             });
+            
             // 恢复之前的选择
-            groupFilter.value = currentSelectedGroup;
+            if (currentSelectedGroup && groupOrder.includes(currentSelectedGroup)) {
+                groupFilter.value = currentSelectedGroup;
+            }
         }
 
         function updateAddGroupSelect() {
             addGroupSelect.innerHTML = '<option value="无分组">无分组</option>';
             addGroupSelect.innerHTML += '<option value="add-new-group">增加分组</option>';
-            groups.forEach((group) => {
+            
+            // 按照 groupOrder 的顺序添加分组选项
+            groupOrder.forEach((group) => {
                 const option = document.createElement('option');
                 option.value = group;
                 option.textContent = group;
@@ -467,7 +1044,9 @@
 
         function updateEditGroupSelect() {
             editGroupSelect.innerHTML = '<option value="无分组">无分组</option>';
-            groups.forEach((group) => {
+            
+            // 按照 groupOrder 的顺序添加分组选项
+            groupOrder.forEach((group) => {
                 const option = document.createElement('option');
                 option.value = group;
                 option.textContent = group;
@@ -477,7 +1056,7 @@
 
         function extractGroup(extinf) {
             const match = extinf.match(/group-title="([^"]+)"/);
-            return match ? match[1] : '无分组';
+            return match? match[1] : '无分组';
         }
 
         function updateGroupCount() {
@@ -492,8 +1071,212 @@
             });
             groupCountSpan.textContent = `(${count})`;
         }
+
+        // 更新分组列表
+        function updateGroupsList() {
+            groupsList.innerHTML = '';
+            
+            // 计算每个分组的条目数量
+            const groupCounts = {};
+            playlistData.forEach((entry) => {
+                if (!groupCounts[entry.group]) {
+                    groupCounts[entry.group] = 0;
+                }
+                groupCounts[entry.group]++;
+            });
+            
+            // 按照 groupOrder 的顺序显示分组
+            groupOrder.forEach((group, index) => {
+                if (!groups.has(group)) return; // 跳过不存在的分组
+                
+                const groupItem = document.createElement('div');
+                groupItem.className = 'group-item';
+                groupItem.draggable = true;
+                groupItem.dataset.group = group;
+                
+                // 拖拽相关事件
+                groupItem.addEventListener('dragstart', handleDragStart);
+                groupItem.addEventListener('dragover', handleDragOver);
+                groupItem.addEventListener('dragleave', handleDragLeave);
+                groupItem.addEventListener('dragend', handleDragEnd);
+                groupItem.addEventListener('drop', handleDrop);
+                
+                const groupInfo = document.createElement('div');
+                groupInfo.className = 'group-info';
+                
+                const groupNumber = document.createElement('div');
+                groupNumber.className = 'group-number';
+                groupNumber.textContent = `${index + 1}.`;
+                
+                const groupName = document.createElement('div');
+                groupName.className = 'group-name';
+                groupName.textContent = group;
+                
+                const groupCount = document.createElement('div');
+                groupCount.className = 'group-count';
+                groupCount.textContent = `(${groupCounts[group] || 0})`;
+                
+                groupInfo.appendChild(groupNumber);
+                groupInfo.appendChild(groupName);
+                groupInfo.appendChild(groupCount);
+                
+                const groupActions = document.createElement('div');
+                groupActions.className = 'group-actions';
+                
+                // 编辑按钮
+                const editAction = document.createElement('i');
+                editAction.className = 'fas fa-edit group-action';
+                editAction.title = '编辑分组名称';
+                editAction.addEventListener('click', () => {
+                    const newGroupName = prompt('请输入新的分组名称', group);
+                    if (newGroupName && newGroupName !== group) {
+                        // 更新分组名称
+                        groups.delete(group);
+                        groups.add(newGroupName);
+                        
+                        // 更新分组顺序
+                        const groupIndex = groupOrder.indexOf(group);
+                        if (groupIndex !== -1) {
+                            groupOrder[groupIndex] = newGroupName;
+                        }
+                        
+                        // 更新所有相关条目
+                        playlistData.forEach(entry => {
+                            if (entry.group === group) {
+                                entry.group = newGroupName;
+                            }
+                        });
+                        
+                        // 更新UI
+                        updatePlaylist();
+                        updateGroupFilter();
+                        updateAddGroupSelect();
+                        updateEditGroupSelect();
+                        updateMoveToGroupSelect();
+                        updateGroupsList();
+                    }
+                });
+                
+                // 删除按钮
+                const deleteAction = document.createElement('i');
+                deleteAction.className = 'fas fa-trash-alt group-action';
+                deleteAction.title = '删除分组及其内容';
+                deleteAction.addEventListener('click', () => {
+                    if (confirm(`确定要删除分组 "${group}" 及其所有内容吗？`)) {
+                        // 删除分组
+                        groups.delete(group);
+                        
+                        // 从分组顺序中移除
+                        groupOrder = groupOrder.filter(g => g !== group);
+                        
+                        // 删除所有相关条目
+                        playlistData = playlistData.filter(entry => entry.group !== group);
+                        
+                        // 更新UI
+                        updatePlaylist();
+                        updateGroupFilter();
+                        updateAddGroupSelect();
+                        updateEditGroupSelect();
+                        updateMoveToGroupSelect();
+                        updateGroupsList();
+                        updateGroupCount();
+                    }
+                });
+                
+                groupActions.appendChild(editAction);
+                groupActions.appendChild(deleteAction);
+                
+                groupItem.appendChild(groupInfo);
+                groupItem.appendChild(groupActions);
+                
+                groupsList.appendChild(groupItem);
+            });
+        }
+
+        // 拖拽相关函数
+        function handleDragStart(e) {
+            draggedItem = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if (this !== draggedItem) {
+                this.classList.add('over');
+            }
+        }
+
+        function handleDragLeave() {
+            this.classList.remove('over');
+        }
+
+        function handleDragEnd() {
+            this.classList.remove('dragging');
+            const items = document.querySelectorAll('.group-item');
+            items.forEach(item => {
+                item.classList.remove('over');
+            });
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            
+            // 确保拖拽的是分组项
+            if (draggedItem && this !== draggedItem) {
+                // 获取拖拽的分组和目标分组
+                const draggedGroup = draggedItem.dataset.group;
+                const targetGroup = this.dataset.group;
+                
+                // 获取它们在 groupOrder 中的索引
+                const draggedIndex = groupOrder.indexOf(draggedGroup);
+                const targetIndex = groupOrder.indexOf(targetGroup);
+                
+                // 从原位置移除
+                groupOrder.splice(draggedIndex, 1);
+                // 插入到新位置
+                groupOrder.splice(targetIndex, 0, draggedGroup);
+                
+                // 重新排序播放列表数据
+                reorderPlaylistData();
+                
+                // 更新UI
+                updateGroupsList();
+                updatePlaylist();
+            }
+            this.classList.remove('over');
+        }
+
+        // 根据新的分组顺序重新排序播放列表数据
+        function reorderPlaylistData() {
+            // 创建一个按新分组顺序排列的条目数组
+            const newPlaylistData = [];
+            
+            // 按照 groupOrder 的顺序添加条目
+            groupOrder.forEach(group => {
+                playlistData.forEach(entry => {
+                    if (entry.group === group) {
+                        newPlaylistData.push(entry);
+                    }
+                });
+            });
+            
+            // 更新播放列表数据
+            playlistData = newPlaylistData;
+        }
+
+        // 初始化
+        initEventListeners();
+        updatePlaylist();
+        updateGroupFilter();
+        updateAddGroupSelect();
+        updateEditGroupSelect();
+        updateMoveToGroupSelect();
+        updateGroupsList();
+        updateGroupCount();
     </script>
 </body>
-
 </html>
-    
