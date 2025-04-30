@@ -14,9 +14,28 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f5f5f7;
+            background-image: url('http://3650000.xyz/api/?mode=1,3,5,8');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
             display: flex;
             min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* 防止水平滚动条闪烁 */
         }
+/* 背景半透明遮罩 */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(245, 245, 247, 0.5); /* 与原背景色相同但半透明 */
+    z-index: -1;
+}
 
         header {
             background-color: #000;
@@ -40,6 +59,8 @@
             margin: 0 auto;
             margin-top: 80px;
             flex: 1;
+            transition: transform 0.3s ease;
+            transform: translateX(0);
         }
 
         button {
@@ -77,6 +98,13 @@
             display: flex;
             align-items: center;
             margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s ease;
+        }
+
+        li:hover {
+            background-color: #f0f0f0;
         }
 
         li input[type="checkbox"] {
@@ -164,12 +192,20 @@
         .sidebar {
             width: 280px;
             background-color: #fff;
-            border-right: 1px solid #d2d2d7;
+            border-left: 1px solid #d2d2d7;
             padding: 1rem;
             margin-top: 80px;
             height: calc(100vh - 80px);
-            overflow-y: auto;
             position: fixed;
+            right: -280px;
+            transition: right 0.3s ease;
+            z-index: 5;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.visible {
             right: 0;
         }
 
@@ -309,15 +345,86 @@
             display: flex;
         }
 
-/* 新增按钮容器的间距调整 */
-#selection-actions {
-    margin-left: 1rem;
-}
+        /* 新增按钮容器的间距调整 */
+        #selection-actions {
+            margin-left: 1rem;
+        }
+
         .move-to-label {
             margin-right: 0.5rem;
             font-size: 0.875rem;
             color: #86868b;
         }
+
+        /* 分组列表容器 - 添加滚动条 */
+        #groups-list-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        /* 右侧触发区域 */
+        .sidebar-trigger {
+            position: fixed;
+            right: 0;
+            top: 80px;
+            width: 20px;
+            height: 100px;
+            background-color: rgba(245, 245, 247, 0.5);
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 4;
+            transition: background-color 0.2s ease;
+        }
+
+        .sidebar-trigger:hover {
+            background-color: rgba(200, 200, 200, 0.7);
+        }
+
+        .sidebar-trigger i {
+            color: #86868b;
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* 当侧边栏展开时调整主内容区域 */
+        body.sidebar-expanded main {
+            transform: translateX(-140px);
+        }
+
+        /* 新增的右侧触发区域悬停样式 */
+        .sidebar-trigger-area {
+            position: fixed;
+            right: 0;
+            top: 80px;
+            width: 20px;
+            height: 100%;
+            z-index: 3;
+        }
+
+        /* 新增：选中项样式 */
+        li.selected {
+            background-color: #e3f2fd;
+        }
+
+/* 添加在style标签的末尾 */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#refresh-bg.loading i {
+    animation: spin 1s linear infinite;
+}
+
+#refresh-bg:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
     </style>
 </head>
 
@@ -361,6 +468,9 @@
             <button id="edit-entry" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600">
                 <i class="fa-solid fa-pencil"></i> 编辑条目信息
             </button>
+<button id="refresh-bg" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">
+        <i class="fa-solid fa-rotate"></i> 刷新背景
+    </button>
 
             <!-- 新增的移动分组下拉框 -->
             <div id="move-to-container" class="move-to-container">
@@ -369,16 +479,18 @@
                     <option value="">选择分组</option>
                 </select>
             </div>
-    <!-- ▼▼▼ 新增的按钮容器（和移动到下拉框并列）▼▼▼ -->
-    <div id="selection-actions" class="move-to-container">
-        <button id="select-all" class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600">
-            <i class="fa-solid fa-check-double"></i> 全选
-        </button>
-        <button id="invert-selection" class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600 ml-2">
-            <i class="fa-solid fa-exchange-alt"></i> 反选
-        </button>
-    </div>
-    <!-- ▲▲▲ 新增结束 ▲▲▲ -->
+            <!-- 新增的按钮容器 -->
+            <div id="selection-actions" class="move-to-container">
+                <button id="select-all" class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600">
+                    <i class="fa-solid fa-check-double"></i> 全选
+                </button>
+                <button id="invert-selection" class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600 ml-2">
+                    <i class="fa-solid fa-exchange-alt"></i> 反选
+                </button>
+<button id="deselect-all" class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600 ml-2">
+        <i class="fa-solid fa-times"></i> 取消勾选
+    </button>
+            </div>
         </div>
         <div class="mb-4">
             <input type="text" id="search-input" placeholder="搜索条目"
@@ -440,11 +552,19 @@
         </ul>
     </main>
 
+    <!-- 右侧触发区域 -->
+    <div class="sidebar-trigger-area" id="sidebar-trigger-area"></div>
+    <div class="sidebar-trigger" id="sidebar-trigger">
+        <i class="fas fa-chevron-left"></i>
+    </div>
+
     <!-- 新增的侧边栏 -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-header">分组管理</div>
-        <div id="groups-list">
-            <!-- 分组列表将在这里显示 -->
+        <div id="groups-list-container">
+            <div id="groups-list">
+                <!-- 分组列表将在这里显示 -->
+            </div>
         </div>
         <div class="add-group-btn" id="add-group-btn">
             <i class="fas fa-plus add-group-icon"></i>
@@ -499,6 +619,12 @@
         const confirmAddGroupBtn = document.getElementById('confirm-add-group');
         const moveToContainer = document.getElementById('move-to-container');
         const moveToGroupSelect = document.getElementById('move-to-group');
+        const sidebarTrigger = document.getElementById('sidebar-trigger');
+        const sidebarTriggerArea = document.getElementById('sidebar-trigger-area');
+        const sidebar = document.getElementById('sidebar');
+        const groupsListContainer = document.getElementById('groups-list-container');
+        const selectAllButton = document.getElementById('select-all');
+        const invertSelectionButton = document.getElementById('invert-selection');
 
         let playlistData = [];
         let groups = new Set();
@@ -507,10 +633,28 @@
         let isEditFormVisible = false;
         let editedIndex = null;
         let draggedItem = null;
+        let isSidebarExpanded = false;
+        let sidebarHoverTimer = null;
+        let lastCheckedIndex = null; // 用于Shift多选
+        let isShiftPressed = false; // 跟踪Shift键状态
 
         // 初始化事件监听
         function initEventListeners() {
             document.getElementById('selection-actions').classList.remove('visible');
+            
+            // 监听键盘事件
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Shift') {
+                    isShiftPressed = true;
+                }
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                if (e.key === 'Shift') {
+                    isShiftPressed = false;
+                }
+            });
+
             openFileButton.addEventListener('click', () => {
                 fileInput.click();
             });
@@ -651,38 +795,38 @@
             });
 
             confirmAddEntryButton.addEventListener('click', () => {
-    const title = addTitleInput.value;
-    const m3u8 = addM3u8Input.value;
-    const group = addGroupSelect.value;
-    if (title && m3u8) {
-        const newEntry = { title, duration: '0', path: m3u8, group };
-        
-        // 如果分组不存在，添加到分组顺序中
-        if (!groups.has(group)) {
-            addNewGroup(group);
-        }
-        
-        // 找到分组的第一个位置插入
-        let insertIndex = playlistData.length;
-        for (let i = 0; i < playlistData.length; i++) {
-            if (playlistData[i].group === group) {
-                insertIndex = i;
-                break;
-            }
-        }
-        
-        playlistData.splice(insertIndex, 0, newEntry);
-        updatePlaylist();
-        updateGroupFilter();
-        updateAddGroupSelect();
-        updateEditGroupSelect();
-        updateMoveToGroupSelect();
-        updateGroupsList();
-        addTitleInput.value = '';
-        addM3u8Input.value = '';
-        updateGroupCount();
-    }
-});
+                const title = addTitleInput.value;
+                const m3u8 = addM3u8Input.value;
+                const group = addGroupSelect.value;
+                if (title && m3u8) {
+                    const newEntry = { title, duration: '0', path: m3u8, group };
+                    
+                    // 如果分组不存在，添加到分组顺序中
+                    if (!groups.has(group)) {
+                        addNewGroup(group);
+                    }
+                    
+                    // 找到分组的第一个位置插入
+                    let insertIndex = playlistData.length;
+                    for (let i = 0; i < playlistData.length; i++) {
+                        if (playlistData[i].group === group) {
+                            insertIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    playlistData.splice(insertIndex, 0, newEntry);
+                    updatePlaylist();
+                    updateGroupFilter();
+                    updateAddGroupSelect();
+                    updateEditGroupSelect();
+                    updateMoveToGroupSelect();
+                    updateGroupsList();
+                    addTitleInput.value = '';
+                    addM3u8Input.value = '';
+                    updateGroupCount();
+                }
+            });
 
             importFromClipboardButton.addEventListener('click', async () => {
                 try {
@@ -694,53 +838,53 @@
             });
 
             confirmEditEntryButton.addEventListener('click', () => {
-    if (editedIndex !== null) {
-        const title = editTitleInput.value;
-        const m3u8 = editM3u8Input.value;
-        const newGroup = editGroupSelect.value;
-        if (title && m3u8) {
-            const entry = playlistData[editedIndex];
-            const oldGroup = entry.group;
-            entry.title = title;
-            entry.path = m3u8;
-            entry.group = newGroup;
-            
-            // 如果新分组不存在，添加到分组顺序中
-            if (!groups.has(newGroup)) {
-                addNewGroup(newGroup);
-            }
+                if (editedIndex !== null) {
+                    const title = editTitleInput.value;
+                    const m3u8 = editM3u8Input.value;
+                    const newGroup = editGroupSelect.value;
+                    if (title && m3u8) {
+                        const entry = playlistData[editedIndex];
+                        const oldGroup = entry.group;
+                        entry.title = title;
+                        entry.path = m3u8;
+                        entry.group = newGroup;
+                        
+                        // 如果新分组不存在，添加到分组顺序中
+                        if (!groups.has(newGroup)) {
+                            addNewGroup(newGroup);
+                        }
 
-            // 移除原位置的条目
-            playlistData.splice(editedIndex, 1);
+                        // 移除原位置的条目
+                        playlistData.splice(editedIndex, 1);
 
-            // 找到新分组的插入位置
-            let insertIndex = playlistData.length;
-            for (let i = 0; i < playlistData.length; i++) {
-                if (playlistData[i].group === newGroup) {
-                    insertIndex = i;
-                    break;
+                        // 找到新分组的插入位置
+                        let insertIndex = playlistData.length;
+                        for (let i = 0; i < playlistData.length; i++) {
+                            if (playlistData[i].group === newGroup) {
+                                insertIndex = i;
+                                break;
+                            }
+                        }
+                        
+                        // 插入到新分组位置
+                        playlistData.splice(insertIndex, 0, entry);
+
+                        updatePlaylist();
+                        updateGroupFilter();
+                        updateAddGroupSelect();
+                        updateEditGroupSelect();
+                        updateMoveToGroupSelect();
+                        updateGroupsList();
+                        updateGroupCount();
+                    }
+                    editEntryForm.classList.add('hidden');
+                    editTitleContainer.classList.add('hidden');
+                    editM3u8Container.classList.add('hidden');
+                    confirmEditContainer.classList.add('hidden');
+                    isEditFormVisible = false;
+                    editedIndex = null;
                 }
-            }
-            
-            // 插入到新分组位置
-            playlistData.splice(insertIndex, 0, entry);
-
-            updatePlaylist();
-            updateGroupFilter();
-            updateAddGroupSelect();
-            updateEditGroupSelect();
-            updateMoveToGroupSelect();
-            updateGroupsList();
-            updateGroupCount();
-        }
-        editEntryForm.classList.add('hidden');
-        editTitleContainer.classList.add('hidden');
-        editM3u8Container.classList.add('hidden');
-        confirmEditContainer.classList.add('hidden');
-        isEditFormVisible = false;
-        editedIndex = null;
-    }
-});
+            });
 
             clearListButton.addEventListener('click', () => {
                 playlistData = [];
@@ -779,72 +923,210 @@
                 }
             });
 
-// 移动分组下拉框变化事件
-moveToGroupSelect.addEventListener('change', () => {
-    const selectedGroup = moveToGroupSelect.value;
-    if (selectedGroup) {
-        const selectedIndices = getSelectedIndices();
-        
-        // 先收集要移动的条目
-        const movedItems = [];
-        selectedIndices.forEach(index => {
-            movedItems.push(playlistData[index]);
-        });
-        
-        // 按降序排序索引，以便从后往前删除
-        selectedIndices.sort((a, b) => b - a);
-        
-        // 从原位置删除条目
-        selectedIndices.forEach(index => {
-            playlistData.splice(index, 1);
-        });
-        
-        // 找到新分组的插入位置
-        let insertIndex = playlistData.length;
-        for (let i = 0; i < playlistData.length; i++) {
-            if (playlistData[i].group === selectedGroup) {
-                insertIndex = i;
-                break;
-            }
-        }
-        
-        // 更新分组并插入到新位置
-        movedItems.forEach(item => {
-            item.group = selectedGroup;
-            playlistData.splice(insertIndex, 0, item);
-        });
-        
-        updatePlaylist();
-        updateGroupsList();
-        updateGroupCount();
-        moveToGroupSelect.value = ''; // 重置选择
-        checkSelectedItems(); // 更新移动分组下拉框的显示状态
-    }
-});
+            // 移动分组下拉框变化事件
+            moveToGroupSelect.addEventListener('change', () => {
+                const selectedGroup = moveToGroupSelect.value;
+                if (selectedGroup) {
+                    // 1. 收集要移动的条目
+                    const selectedIndices = getSelectedIndices();
+                    const movedItems = [];
+                    selectedIndices.forEach(index => {
+                        movedItems.push(playlistData[index]);
+                    });
+
+                    // 2. 按降序删除原条目
+                    selectedIndices.sort((a, b) => b - a).forEach(index => {
+                        playlistData.splice(index, 1);
+                    });
+
+                    // 3. 插入到新分组位置
+                    let insertIndex = playlistData.length;
+                    for (let i = 0; i < playlistData.length; i++) {
+                        if (playlistData[i].group === selectedGroup) {
+                            insertIndex = i;
+                            break;
+                        }
+                    }
+                    movedItems.forEach(item => {
+                        item.group = selectedGroup;
+                        playlistData.splice(insertIndex, 0, item);
+                    });
+
+                    // 4. 清除勾选状态
+                    const checkboxes = playlist.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+
+                    // 5. 更新UI
+                    updatePlaylist();
+                    updateGroupsList();
+                    updateGroupCount();
+                    moveToGroupSelect.value = '';
+                    checkSelectedItems();
+                }
+            });
 
             // 监听复选框变化，显示/隐藏移动分组下拉框
             playlist.addEventListener('change', (e) => {
                 if (e.target.type === 'checkbox') {
+                    const checkbox = e.target;
+                    const li = checkbox.closest('li');
+                    const index = parseInt(checkbox.dataset.index);
+                    
+                    // 更新选中状态样式
+                    if (checkbox.checked) {
+                        li.classList.add('selected');
+                        
+                        // 处理Shift多选
+                        if (isShiftPressed && lastCheckedIndex !== null) {
+                            const start = Math.min(lastCheckedIndex, index);
+                            const end = Math.max(lastCheckedIndex, index);
+                            
+                            // 获取当前显示的条目索引
+                            const visibleItems = Array.from(playlist.querySelectorAll('li'));
+                            const visibleIndices = visibleItems.map(item => 
+                                parseInt(item.querySelector('input[type="checkbox"]').dataset.index)
+                            );
+                            
+                            // 选中范围内的条目
+                            for (let i = start; i <= end; i++) {
+                                if (visibleIndices.includes(i)) {
+                                    const itemIndex = visibleIndices.indexOf(i);
+                                    const itemCheckbox = visibleItems[itemIndex].querySelector('input[type="checkbox"]');
+                                    itemCheckbox.checked = true;
+                                    visibleItems[itemIndex].classList.add('selected');
+                                }
+                            }
+                        }
+                        
+                        lastCheckedIndex = index;
+                    } else {
+                        li.classList.remove('selected');
+                    }
+                    
                     checkSelectedItems();
                 }
             });
-    // 全选按钮事件
-    document.getElementById('select-all').addEventListener('click', () => {
+
+            // 全选按钮事件
+            selectAllButton.addEventListener('click', () => {
+                const checkboxes = playlist.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                    checkbox.closest('li').classList.add('selected');
+                });
+                checkSelectedItems();
+            });
+
+            // 反选按钮事件
+            invertSelectionButton.addEventListener('click', () => {
+                const checkboxes = playlist.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = !checkbox.checked;
+                    const li = checkbox.closest('li');
+                    if (checkbox.checked) {
+                        li.classList.add('selected');
+                    } else {
+                        li.classList.remove('selected');
+                    }
+                });
+                checkSelectedItems();
+            });
+// 取消勾选按钮事件
+    const deselectAllButton = document.getElementById('deselect-all');
+    deselectAllButton.addEventListener('click', () => {
         const checkboxes = playlist.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
-            checkbox.checked = true;
+            checkbox.checked = false;
+            checkbox.closest('li').classList.remove('selected');
         });
         checkSelectedItems();
     });
 
-    // 反选按钮事件
-    document.getElementById('invert-selection').addEventListener('click', () => {
-        const checkboxes = playlist.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = !checkbox.checked;
-        });
-        checkSelectedItems();
+// 添加在selectAllButton/invertSelectionButton等按钮事件之后（大约line 550）
+//刷新背景图片按钮事件
+    const refreshBgButton = document.getElementById('refresh-bg');
+    refreshBgButton.addEventListener('click', function() {
+        this.classList.add('loading');
+        
+        const timestamp = new Date().getTime();
+        const bgUrl = `http://3650000.xyz/api/?mode=1,3,5,8&t=${timestamp}`;
+        
+        const img = new Image();
+        img.onload = () => {
+            document.body.style.backgroundImage = `url(${bgUrl})`;
+            this.classList.remove('loading');
+        };
+        img.src = bgUrl;
     });
+
+            // 侧边栏触发区域事件
+            sidebarTrigger.addEventListener('click', toggleSidebar);
+            
+            // 新增的右侧触发区域悬停事件
+            sidebarTriggerArea.addEventListener('mouseenter', () => {
+                clearTimeout(sidebarHoverTimer);
+                expandSidebar();
+            });
+            
+            sidebarTriggerArea.addEventListener('mouseleave', () => {
+                sidebarHoverTimer = setTimeout(() => {
+                    if (!isMouseOverSidebar()) {
+                        collapseSidebar();
+                    }
+                }, 300);
+            });
+            
+            // 侧边栏鼠标进入事件
+            sidebar.addEventListener('mouseenter', () => {
+                clearTimeout(sidebarHoverTimer);
+            });
+            
+            // 侧边栏鼠标离开事件
+            sidebar.addEventListener('mouseleave', () => {
+                sidebarHoverTimer = setTimeout(() => {
+                    collapseSidebar();
+                }, 300);
+            });
+        }
+
+        // 检查鼠标是否在侧边栏上
+        // 检查鼠标是否在侧边栏上
+        function isMouseOverSidebar() {
+            const sidebarRect = sidebar.getBoundingClientRect();
+            const triggerRect = sidebarTrigger.getBoundingClientRect();
+            return (
+                (event.clientX >= sidebarRect.left && event.clientX <= sidebarRect.right &&
+                 event.clientY >= sidebarRect.top && event.clientY <= sidebarRect.bottom) ||
+                (event.clientX >= triggerRect.left && event.clientX <= triggerRect.right &&
+                 event.clientY >= triggerRect.top && event.clientY <= triggerRect.bottom)
+            );
+        }
+
+        // 切换侧边栏
+        function toggleSidebar() {
+            if (sidebar.classList.contains('visible')) {
+                collapseSidebar();
+            } else {
+                expandSidebar();
+            }
+        }
+
+        // 展开侧边栏
+        function expandSidebar() {
+            sidebar.classList.add('visible');
+            document.body.classList.add('sidebar-expanded');
+            isSidebarExpanded = true;
+            sidebarTrigger.querySelector('i').style.transform = 'rotate(180deg)';
+        }
+
+        // 折叠侧边栏
+        function collapseSidebar() {
+            sidebar.classList.remove('visible');
+            document.body.classList.remove('sidebar-expanded');
+            isSidebarExpanded = false;
+            sidebarTrigger.querySelector('i').style.transform = 'rotate(0deg)';
         }
 
         // 获取选中的条目索引
@@ -859,20 +1141,17 @@ moveToGroupSelect.addEventListener('change', () => {
         }
 
         // 检查是否有选中的条目，显示/隐藏移动分组下拉框
- 
-function checkSelectedItems() {
+        function checkSelectedItems() {
+            const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
+            const hasSelection = selectedItems.length > 0;
 
-    const selectedItems = Array.from(playlist.querySelectorAll('input[type="checkbox"]:checked'));
-    const hasSelection = selectedItems.length > 0;
+            // 统一控制"移动到"下拉框和操作按钮的显示
+            moveToContainer.classList.toggle('visible', hasSelection);
+            document.getElementById('selection-actions').classList.toggle('visible', hasSelection);
 
-    // 统一控制"移动到"下拉框和操作按钮的显示
-    moveToContainer.classList.toggle('visible', hasSelection);
-    document.getElementById('selection-actions').classList.toggle('visible', hasSelection);
-
-    // 只有选中项时才更新分组下拉框
-    if (hasSelection) updateMoveToGroupSelect();
-
-}
+            // 只有选中项时才更新分组下拉框
+            if (hasSelection) updateMoveToGroupSelect();
+        }
 
         // 更新移动分组下拉框
         function updateMoveToGroupSelect() {
@@ -887,7 +1166,6 @@ function checkSelectedItems() {
             });
         }
 
-        // 添加新分组的通用函数
         function addNewGroup(groupName) {
             groups.add(groupName);
             groupOrder.push(groupName);
@@ -946,7 +1224,7 @@ function checkSelectedItems() {
                 if (groupedEntries[group] && groupedEntries[group].length > 0) {
                     m3uContent += `\n#-------------------------------  ${group}   -------------------------------#\n`;
                     groupedEntries[group].forEach((entry) => {
-                        const groupInfo = entry.group === '无分组'? '' : `group-title="${entry.group}"`;
+                        const groupInfo = entry.group === '无分组' ? '' : `group-title="${entry.group}"`;
                         m3uContent += `#EXTINF:${entry.duration} ${groupInfo},${entry.title}\n`;
                         m3uContent += `${entry.path}\n`;
                     });
@@ -956,60 +1234,99 @@ function checkSelectedItems() {
             return m3uContent;
         }
 
+        function updatePlaylist() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedGroup = groupFilter.value;
+            
+            // 保存当前选中的索引
+            const selectedIndices = new Set();
+            const checkboxes = playlist.querySelectorAll('input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                selectedIndices.add(parseInt(checkbox.dataset.index));
+            });
+            
+            playlist.innerHTML = '';
+            
+            const filteredData = playlistData.filter(entry => {
+                return (searchTerm === '' || entry.title.toLowerCase().includes(searchTerm)) &&
+                       (selectedGroup === 'all' || entry.group === selectedGroup);
+            });
+            
+            filteredData.forEach((entry, index) => {
+                const originalIndex = playlistData.indexOf(entry);
+                const li = document.createElement('li');
+                li.classList.add('flex', 'items-center', 'mb-2');
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.dataset.index = originalIndex;
+                checkbox.classList.add('mr-2');
+                
+                // 恢复选中状态
+                if (selectedIndices.has(originalIndex)) {
+                    checkbox.checked = true;
+                    li.classList.add('selected');
+                }
+                
+                li.appendChild(checkbox);
+                
+                const span = document.createElement('span');
+                span.textContent = `${entry.title} (${entry.duration}s) - ${entry.path} [分组: ${entry.group}]`;
+                li.appendChild(span);
 
-function updatePlaylist() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const selectedGroup = groupFilter.value;
-    
-    // 保存当前选中的索引
-    const selectedIndices = new Set();
-    const checkboxes = playlist.querySelectorAll('input[type="checkbox"]:checked');
-    checkboxes.forEach(checkbox => {
-        selectedIndices.add(parseInt(checkbox.dataset.index));
-    });
-    
-    playlist.innerHTML = '';
-    
-    const filteredData = playlistData.filter(entry => {
-        return (searchTerm === '' || entry.title.toLowerCase().includes(searchTerm)) &&
-               (selectedGroup === 'all' || entry.group === selectedGroup);
-    });
-    
-    filteredData.forEach((entry, index) => {
-        const originalIndex = playlistData.indexOf(entry);
-        const li = document.createElement('li');
-        li.classList.add('flex', 'items-center', 'mb-2');
-        
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.dataset.index = originalIndex;
-        checkbox.classList.add('mr-2');
-        
-        // 恢复选中状态
-        if (selectedIndices.has(originalIndex)) {
-            checkbox.checked = true;
+                const playIcon = document.createElement('i');
+                playIcon.classList.add('fa-solid', 'fa-play', 'video-play-icon');
+                playIcon.addEventListener('click', () => {
+                    const playerUrl = `https://m3u8player.org/player.html?url=${entry.path}`;
+                    window.open(playerUrl, '_blank');
+                });
+                li.appendChild(playIcon);
+
+                playlist.appendChild(li);
+            });
+            
+            // 为所有复选框添加点击事件监听器
+            const allCheckboxes = playlist.querySelectorAll('input[type="checkbox"]');
+            allCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', function(e) {
+                    const li = this.closest('li');
+                    if (this.checked) {
+                        li.classList.add('selected');
+                        
+                        // 处理Shift多选
+                        if (isShiftPressed && lastCheckedIndex !== null) {
+                            const currentIndex = parseInt(this.dataset.index);
+                            const start = Math.min(lastCheckedIndex, currentIndex);
+                            const end = Math.max(lastCheckedIndex, currentIndex);
+                            
+                            // 获取当前显示的条目索引
+                            const visibleItems = Array.from(playlist.querySelectorAll('li'));
+                            const visibleIndices = visibleItems.map(item => 
+                                parseInt(item.querySelector('input[type="checkbox"]').dataset.index)
+                            );
+                            
+                            // 选中范围内的条目
+                            for (let i = start; i <= end; i++) {
+                                if (visibleIndices.includes(i)) {
+                                    const itemIndex = visibleIndices.indexOf(i);
+                                    const itemCheckbox = visibleItems[itemIndex].querySelector('input[type="checkbox"]');
+                                    itemCheckbox.checked = true;
+                                    visibleItems[itemIndex].classList.add('selected');
+                                }
+                            }
+                        }
+                        
+                        lastCheckedIndex = parseInt(this.dataset.index);
+                    } else {
+                        li.classList.remove('selected');
+                    }
+                    
+                    checkSelectedItems();
+                });
+            });
+            
+            checkSelectedItems();
         }
-        
-        li.appendChild(checkbox);
-        
-        const span = document.createElement('span');
-        span.textContent = `${entry.title} (${entry.duration}s) - ${entry.path} [分组: ${entry.group}]`;
-        li.appendChild(span);
-
-        const playIcon = document.createElement('i');
-        playIcon.classList.add('fa-solid', 'fa-play', 'video-play-icon');
-        playIcon.addEventListener('click', () => {
-            const playerUrl = `https://m3u8player.org/player.html?url=${entry.path}`;
-            window.open(playerUrl, '_blank');
-        });
-        li.appendChild(playIcon);
-
-        playlist.appendChild(li);
-    });
-    
-    checkSelectedItems();
-}
-
 
         function updateGroupFilter() {
             const currentSelectedGroup = groupFilter.value;
@@ -1056,7 +1373,7 @@ function updatePlaylist() {
 
         function extractGroup(extinf) {
             const match = extinf.match(/group-title="([^"]+)"/);
-            return match? match[1] : '无分组';
+            return match ? match[1] : '无分组';
         }
 
         function updateGroupCount() {
@@ -1246,6 +1563,12 @@ function updatePlaylist() {
                 // 更新UI
                 updateGroupsList();
                 updatePlaylist();
+
+                // 同步更新分组筛选下拉框
+                updateGroupFilter();
+                updateAddGroupSelect();
+                updateEditGroupSelect();
+                updateMoveToGroupSelect();
             }
             this.classList.remove('over');
         }
