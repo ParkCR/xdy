@@ -1,0 +1,8 @@
+# 允许所有域名跨域访问 JSON 文件
+/*.json
+  Access-Control-Allow-Origin: *
+  Content-Type: application/json
+
+# 对 M3U 文件设置正确的 MIME 类型
+/*.m3u
+  Content-Type: application/x-mpegurl
