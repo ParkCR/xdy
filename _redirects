@@ -1,0 +1,10 @@
+# 将 ​​/xdy/ 下的所有文件和子目录​​ 都重定向到 ​​根目录​​（即去掉 /xdy/ 前缀）
+/xdy/*  /:splat  200
+
+# 将所有 /files/ 下的请求重定向到 /xdy/files/
+# /files/* /xdy/files/:splat 200
+
+# 将所有 /mt/*.json 请求重定向到 /xdy/mt/
+# /mt/*.json /xdy/mt/:splat.json 200
+
+# 更多规则...
