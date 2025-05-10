@@ -22,10 +22,10 @@ subDirs.forEach((subDir) => {
     const fileObjects = files
       .filter((file) => path.extname(file) === '.html')
       .map((file) => ({
-        name: path.basename(file, '.html'), // 移除.html后缀作为name
-        type: 'file',
-        link: file,
-        icon: 'html',
+        name: path.basename(file, '.html'),
+        type: 'folder',
+        link: `files/${subDir}/${file}`, // 添加相对路径
+        icon: 'folder',
         fileType: 'HTML文档'
       }));
 
