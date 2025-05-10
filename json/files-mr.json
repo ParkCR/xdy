@@ -1,16 +1,16 @@
 [
   {
     "name": "20241126-mr",
-    "type": "folder",
+    "type": "file",
     "link": "files/mr/20241126-mr.html",
-    "icon": "folder",
+    "icon": "html",
     "fileType": "HTML文档"
   },
   {
     "name": "20241127-mr",
-    "type": "folder",
+    "type": "file",
     "link": "files/mr/20241127-mr.html",
-    "icon": "folder",
+    "icon": "html",
     "fileType": "HTML文档"
   }
 ]

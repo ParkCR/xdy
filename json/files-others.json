@@ -1,37 +1,44 @@
 [
   {
     "name": "20241203",
-    "type": "folder",
+    "type": "file",
     "link": "files/others/20241203.html",
-    "icon": "folder",
+    "icon": "html",
     "fileType": "HTML文档"
   },
   {
     "name": "20250509-1",
-    "type": "folder",
+    "type": "file",
     "link": "files/others/20250509-1.html",
-    "icon": "folder",
+    "icon": "html",
     "fileType": "HTML文档"
   },
   {
     "name": "20250509-2",
-    "type": "folder",
+    "type": "file",
     "link": "files/others/20250509-2.html",
-    "icon": "folder",
+    "icon": "html",
     "fileType": "HTML文档"
   },
   {
     "name": "20250509-3",
-    "type": "folder",
+    "type": "file",
     "link": "files/others/20250509-3.html",
-    "icon": "folder",
+    "icon": "html",
     "fileType": "HTML文档"
   },
   {
     "name": "20250509-lai",
-    "type": "folder",
+    "type": "file",
     "link": "files/others/20250509-lai.html",
-    "icon": "folder",
+    "icon": "html",
+    "fileType": "HTML文档"
+  },
+  {
+    "name": "20250510-li",
+    "type": "file",
+    "link": "files/others/20250510-li.html",
+    "icon": "html",
     "fileType": "HTML文档"
   }
 ]
