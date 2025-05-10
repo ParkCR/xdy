@@ -1,0 +1,46 @@
+[
+    {
+        "name": "MR 资源",
+        "type": "folder",
+        "link": "mr.html",
+        "icon": "folder"
+    },
+    {
+        "name": "MT 文档",
+        "type": "folder",
+        "link": "mt.html",
+        "icon": "folder"
+    },
+    {
+        "name": "MB 档案",
+        "type": "folder",
+        "link": "mb.html",
+        "icon": "folder"
+    },
+    {
+        "name": "其他资料",
+        "type": "folder",
+        "link": "others.html",
+        "icon": "folder"
+    },
+    {
+        "name": "2024 年度",
+        "type": "folder",
+        "link": "2024.html",
+        "icon": "folder"
+    },
+    {
+        "name": "工具集合",
+        "type": "file",
+        "link": "tools.html",
+        "icon": "checkmark",
+        "fileType": "HTML 文件"
+    },
+    {
+        "name": "图片库",
+        "type": "file",
+        "link": "pic.html",
+        "icon": "picture",
+        "fileType": "图集目录"
+    }
+]
