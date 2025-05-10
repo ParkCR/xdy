@@ -1,7 +1,37 @@
 [
-  "20241203.html",
-  "20250509-1.html",
-  "20250509-2.html",
-  "20250509-3.html",
-  "20250509-lai.html"
+  {
+    "name": "20241203",
+    "type": "file",
+    "link": "20241203.html",
+    "icon": "html",
+    "fileType": "HTML文档"
+  },
+  {
+    "name": "20250509-1",
+    "type": "file",
+    "link": "20250509-1.html",
+    "icon": "html",
+    "fileType": "HTML文档"
+  },
+  {
+    "name": "20250509-2",
+    "type": "file",
+    "link": "20250509-2.html",
+    "icon": "html",
+    "fileType": "HTML文档"
+  },
+  {
+    "name": "20250509-3",
+    "type": "file",
+    "link": "20250509-3.html",
+    "icon": "html",
+    "fileType": "HTML文档"
+  },
+  {
+    "name": "20250509-lai",
+    "type": "file",
+    "link": "20250509-lai.html",
+    "icon": "html",
+    "fileType": "HTML文档"
+  }
 ]

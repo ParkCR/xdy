@@ -1,4 +1,16 @@
 [
-  "20241126-mr.html",
-  "20241127-mr.html"
+  {
+    "name": "20241126-mr",
+    "type": "file",
+    "link": "20241126-mr.html",
+    "icon": "html",
+    "fileType": "HTML文档"
+  },
+  {
+    "name": "20241127-mr",
+    "type": "file",
+    "link": "20241127-mr.html",
+    "icon": "html",
+    "fileType": "HTML文档"
+  }
 ]
