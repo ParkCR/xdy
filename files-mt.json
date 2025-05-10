@@ -1,16 +1,16 @@
 [
   {
     "name": "20241126-mt",
-    "type": "file",
-    "link": "20241126-mt.html",
-    "icon": "html",
+    "type": "folder",
+    "link": "files/mt/20241126-mt.html",
+    "icon": "folder",
     "fileType": "HTML文档"
   },
   {
     "name": "20250427-mt",
-    "type": "file",
-    "link": "20250427-mt.html",
-    "icon": "html",
+    "type": "folder",
+    "link": "files/mt/20250427-mt.html",
+    "icon": "folder",
     "fileType": "HTML文档"
   }
 ]

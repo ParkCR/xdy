@@ -1,9 +1,9 @@
 [
   {
     "name": "20241126-mt",
-    "type": "file",
-    "link": "20241126-mt.html",
-    "icon": "html",
+    "type": "folder",
+    "link": "files/mb/20241126-mt.html",
+    "icon": "folder",
     "fileType": "HTML文档"
   }
 ]
