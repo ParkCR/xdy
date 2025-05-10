@@ -45,12 +45,13 @@ jobs:
           else
             git commit -m "Update files JSON [skip ci]"
             git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
-          fi  # 这里必须有fi结束if语句
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
-      - name: Upload artifact
+      # 明确使用 upload-pages-artifact 而不是 upload-artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
         with:
           path: |
@@ -58,5 +59,4 @@ jobs:
             ./json
 
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: actions/deploy-pages@v2
