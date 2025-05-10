@@ -55,6 +55,8 @@
         <a href="2024.html" class="mobile-link">2024</a>
     </div>
 
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
     <div class="container">
         <div class="grid">
             <div class="loader"></div>
@@ -159,16 +161,34 @@
 
         const menuToggle = document.getElementById('menuToggle');
         const mobileMenu = document.getElementById('mobileMenu');
-        
-        menuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('active');
-            menuToggle.innerHTML = mobileMenu.classList.contains('active') ? 
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+        function toggleMobileMenu() {
+            const isActive = mobileMenu.classList.toggle('active');
+            mobileMenuOverlay.classList.toggle('active', isActive);
+            
+            menuToggle.innerHTML = isActive ? 
                 `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M6 18L18 6M6 6l12 12"/>
                 </svg>` :
                 `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>`;
+        }
+
+        menuToggle.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay.addEventListener('click', toggleMobileMenu);
+
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (mobileMenu.classList.contains('active') && 
+                !e.target.closest('.mobile-menu') && 
+                !e.target.closest('.menu-toggle')) {
+                toggleMobileMenu();
+            }
         });
 
         const backToTop = document.querySelector('.back-to-top');
@@ -184,14 +204,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadCards();
             initView();
-            document.querySelectorAll('.mobile-link').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.remove('active');
-                    menuToggle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>`;
-                });
-            });
         });
 
         viewToggle.addEventListener('click', handleViewToggle);
