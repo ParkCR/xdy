@@ -1,41 +1,59 @@
 const fs = require('fs');
 const path = require('path');
+const { promisify } = require('util');
+
+// 将fs方法转换为Promise形式
+const readdir = promisify(fs.readdir);
+const writeFile = promisify(fs.writeFile);
+const mkdir = promisify(fs.mkdir);
 
 const filesDir = path.join(__dirname, '../files');
-const jsonFilesDir = path.join(__dirname, '../');
+const jsonOutputDir = path.join(__dirname, '../json'); // JSON文件输出目录
 
 // 定义子目录名称
 const subDirs = ['mr', 'mb', 'mt', 'others'];
 
-subDirs.forEach((subDir) => {
-  const subDirPath = path.join(filesDir, subDir);
-  const jsonFilePath = path.join(jsonFilesDir, `files-${subDir}.json`);
+async function generateJsonFiles() {
+  try {
+    // 确保json目录存在
+    await mkdir(jsonOutputDir, { recursive: true });
 
-  // 读取子目录中的文件
-  fs.readdir(subDirPath, (err, files) => {
-    if (err) {
-      console.error(`Error reading ${subDirPath}:`, err);
-      return;
-    }
+    // 并行处理所有子目录
+    await Promise.all(subDirs.map(async (subDir) => {
+      const subDirPath = path.join(filesDir, subDir);
+      const jsonFilePath = path.join(jsonOutputDir, `files-${subDir}.json`);
 
-    // 过滤出 HTML 文件并转换为新结构
-    const fileObjects = files
-      .filter((file) => path.extname(file) === '.html')
-      .map((file) => ({
-        name: path.basename(file, '.html'),
-        type: 'folder',
-        link: `files/${subDir}/${file}`, // 添加相对路径
-        icon: 'folder',
-        fileType: 'HTML文档'
-      }));
+      try {
+        const files = await readdir(subDirPath);
+        
+        // 过滤出HTML文件并转换为所需格式
+        const fileObjects = files
+          .filter(file => path.extname(file) === '.html')
+          .map(file => ({
+            name: path.basename(file, '.html'),
+            type: 'file',
+            link: `files/${subDir}/${file}`,
+            icon: 'html',
+            fileType: 'HTML文档'
+          }));
 
-    // 将文件信息写入对应的 JSON 文件
-    fs.writeFile(jsonFilePath, JSON.stringify(fileObjects, null, 2), (err) => {
-      if (err) {
-        console.error(`Error writing ${jsonFilePath}:`, err);
-      } else {
-        console.log(`Updated ${jsonFilePath}`);
+        // 写入JSON文件
+        await writeFile(
+          jsonFilePath,
+          JSON.stringify(fileObjects, null, 2)
+        );
+        
+        console.log(`成功生成: ${jsonFilePath}`);
+      } catch (err) {
+        console.error(`处理目录 ${subDir} 时出错:`, err);
       }
-    });
-  });
-});
+    }));
+    
+    console.log('所有JSON文件生成完成！');
+  } catch (err) {
+    console.error('初始化时出错:', err);
+  }
+}
+
+// 执行生成任务
+generateJsonFiles();
