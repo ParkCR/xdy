@@ -43,4 +43,11 @@
         "icon": "picture",
         "fileType": "HTML 文件"
     }
+    {
+        "name": "M3U",
+        "type": "file",
+        "link": "m3u.html",
+        "icon": "checkmark",
+        "fileType": "HTML 文件"
+    },
 ]
