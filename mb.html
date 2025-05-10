@@ -1,287 +1,213 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>MB</title>
-<meta name="description" content="这是 MB 文件夹的子页面，包含多个文件夹和文件。">
-<meta name="keywords" content="网盘, 文件夹, 文件, MB">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-        color: #333;
-        margin: 0;
-        padding: 0;
-        animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    header {
-        background-color: #4a90e2;
-        color: white;
-        padding: 10px 0;
-        text-align: center;
-        animation: slideInDown 0.5s ease-in-out;
-    }
-
-    @keyframes slideInDown {
-        from { transform: translateY(-20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-
-    nav {
-        background-color: #3c76b0;
-        color: white;
-        padding: 10px 0;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    nav a {
-        color: white;
-        text-decoration: none;
-        padding: 10px 20px;
-        margin: 5px;
-        transition: background-color 0.2s;
-    }
-
-    nav a:hover {
-        background-color: #4a90e2;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-
-    .folder-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-    }
-
-    .folder, .file {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-        cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-        opacity: 0;
-        animation: slideInLeft 0.5s ease-in-out forwards;
-    }
-
-    .folder {
-        background-color: #4a90e2; /* 文件夹背景颜色与标题背景颜色一致 */
-        border-color: #3c76b0; /* 文件夹边框颜色 */
-        color: white; /* 文件夹文字颜色 */
-    }
-
-    .file {
-        background-color: #fff; /* 文件背景颜色 */
-        border-color: #ddd; /* 文件边框颜色 */
-    }
-
-    .folder:hover, .file:hover {
-        transform: scale(1.1) !important; /* 缩放比例为1.1，使用!important提高优先级 */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .icon {
-        width: 50px;
-        height: 50px;
-        margin-bottom: 10px;
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .folder .icon {
-        background-image: url('/xdy/folder-icon.png'); /* 文件夹图标 */
-    }
-
-    .file .icon {
-        background-color: #f0f0f0; /* 文本框背景颜色 */
-        border: 1px solid #ccc; /* 文本框边框 */
-        border-radius: 5px;
-    }
-
-    .file .icon::before {
-        content: 'A'; /* 默认文本内容 */
-        font-size: 24px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .folder-name, .file-name {
-        font-weight: bold;
-        margin-top: 10px;
-    }
-
-    @keyframes slideInLeft {
-        from { transform: translateX(-20px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-
-    .back-link-container {
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    .back-link {
-        display: inline-block;
-        padding: 8px 16px;
-        background-color: #4a90e2;
-        color: white;
-        text-decoration: none;
-        text-align: center;
-        border-radius: 5px;
-        transition: background-color 0.2s;
-        font-size: 14px;
-        margin-right: 10px; /* 右边距 */
-    }
-
-    .back-link:hover {
-        background-color: #3c76b0;
-    }
-
-    .back-to-top {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        padding: 10px;
-        background-color: #4a90e2;
-        color: white;
-        text-decoration: none;
-        text-align: center;
-        border-radius: 5px;
-        transition: background-color 0.2s;
-        font-size: 14px;
-    }
-
-    .back-to-top:hover {
-        background-color: #3c76b0;
-    }
-
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-        .container {
-            padding: 10px;
-        }
-
-        .folder, .file {
-            padding: 15px;
-        }
-
-        .icon {
-            width: 40px;
-            height: 40px;
-        }
-
-        .folder-name, .file-name {
-            font-size: 14px;
-        }
-
-        nav {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        nav a {
-            flex-basis: calc(25% - 10px); /* 每个链接占25%，减去左右各5px的margin */
-            margin: 5px;
-        }
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美好收藏 | MB</title>
+    <meta name="description" content="精心整理的数字资产收藏库，高效管理您的数字资源">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<nav>
-    <a href="/xdy/index.html">主页</a>
-    <a href="/xdy/mr.html">MR</a>
-    <a href="/xdy/mt.html">MT</a>
-    <a href="/xdy/mb.html">MB</a>
-    <a href="/xdy/others.html">Others</a>
-    <a href="/xdy/2024.html">2024</a>
-</nav>
-<header>
-    <h1>MB</h1>
-    <p>这是 MB 文件夹的内容。</p>
-</header>
-<div class="container">
-    <div class="folder-grid" id="folder-grid">
-        <!-- 示例文件夹 -->
-        <a href="/xdy/sub-mr2.html" target="_blank" class="folder">
-            <div class="icon"></div>
-            <div class="folder-name">Sub-MR2</div>
-        </a>
-    </div>
-    <div class="back-link-container">
-        <a href="/xdy/index.html" class="back-link">返回上一层</a>
-        <a href="/xdy/index.html" class="back-link">返回首页</a>
-    </div>
-</div>
-<a href="#top" class="back-to-top" id="back-to-top">返回顶部</a>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const folderGrid = document.querySelector('#folder-grid');
+    <div class="nav-container">
+        <nav class="nav">
+            <a href="#" class="nav-brand">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width:24px;height:24px">
+                    <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+                </svg>
+                MB
+            </a>
+            
+            <div class="nav-links">
+                <button class="view-toggle" id="viewToggle" aria-label="切换视图模式">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 4h16v4H4V4zm0 6h16v4H4v-4zm0 6h16v4H4v-4z"/>
+                    </svg>
+                </button>
+                <a href="index.html" class="nav-link">主页</a>
+                <a href="mr.html" class="nav-link">MR</a>
+                <a href="mt.html" class="nav-link">MT</a>
+                <a href="mb.html" class="nav-link">MB</a>
+                <a href="others.html" class="nav-link">其他</a>
+                <a href="2024.html" class="nav-link">2024</a>
+            </div>
 
-    // 使用相对路径加载文件列表 JSON 文件
-    fetch('/xdy/files-mb.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
+            <div class="mobile-controls">
+                <button class="view-toggle" id="mobileViewToggle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 4h16v4H4V4zm0 6h16v4H4v-4zm0 6h16v4H4v-4z"/>
+                    </svg>
+                </button>
+                <button class="menu-toggle" id="menuToggle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html" class="mobile-link">主页</a>
+        <a href="mr.html" class="mobile-link">MR</a>
+        <a href="mt.html" class="mobile-link">MT</a>
+        <a href="mb.html" class="mobile-link">MB</a>
+        <a href="others.html" class="mobile-link">其他</a>
+        <a href="2024.html" class="mobile-link">2024</a>
+    </div>
+
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <div class="container">
+        <div class="grid">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <div class="back-to-top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 15l7-7 7 7"/>
+        </svg>
+    </div>
+
+    <script>
+        const iconConfig = {
+            folder: {
+                path: 'M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z',
+                viewBox: '0 0 24 24'
+            },
+            html: {
+                path: 'M4 4h16v12h-8l-4 4v-4H4V4zm2 2v8h2V8h2v2h2V6H6zm4 6V8h2v4h-2zm4-2h2V8h-2v2z',
+                viewBox: '0 0 24 24'
+            },
+            checkmark: {
+                path: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+                viewBox: '0 0 24 24'
+            },
+            picture: {
+                path: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
+                viewBox: '0 0 24 24'
             }
-            return response.json();
-        })
-        .then(data => {
-            data.forEach((item, index) => {
-                const itemLink = document.createElement('a');
-                itemLink.href = `/xdy/files/mb/${item}`;
-                itemLink.target = '_blank'; // 确保链接在新页面打开
-                itemLink.className = 'file';
-                itemLink.style.animationDelay = `${index * 0.1}s`; // 延迟每个项目的动画
-                itemLink.innerHTML = `
-                    <div class="icon"></div>
-                    <div class="file-name">${item}</div>
-                `;
-                folderGrid.appendChild(itemLink);
+        };
+
+        const viewToggle = document.getElementById('viewToggle');
+        const mobileViewToggle = document.getElementById('mobileViewToggle');
+        const grid = document.querySelector('.grid');
+        
+        function handleViewToggle() {
+            grid.classList.toggle('list-view');
+            const isListView = grid.classList.contains('list-view');
+            
+            [viewToggle, mobileViewToggle].forEach(btn => {
+                btn.innerHTML = isListView ? 
+                    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 4h6v6H4V4zm0 10h6v6H4v-6zm10 0h6v6h-6v-6zm0-10h6v6h-6V4z"/>
+                    </svg>` :
+                    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 4h16v4H4V4zm0 6h16v4H4v-4zm0 6h16v4H4v-4z"/>
+                    </svg>`;
             });
-        })
-        .catch(error => console.error('Error fetching files:', error));
+            
+            localStorage.setItem('viewPreference', isListView ? 'list' : 'grid');
+        }
 
-    // 返回顶部功能
-    const backToTopButton = document.getElementById('back-to-top');
+        function initView() {
+            const savedView = localStorage.getItem('viewPreference');
+            if (savedView === 'list') {
+                grid.classList.add('list-view');
+                [viewToggle, mobileViewToggle].forEach(btn => {
+                    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 4h6v6H4V4zm0 10h6v6H4v-6zm10 0h6v6h-6v-6zm0-10h6v6h-6V4z"/>
+                    </svg>`;
+                });
+            }
+        }
 
-    backToTopButton.addEventListener('click', function(event) {
-        event.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+        function loadCards() {
+            const grid = document.querySelector('.grid');
+            grid.innerHTML = '<div class="loader"></div>';
 
-    // 返回上一层功能
-    const backLinks = document.querySelectorAll('.back-link');
-    backLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault();
-            history.back();
+            fetch('./files-mb.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('数据加载失败');
+                    return response.json();
+                })
+                .then(data => {
+                    grid.innerHTML = '';
+                    data.forEach((item, index) => {
+                        const card = document.createElement('a');
+                        card.className = `card ${item.type === 'folder' ? 'card-folder' : 'card-file'}`;
+                        card.href = item.link;
+                        card.style.animationDelay = `${index * 0.1}s`;
+                        
+                        const icon = iconConfig[item.icon] || iconConfig.folder;
+                        
+                        card.innerHTML = `
+                            <div class="card-icon">
+                                <svg viewBox="${icon.viewBox}" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="${icon.path}"/>
+                                </svg>
+                            </div>
+                            <h3 class="card-name">${item.name}</h3>
+                            <div class="card-type">${item.type === 'folder' ? '文件夹' : item.fileType || '文件'}</div>
+                        `;
+
+                        grid.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    grid.innerHTML = `<div class="error">${error.message}</div>`;
+                });
+        }
+
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+        function toggleMobileMenu() {
+            const isActive = mobileMenu.classList.toggle('active');
+            mobileMenuOverlay.classList.toggle('active', isActive);
+            
+            menuToggle.innerHTML = isActive ? 
+                `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12"/>
+                </svg>` :
+                `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>`;
+        }
+
+        menuToggle.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay.addEventListener('click', toggleMobileMenu);
+
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
         });
-    });
-});
-</script>
+
+        document.addEventListener('click', (e) => {
+            if (mobileMenu.classList.contains('active') && 
+                !e.target.closest('.mobile-menu') && 
+                !e.target.closest('.menu-toggle')) {
+                toggleMobileMenu();
+            }
+        });
+
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('show', window.scrollY > 300);
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCards();
+            initView();
+        });
+
+        viewToggle.addEventListener('click', handleViewToggle);
+        mobileViewToggle.addEventListener('click', handleViewToggle);
+    </script>
 </body>
 </html>
-
-
-
