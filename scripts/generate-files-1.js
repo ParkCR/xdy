@@ -18,19 +18,11 @@ subDirs.forEach((subDir) => {
       return;
     }
 
-    // 过滤出 HTML 文件并转换为新结构
-    const fileObjects = files
-      .filter((file) => path.extname(file) === '.html')
-      .map((file) => ({
-        name: path.basename(file, '.html'), // 移除.html后缀作为name
-        type: 'file',
-        link: file,
-        icon: 'html',
-        fileType: 'HTML文档'
-      }));
+    // 过滤出 HTML 文件
+    const htmlFiles = files.filter((file) => path.extname(file) === '.html');
 
     // 将文件信息写入对应的 JSON 文件
-    fs.writeFile(jsonFilePath, JSON.stringify(fileObjects, null, 2), (err) => {
+    fs.writeFile(jsonFilePath, JSON.stringify(htmlFiles, null, 2), (err) => {
       if (err) {
         console.error(`Error writing ${jsonFilePath}:`, err);
       } else {
