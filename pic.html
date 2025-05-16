@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片查看器2.3</title>
+    <title>图片查看器2.4</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -217,11 +217,12 @@
                     <label><input type="radio" name="service" value="4get6" onclick="selectService('4get6')">4get6节点</label>
                     <label><input type="radio" name="service" value="4get7" onclick="selectService('4get7')">4get7节点</label>
                     <label><input type="radio" name="service" value="4get8" onclick="selectService('4get8')">4get8节点</label>
+                    <label><input type="radio" name="service" value="dmm" onclick="selectService('dmm')">DMM节点</label>
                 </div>
             </div>
         </div>
     </div>
-    <div class="footer-text">2025.4.17，新增微博专用节点</div>
+    <div class="footer-text">2025.5.16，新增DMM节点</div>
 
     <script>
         let selectedService = '';
@@ -321,7 +322,7 @@
                     convertedUrl = `https://4get.tux.pizza/proxy?i=${encodeURIComponent(url)}`;
                     break;
                 case '4get4':
-                    convertedUrl = `https://search.fzorb.xyz/proxy?i=${encodeURIComponent(url)}`;
+                    convertedUrl = `https://4get.turtlecute.org/proxy?i=${encodeURIComponent(url)}`;
                     break;
                 case '4get5':
                     convertedUrl = `https://search.yonderly.org/proxy?i=${encodeURIComponent(url)}`;
@@ -334,6 +335,12 @@
                     break;
                 case '4get8':
                     convertedUrl = `https://4get.sijh.net/proxy?i=${encodeURIComponent(url)}`;
+                    break;
+                case 'dmm':
+                    // 将输入转换为小写并用下划线连接
+                    const nameParts = url.toLowerCase().split(' ');
+                    const dmmName = nameParts.join('_');
+                    convertedUrl = `https://pics.dmm.co.jp/mono/actjpgs/${dmmName}.jpg`;
                     break;
                 default:
                     convertedUrl = `${url}?service=${selectedService}`;
