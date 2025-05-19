@@ -337,9 +337,8 @@
                     convertedUrl = `https://4get.sijh.net/proxy?i=${encodeURIComponent(url)}`;
                     break;
                 case 'dmm':
-                    // 将输入转换为小写并用下划线连接
-                    const nameParts = url.toLowerCase().split(' ');
-                    const dmmName = nameParts.join('_');
+                    // 将输入转为小写，并用下划线替换空格和连字符
+                    const dmmName = url.toLowerCase().replace(/[\s-]/g, '_');
                     convertedUrl = `https://pics.dmm.co.jp/mono/actjpgs/${dmmName}.jpg`;
                     break;
                 default:
