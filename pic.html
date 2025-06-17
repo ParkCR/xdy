@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片查看器2.4</title>
+    <title>图片查看器2.5</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -185,7 +185,7 @@
 <body>
     <div class="time-display" id="timeDisplay"></div>
     <div class="container">
-        <h2>图片查看器2.4 2025.5.16</h2>
+        <h2>图片查看器2.5 2025.6.17</h2>
         <div class="clearfix">
             <input type="text" id="urlInput" placeholder="请输入链接" onkeypress="handleKeyPress(event)">
             <button id="openButton" onclick="openConvertedPage()">打开</button>
@@ -218,11 +218,12 @@
                     <label><input type="radio" name="service" value="4get7" onclick="selectService('4get7')">4get7节点</label>
                     <label><input type="radio" name="service" value="4get8" onclick="selectService('4get8')">4get8节点</label>
                     <label><input type="radio" name="service" value="dmm" onclick="selectService('dmm')">DMM节点</label>
+                    <label><input type="radio" name="service" value="yandex" onclick="selectService('yandex')">yandex节点</label>
                 </div>
             </div>
         </div>
     </div>
-    <div class="footer-text">2025.5.16，新增DMM节点</div>
+    <div class="footer-text">2025.6.17，新增yandex节点</div>
 
     <script>
         let selectedService = '';
@@ -340,6 +341,9 @@
                     // 将输入转为小写，并用下划线替换空格和连字符
                     const dmmName = url.toLowerCase().replace(/[\s-]/g, '_');
                     convertedUrl = `https://pics.dmm.co.jp/mono/actjpgs/${dmmName}.jpg`;
+                    break;
+                case 'yandex':
+                    convertedUrl = `https://yandex.ru/images/search?rpt=imageview&url=${encodeURIComponent(url)}`;
                     break;
                 default:
                     convertedUrl = `${url}?service=${selectedService}`;
