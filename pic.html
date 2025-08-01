@@ -4,25 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片查看器2.6</title>
+    <title>图片查看器3.0</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url('http://3650000.xyz/api/?mode=1,3,5,8');/* 随机美女背景图 */
-            //background-image: url('https://api.vvhan.com/api/wallpaper/pcGirl');/* 随机美女背景图 */
-            //background-image: url('https://api.btstu.cn/sjbz/api.php?lx=meizi&type=zsy&format=images');/* 随机美女背景图 */
-            //background-image: url('http://3650000.xyz/api/360.php?cid=6');/* 360美女图片 */
-            //background-image: url('https://api.eyabc.cn/api/picture/beauty');/* 随机美女背景图 */
-            //background-image: url('https://api.vvhan.com/api/bing');/* bing每日图片 */
-            //background-image: url('https://api.eyabc.cn/api/background/bing');/* bing每日图片 */
-            //background-image: url('https://api.timelessq.com/bing');/* bing每日图片 */
-            //background-image: url('https://Wall.youtd.cc/bing.php');/* bing每日图片 */
-            //background-image: url('https://open.saintic.com/api/bingPic');/* bing每日图片 */
-            //background-image: url('https://api.kdcc.cn/img');/* bing每日图片 */
-            //background-image: url('https://api.dujin.org/bing/1920.php');/* bing每日图片 */
-            //background-image: url('https://cdn.seovx.com/?mom=302');/* 美女图片 */
+            background-image: url('http://3650000.xyz/api/?mode=1,3,5,8');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -35,39 +23,65 @@
             flex-direction: column;
         }
 
-      .time-display {
+        .time-display {
             position: absolute;
             top: 10%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 100px; /* 默认字体大小 */
+            font-size: 65px;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             z-index: 2;
+            transition: font-size 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        top 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* 使用更平滑的过渡曲线 */
         }
-      .container {
+
+        .container {
             width: 90%;
             max-width: 800px;
-            background-color: rgba(0, 0, 0, 0.2);/* 容器背景颜色和透明度效果 */
-            backdrop-filter: blur(7px); /* 毛玻璃效果 */
+            background-color: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(7px);
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);/* 阴影效果 */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             margin: 20px;
             position: relative;
             z-index: 1;
+            transition: max-height 0.5s ease, height 0.5s ease;
         }
+
         h2 {
             text-align: center;
             margin-bottom: 30px;
         }
+
+        .mode-tabs {
+            display: flex;
+            justify-content: center; /* 标签居中 */
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mode-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .mode-tab.active {
+            border-bottom: 2px solid #007bff;
+            color: #007bff;
+        }
+
         .clearfix {
             display: flex;
             justify-content: center;
-            align-items: center; /* 确保子元素垂直居中对齐 */
-            gap: 10px; /* 设置元素之间的间距 */
+            align-items: center;
+            gap: 10px;
         }
-       input[type="text"] {
+
+        input[type="text"], textarea {
             width: calc(100% - 160px);
             padding: 15px;
             border: 1px solid #ccc;
@@ -75,14 +89,28 @@
             transition: border-color 0.3s ease;
             background-color: #fff;
             color: #333;
-            float: none; /* 移除浮动 */
-            box-sizing: border-box; /* 确保内边距和边框包含在宽度内 */
+            box-sizing: border-box;
         }
-        input[type="text"]:focus {
+
+        textarea {
+            min-height: 120px;
+            border-radius: 20px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        input[type="text"]:focus, textarea:focus {
             border-color: #007bff;
             outline: none;
         }
-        #openButton {
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        #openButton, #batchProcessButton, #copyAllButton {
             padding: 15px 30px;
             cursor: pointer;
             background-color: #007bff;
@@ -90,49 +118,162 @@
             border: none;
             border-radius: 30px;
             transition: background-color 0.3s ease;
-            float: none; /* 移除浮动 */
-            box-sizing: border-box; /* 确保内边距和边框包含在宽度内 */
-            height: auto; /* 让按钮高度自动适应 */
-            align-self: center; /* 确保按钮自身垂直居中 */
+            box-sizing: border-box;
+            height: auto;
+            align-self: center;
         }
-        #openButton:hover {
+
+        #openButton:hover, #batchProcessButton:hover, #copyAllButton:hover {
             background-color: #0056b3;
         }
-      .clearfix::after {
+
+        .clearfix::after {
             content: "";
             clear: both;
             display: table;
         }
-      .options {
+
+        .options {
             margin-top: 30px;
         }
+
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            justify-content: center; /* 分类居中 */
+        }
+
+        .category-tab {
+            padding: 5px 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .category-tab:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .category-tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+
         label {
             display: block;
             margin-bottom: 15px;
             cursor: pointer;
             color: #fff;
         }
+
         input[type="radio"] {
             margin-right: 5px;
         }
-      .option-group {
+
+        .service-group {
+            margin-bottom: 25px;
+        }
+
+        .service-group h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #e0e0e0;
+            padding-left: 5px;
+            border-left: 3px solid #007bff;
+        }
+
+        .option-group {
             display: flex;
             flex-wrap: wrap;
         }
-      .option-group label {
+
+        .option-group label {
             width: 33.33%;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             box-sizing: border-box;
             padding: 0 10px;
         }
-        /* 新增滚动条容器样式 */
-      .scrollable-container {
-            max-height: 250px; /* 设置最大高度，超过此高度显示滚动条 */
-            overflow-y: auto; /* 垂直方向滚动 */
+
+        .scrollable-container {
+            max-height: 250px;
+            overflow-y: auto;
             margin-top: 20px;
+            padding-right: 10px;
         }
-        /* 新增提示框样式 */
-      .copy-notification {
+
+        .scrollable-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollable-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .scrollable-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .batch-results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+        }
+
+        .batch-results.active {
+            display: block;
+        }
+
+        .batch-results h4 {
+            margin-top: 0;
+            color: #007bff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .result-item {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-original {
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
+        .result-converted {
+            word-break: break-all;
+        }
+
+        .result-link {
+            color: #66b2ff;
+            text-decoration: none;
+        }
+
+        .result-link:hover {
+            text-decoration: underline;
+        }
+
+        .copy-notification {
             position: fixed;
             top: 20px;
             left: 50%;
@@ -146,50 +287,81 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        /* 其余样式保持不变 */
+
+        .mode-content {
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .mode-content.active {
+            display: block;
+        }
+
         @media (max-width: 600px) {
             .option-group label {
                 width: 100%;
             }
+
             .time-display {
                 top: 8%;
-                font-size: 40px; /* 减小字体大小以适应移动端 */
+                font-size: 40px;
             }
+
             .footer-text {
                 font-size: 13px;
             }
+
             .container {
-                padding: 2.5%; /* 缩小内边距为 2.5% */
-                margin: 1.25%; /* 缩小外边距为 1.25% */
-                max-height: 80vh; /* 设置最大高度为视口高度的 80% */
-                overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
+                padding: 2.5%;
+                margin: 1.25%;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+
+            .clearfix, .button-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            input[type="text"], textarea {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            #openButton, #batchProcessButton, #copyAllButton {
+                width: 100%;
             }
         }
+
         @media (max-width: 400px) {
             .option-group label {
                 width: 100%;
             }
+
             .time-display {
                 top: 6%;
-                font-size: 30px; /* 进一步减小字体大小 */
+                font-size: 30px;
             }
+
             .footer-text {
                 font-size: 10px;
             }
+
             .container {
-                padding: 1.875%; /* 进一步缩小内边距为 1.875% */
-                margin: 1%; /* 进一步缩小外边距为 1% */
-                max-height: 85vh; /* 在更小屏幕上适当增大最大高度为视口高度的 85% */
-                overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
+                padding: 1.875%;
+                margin: 1%;
+                max-height: 85vh;
+                overflow-y: auto;
             }
         }
-      .footer-text {
+
+        .footer-text {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 15px;
-            color: #fff;/* 黑色字体 */
+            color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 2;
         }
@@ -198,247 +370,722 @@
 
 <body>
     <div class="time-display" id="timeDisplay"></div>
-    <div class="container">
-        <h2>图片查看器2.6 2025.7.07</h2>
-        <div class="clearfix">
-            <input type="text" id="urlInput" placeholder="请输入链接" onkeypress="handleKeyPress(event)">
-            <button id="openButton" onclick="openConvertedPage()">打开</button>
+    <div class="container" id="mainContainer">
+        <h2>图片查看器3.0 2025.8.01</h2>
+        
+        <!-- 模式切换标签 -->
+        <div class="mode-tabs">
+            <div class="mode-tab active" data-mode="single">单链接模式</div>
+            <div class="mode-tab" data-mode="batch">批量模式</div>
         </div>
-        <!-- 新增滚动条容器 -->
+        
+        <!-- 单链接输入区域 -->
+        <div id="singleMode" class="mode-content active">
+            <div class="clearfix">
+                <input type="text" id="urlInput" placeholder="请输入链接" onkeypress="handleKeyPress(event)">
+                <button id="openButton" onclick="openConvertedPage()">打开</button>
+            </div>
+        </div>
+        
+        <!-- 批量处理区域 -->
+        <div id="batchMode" class="mode-content">
+            <div class="clearfix">
+                <textarea id="batchUrlInput" placeholder="请输入多个链接，每行一个"></textarea>
+                <div class="button-group">
+                    <button id="batchProcessButton" onclick="processBatchUrls()">处理</button>
+                    <button id="copyAllButton" onclick="copyAllResults()" style="display:none;">复制全部</button>
+                </div>
+            </div>
+            
+            <!-- 批量处理结果区域 -->
+            <div id="batchResults" class="batch-results">
+                <h4>处理结果</h4>
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+        
         <div class="scrollable-container">
             <div class="options">
-                <div class="option-group">
-                    <label><input type="radio" name="service" value="daum" onclick="selectService('daum')">Daum节点</label>
-                    <label><input type="radio" name="service" value="flyimg" onclick="selectService('flyimg')">Flyimg节点</label>
-                    <label><input type="radio" name="service" value="imagizer" onclick="selectService('imagizer')">Imagizer节点</label>
-                    <label><input type="radio" name="service" value="imagecdn" onclick="selectService('imagecdn')">Imagecdn节点</label>
-                    <label><input type="radio" name="service" value="picseed" onclick="selectService('picseed')">Picseed节点</label>
-                    <label><input type="radio" name="service" value="cdnjson" onclick="selectService('cdnjson')">CDNjson节点</label>
-                    <label><input type="radio" name="service" value="blozoo" onclick="selectService('blozoo')">Blozoo节点</label>
-                    <label><input type="radio" name="service" value="wp" onclick="selectService('wp')">WP节点</label>
-                    <label><input type="radio" name="service" value="weibo" onclick="selectService('weibo')">weibo节点</label>
-                    <label><input type="radio" name="service" value="wsrv" onclick="selectService('wsrv')">Wsrv节点</label>
-                    <label><input type="radio" name="service" value="weserv" onclick="selectService('weserv')">Weserv节点</label>
-                    <label><input type="radio" name="service" value="lightspeed" onclick="selectService('lightspeed')">Lightspeed节点</label>
-                    <label><input type="radio" name="service" value="footballtransfers" onclick="selectService('footballtransfers')">Footballtransfers节点</label>
-                    <label><input type="radio" name="service" value="ezgif" onclick="selectService('ezgif')">Ezgif节点</label>
-                    <label><input type="radio" name="service" value="st" onclick="selectService('st')">ST节点(代)</label>
-                    <label><input type="radio" name="service" value="sp" onclick="selectService('sp')">SP节点(代)</label>
-                    <label><input type="radio" name="service" value="mp" onclick="selectService('mp')">MP节点(代)</label>
-                    <label><input type="radio" name="service" value="missavplay" onclick="selectService('missavplay')">MissavPlay节点(代)</label>
-                    <label><input type="radio" name="service" value="4get1" onclick="selectService('4get1')">4get1节点(代)</label>
-                    <label><input type="radio" name="service" value="4get2" onclick="selectService('4get2')">4get2节点(代)</label>
-                    <label><input type="radio" name="service" value="4get3" onclick="selectService('4get3')">4get3节点(代)</label>
-                    <label><input type="radio" name="service" value="4get4" onclick="selectService('4get4')">4get4节点(代)</label>
-                    <label><input type="radio" name="service" value="4get5" onclick="selectService('4get5')">4get5节点(代)</label>
-                    <label><input type="radio" name="service" value="4get6" onclick="selectService('4get6')">4get6节点(代)</label>
-                    <label><input type="radio" name="service" value="4get7" onclick="selectService('4get7')">4get7节点(代)</label>
-                    <label><input type="radio" name="service" value="4get8" onclick="selectService('4get8')">4get8节点(代)</label>
-                    <label><input type="radio" name="service" value="dmm" onclick="selectService('dmm')">DMM节点</label>
-                    <label><input type="radio" name="service" value="yandex" onclick="selectService('yandex')">yandex节点</label>
-                    <label><input type="radio" name="service" value="customBase64" onclick="selectService('customBase64')">Base64解码(剪贴板)</label>
+                <!-- 分类标签 -->
+                <div class="category-tabs" id="categoryTabs">
+                    <!-- 分类标签将通过JavaScript动态生成 -->
+                </div>
+                
+                <!-- 服务选项将通过JavaScript动态生成 -->
+                <div id="serviceOptions">
                 </div>
             </div>
         </div>
     </div>
-    <!-- 新增提示框元素 -->
     <div id="copyNotification" class="copy-notification">已复制到剪贴板!</div>
-    <div class="footer-text">2025.7.07，新增Base64解码复制功能</div>
+    <div class="footer-text">2025.8.01，优化了输入框显示，每个模式只显示对应输入框，增加了动态时间调整</div>
 
     <script>
-        let selectedService = '';
-
-        function selectService(service) {
-            selectedService = service;
-        }
-
-        // 显示复制成功提示
-        function showCopyNotification(message) {
-            const notification = document.getElementById('copyNotification');
-            notification.textContent = message;
-            notification.style.opacity = '1';
-            
-            setTimeout(() => {
-                notification.style.opacity = '0';
-            }, 2000);
-        }
-
-        function openConvertedPage() {
-            const url = document.getElementById('urlInput').value;
-            if (!url || !selectedService) {
-                alert('请输入链接并选择服务');
-                return;
-            }
-
-            let convertedUrl = url;
-            switch (selectedService) {
-                case 'daum':
-                    convertedUrl = `https://t2.daumcdn.net/thumb/R2000x0/?fname=${encodeURIComponent(url)}`;
-                    break;
-                case 'weserv':
-                    convertedUrl = `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
-                    if (convertedUrl.toLowerCase().endsWith('.gif')) {
-                        convertedUrl += '&n=-1';
-                    }
-                    break;
-                case 'lightspeed':
-                    convertedUrl = `https://lightspeed.ac/?url=${encodeURIComponent(url)}`;
-                    if (convertedUrl.toLowerCase().endsWith('.gif')) {
-                        convertedUrl += '&n=-1';
-                    }
-                    break;
-                case 'footballtransfers':
-                    convertedUrl = `https://images.footballtransfers.com/?url=${encodeURIComponent(url)}`;
-                    if (convertedUrl.toLowerCase().endsWith('.gif')) {
-                        convertedUrl += '&n=-1';
-                    }
-                    break;
-                case 'wsrv':
-                    const wsrvCleanedUrl = url.replace(/^https?:\/\//, '');
-                    convertedUrl = `https://wsrv.nl/?url=${encodeURIComponent(wsrvCleanedUrl)}`;
-                    if (wsrvCleanedUrl.toLowerCase().endsWith('.gif')) {
-                        convertedUrl += '&n=-1';
-                    }
-                    break;
-                case 'flyimg':
-                    convertedUrl = `https://demo.flyimg.io/upload/q_100/${encodeURIComponent(url)}`;
-                    break;
-                case 'imagizer':
-                    convertedUrl = `https://examples.imagizer.com/?source_url=${encodeURIComponent(url)}`;
-                    break;
-                case 'picseed':
-                    convertedUrl = `https://cdn1.picseed.com/?url=${encodeURIComponent(url)}`;
-                    break;
-                case 'cdnjson':
-                    convertedUrl = `https://cdn.cdnjson.com/pic.html?url=${encodeURIComponent(url)}`;
-                    break;
-                case 'ezgif':
+        // 服务配置 - 所有服务转换逻辑集中管理
+        const services = [
+            {
+                id: 'daum',
+                name: 'Daum节点',
+                category: 'direct',
+                convert: (url) => `https://t2.daumcdn.net/thumb/R2000x0/?fname=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'weserv',
+                name: 'Weserv节点',
+                category: 'direct',
+                convert: (url) => {
+                    let converted = `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
+                    return url.toLowerCase().endsWith('.gif') ? converted + '&n=-1' : converted;
+                }
+            },
+            {
+                id: 'lightspeed',
+                name: 'Lightspeed节点',
+                category: 'direct',
+                convert: (url) => {
+                    let converted = `https://lightspeed.ac/?url=${encodeURIComponent(url)}`;
+                    return url.toLowerCase().endsWith('.gif') ? converted + '&n=-1' : converted;
+                }
+            },
+            {
+                id: 'footballtransfers',
+                name: 'Footballtransfers节点',
+                category: 'direct',
+                convert: (url) => {
+                    let converted = `https://images.footballtransfers.com/?url=${encodeURIComponent(url)}`;
+                    return url.toLowerCase().endsWith('.gif') ? converted + '&n=-1' : converted;
+                }
+            },
+            {
+                id: 'wsrv',
+                name: 'Wsrv节点',
+                category: 'direct',
+                convert: (url) => {
+                    const cleanedUrl = url.replace(/^https?:\/\//, '');
+                    let converted = `https://wsrv.nl/?url=${encodeURIComponent(cleanedUrl)}`;
+                    return cleanedUrl.toLowerCase().endsWith('.gif') ? converted + '&n=-1' : converted;
+                }
+            },
+            {
+                id: 'flyimg',
+                name: 'Flyimg节点',
+                category: 'direct',
+                convert: (url) => `https://demo.flyimg.io/upload/q_100/${encodeURIComponent(url)}`
+            },
+            {
+                id: 'imagizer',
+                name: 'Imagizer节点',
+                category: 'direct',
+                convert: (url) => `https://examples.imagizer.com/?source_url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'picseed',
+                name: 'Picseed节点',
+                category: 'direct',
+                convert: (url) => `https://cdn1.picseed.com/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'cdnjson',
+                name: 'CDNjson节点',
+                category: 'direct',
+                convert: (url) => `https://cdn.cdnjson.com/pic.html?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'ezgif',
+                name: 'Ezgif节点',
+                category: 'direct',
+                convert: (url) => {
                     if (url.toLowerCase().endsWith('.gif')) {
-                        convertedUrl = `https://ezgif.com/optimize?url=${encodeURIComponent(url)}`;
+                        return `https://ezgif.com/optimize?url=${encodeURIComponent(url)}`;
                     } else if (url.toLowerCase().endsWith('.png')) {
-                        convertedUrl = `https://ezgif.com/optipng?url=${encodeURIComponent(url)}`;
+                        return `https://ezgif.com/optipng?url=${encodeURIComponent(url)}`;
                     } else {
-                        convertedUrl = `https://ezgif.com/optijpeg?url=${encodeURIComponent(url)}`;
+                        return `https://ezgif.com/optijpeg?url=${encodeURIComponent(url)}`;
                     }
-                    break;
-                case 'imagecdn':
-                    convertedUrl = `https://imagecdn.app/v2/image/${encodeURIComponent(url)}`;
-                    break;
-                case 'wp':
-                    const wpCleanedUrl = url.replace(/^https?:\/\//, '');
-                    convertedUrl = `https://i3.wp.com/${wpCleanedUrl}`;
-                    break;
-                case 'weibo':
+                }
+            },
+            {
+                id: 'imagecdn',
+                name: 'Imagecdn节点',
+                category: 'direct',
+                convert: (url) => `https://imagecdn.app/v2/image/${encodeURIComponent(url)}`
+            },
+            {
+                id: 'wp',
+                name: 'WP节点',
+                category: 'direct',
+                convert: (url) => {
+                    const cleanedUrl = url.replace(/^https?:\/\//, '');
+                    return `https://i3.wp.com/${cleanedUrl}`;
+                }
+            },
+            {
+                id: 'weibo',
+                name: 'weibo节点',
+                category: 'specialized',
+                convert: (url) => {
                     let cleanedUrl = url.replace(/^https?:\/\//, '');
-                    // Replace any path segment between 'sinaimg.cn/' and the filename with 'large/'
                     cleanedUrl = cleanedUrl.replace(
                         /(sinaimg\.cn\/)[^\/]+\/(.+)/, 
                         '$1large/$2'
                     );
-                    convertedUrl = `https://i3.wp.com/${cleanedUrl}`;
-                    break; 
-                case 'blozoo':
-                    convertedUrl = `https://image.blozoo.info/v2/thumb/900/1200/?url=${encodeURIComponent(url)}`;
-                    break;
-                case 'st':
-                    convertedUrl = `https://sitenable.top/o.php?u=${encodeURIComponent(url)}`;
-                    break;
-                case 'sp':
-                    convertedUrl = `https://sitenable.pw/o.php?u=${encodeURIComponent(url)}`;
-                    break;
-                case 'mp':
-                    convertedUrl = `https://mp.kkkkkktt.top/?url=${encodeURIComponent(url)}`;
-                    break;
-                case 'missavplay':
-                    convertedUrl = `https://missavplay.8dy.one/?url=${encodeURIComponent(url)}`;
-                    break;
-                case '4get1':
-                    convertedUrl = `https://4get.ch/proxy?i=${encodeURIComponent(url)}`;
-                    break;
-                case '4get2':
-                    convertedUrl = `https://4.nboeck.de/proxy?i=${encodeURIComponent(url)}`;
-                    break;
-                case '4get3':
-                    convertedUrl = `https://4get.tux.pizza/proxy?i=${encodeURIComponent(url)}`;
-                    break;
-                case '4get4':
-                    convertedUrl = `https://4get.turtlecute.org/proxy?i=${encodeURIComponent(url)}`;
-                    break;
-                case '4get5':
-                    convertedUrl = `https://search.yonderly.org/proxy?i=${encodeURIComponent(url)}`;
-                    break;
-                case '4get6':
-                    convertedUrl = `https://4get.sudovanilla.org/proxy?i=${encodeURIComponent(url)}`;
-                    break;
-                case '4get7':
-                    convertedUrl = `https://4get.lumaeris.com/proxy?i=${encodeURIComponent(url)}`;
-                    break;
-                case '4get8':
-                    convertedUrl = `https://4get.sijh.net/proxy?i=${encodeURIComponent(url)}`;
-                    break;
-                case 'dmm':
-                    // 将输入转为小写，并用下划线替换空格和连字符
+                    return `https://i3.wp.com/${cleanedUrl}`;
+                }
+            },
+            {
+                id: 'blozoo',
+                name: 'Blozoo节点',
+                category: 'direct',
+                convert: (url) => `https://image.blozoo.info/v2/thumb/900/1200/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'st',
+                name: 'ST节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://sitenable.top/o.php?u=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'sp',
+                name: 'SP节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://sitenable.pw/o.php?u=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'mp',
+                name: 'MP节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://mp.kkkkkktt.top/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'missavplay',
+                name: 'MissavPlay节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://missavplay.8dy.one/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: '4get1',
+                name: '4get1节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://4get.ch/proxy?i=${encodeURIComponent(url)}`
+            },
+            {
+                id: '4get2',
+                name: '4get2节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://4.nboeck.de/proxy?i=${encodeURIComponent(url)}`
+            },
+            {
+                id: '4get3',
+                name: '4get3节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://4get.tux.pizza/proxy?i=${encodeURIComponent(url)}`
+            },
+            {
+                id: '4get4',
+                name: '4get4节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://4get.turtlecute.org/proxy?i=${encodeURIComponent(url)}`
+            },
+            {
+                id: '4get5',
+                name: '4get5节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://search.yonderly.org/proxy?i=${encodeURIComponent(url)}`
+            },
+            {
+                id: '4get6',
+                name: '4get6节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://4get.sudovanilla.org/proxy?i=${encodeURIComponent(url)}`
+            },
+            {
+                id: '4get7',
+                name: '4get7节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://4get.lumaeris.com/proxy?i=${encodeURIComponent(url)}`
+            },
+            {
+                id: '4get8',
+                name: '4get8节点(代)',
+                category: 'proxy',
+                convert: (url) => `https://4get.sijh.net/proxy?i=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'dmm',
+                name: 'DMM节点',
+                category: 'specialized',
+                convert: (url) => {
                     const dmmName = url.toLowerCase().replace(/[\s-]/g, '_');
-                    convertedUrl = `https://pics.dmm.co.jp/mono/actjpgs/${dmmName}.jpg`;
-                    break;
-                case 'yandex':
-                    convertedUrl = `https://yandex.ru/images/search?rpt=imageview&url=${encodeURIComponent(url)}`;
-                    break;
-                case 'customBase64':
+                    return `https://pics.dmm.co.jp/mono/actjpgs/${dmmName}.jpg`;
+                }
+            },
+            {
+                id: 'yandex',
+                name: 'yandex节点',
+                category: 'proxy',
+                convert: (url) => `https://yandex.ru/images/search?rpt=imageview&url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'customBase64',
+                name: 'Base64解码(剪贴板)',
+                category: 'specialized',
+                convert: (url) => {
                     try {
-                        // 解析URL
                         const urlObj = new URL(url);
                         const params = new URLSearchParams(urlObj.search);
-                        
-                        // 获取并解码__cpo参数
                         const cpoParam = params.get('__cpo');
+                        
                         if (!cpoParam) {
-                            alert('URL中缺少__cpo参数');
-                            return;
+                            throw new Error('URL中缺少__cpo参数');
                         }
                         
-                        // 解码Base64字符串（处理可能缺少的填充）
                         const paddedCpo = cpoParam.replace(/-/g, '+').replace(/_/g, '/')
                             .padEnd(cpoParam.length + (4 - cpoParam.length % 4) % 4, '=');
                         const decodedDomain = atob(paddedCpo);
                         
-                        // 构建新的URL（使用解码后的域名，保留原始路径和查询参数，不包括__cpo）
                         params.delete('__cpo');
                         const newQuery = params.toString() ? `?${params.toString()}` : '';
-                        convertedUrl = `${decodedDomain}${urlObj.pathname}${newQuery}`;
-                        
-                        // 复制到剪贴板
-                        navigator.clipboard.writeText(convertedUrl)
-                            .then(() => {
-                                showCopyNotification('已复制到剪贴板!');
-                                console.log('URL复制成功:', convertedUrl);
-                            })
-                            .catch(err => {
-                                console.error('复制失败:', err);
-                                alert('复制失败，请手动复制: ' + convertedUrl);
-                            });
-                        
-                        // 阻止默认的打开新页面行为
-                        return;
+                        return `${decodedDomain}${urlObj.pathname}${newQuery}`;
                     } catch (error) {
-                        alert(`Base64解码失败: ${error.message}`);
-                        return;
+                        throw error;
                     }
-                    break;
-                default:
-                    convertedUrl = `${url}?service=${selectedService}`;
+                },
+                action: 'copy'
+            },
+            {
+                id: 'aliplayer',
+                name: 'Aliplayer',
+                category: 'videos',
+                convert: (url) => `https://onepage.czl.net/aliplayer/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'dplayer',
+                name: 'Dplayer',
+                category: 'videos',
+                convert: (url) => `https://onepage.czl.net/dplayer/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'ckplayer',
+                name: 'CKplayer VIP',
+                category: 'videos',
+                convert: (url) => `https://www.ckplayer.vip/jiexi/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'xmflv',
+                name: 'XMFLV VIP',
+                category: 'videos',
+                convert: (url) => `https://jx.xmflv.com/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'jxm3u8',
+                name: 'JXM3U8 VIP',
+                category: 'videos',
+                convert: (url) => `https://jx.m3u8.tv/jiexi/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'bdjx',
+                name: 'BDJX VIP',
+                category: 'videos',
+                convert: (url) => `https://bd.jx.cn/?url=${encodeURIComponent(url)}`
             }
 
-            // 对于其他服务，继续使用原来的打开新页面逻辑
-            window.open(convertedUrl, '_blank');
+        // 在此处新增节点
+        ];
+
+        // 分类名称映射
+        const categoryNames = {
+            'direct': '缓存节点',
+            'proxy': '代理节点',
+            'specialized': '专用节点',
+            'videos': '视频节点',
+            'tools': '工具节点'
+        };
+
+        // 状态管理
+        let selectedServiceId = '';
+        let activeCategory = 'all';
+        let batchResults = []; // 存储批量处理结果
+        let originalTimeFontSize = 65; // 原始时间字体大小
+        let originalTimeTop = '10%'; // 原始时间位置
+        let minTimeFontSize = 30; // 最小时间字体大小
+        let maxTimeFontSize = 120; // 最大时间字体大小
+
+        // DOM 元素
+        const serviceOptionsContainer = document.getElementById('serviceOptions');
+        const categoryTabsContainer = document.getElementById('categoryTabs');
+        const urlInput = document.getElementById('urlInput');
+        const batchUrlInput = document.getElementById('batchUrlInput');
+        const batchResultsContainer = document.getElementById('batchResults');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const copyAllButton = document.getElementById('copyAllButton');
+        const copyNotification = document.getElementById('copyNotification');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const mainContainer = document.getElementById('mainContainer');
+
+        // 初始化函数
+        function init() {
+            renderCategoryTabs();
+            renderServiceOptions();
+            initTimeDisplay();
+            initModeTabs();
+            
+            // 存储原始时间样式
+            originalTimeFontSize = parseInt(window.getComputedStyle(timeDisplay).fontSize);
+            originalTimeTop = window.getComputedStyle(timeDisplay).top;
+            
+            // 监听窗口大小变化，调整时间显示
+            window.addEventListener('resize', adjustTimeDisplay);
+            
+            // 初始调整一次
+            setTimeout(adjustTimeDisplay, 100);
         }
 
+        // 初始化模式切换标签
+        function initModeTabs() {
+            document.querySelectorAll('.mode-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const mode = this.getAttribute('data-mode');
+                    
+                    // 更新标签样式
+                    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 显示对应模式内容，隐藏其他模式
+                    document.querySelectorAll('.mode-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    document.getElementById(`${mode}Mode`).classList.add('active');
+                    
+                    // 模式切换后调整时间显示
+                    setTimeout(adjustTimeDisplay, 100); // 稍等一下让布局完成
+                });
+            });
+        }
+
+        // 根据容器高度和窗口高度调整时间显示
+        function adjustTimeDisplay() {
+            const containerHeight = mainContainer.offsetHeight;
+            const windowHeight = window.innerHeight;
+            
+            // 计算可用空间 - 窗口高度减去容器高度和页脚高度
+            const footerHeight = document.querySelector('.footer-text').offsetHeight;
+            const availableSpace = windowHeight - containerHeight - footerHeight - 40; // 40是边距
+            
+            // 批量模式额外调整因子
+            const isBatchMode = document.getElementById('batchMode').classList.contains('active');
+            const batchFactor = isBatchMode ? 0.8 : 1;
+            
+            // 计算基础字体大小：可用空间越大，字体越大；可用空间越小，字体越小
+            // 使用对数函数让变化更自然，避免极端值
+            let baseFontSize = Math.log(Math.max(availableSpace, 50)) * 15 * batchFactor;
+            
+            // 限制在最小和最大字体大小之间
+            baseFontSize = Math.max(minTimeFontSize, Math.min(maxTimeFontSize, baseFontSize));
+            
+            // 计算位置：字体越大，位置越靠下；字体越小，位置越靠上
+            const topPercentage = 8 + (baseFontSize / maxTimeFontSize) * 0.1; // 8%到8.1%之间
+            
+            // 应用新样式
+            timeDisplay.style.fontSize = `${baseFontSize}px`;
+            timeDisplay.style.top = `${topPercentage}%`;
+        }
+
+        // 获取所有唯一的分类
+        function getUniqueCategories() {
+            const categories = new Set();
+            services.forEach(service => categories.add(service.category));
+            return Array.from(categories);
+        }
+
+        // 渲染分类标签
+        function renderCategoryTabs() {
+            // 添加"全部"选项
+            const allTab = document.createElement('div');
+            allTab.className = 'category-tab active';
+            allTab.textContent = '全部';
+            allTab.onclick = () => switchCategory('all');
+            categoryTabsContainer.appendChild(allTab);
+
+            // 添加各个分类
+            const categories = getUniqueCategories();
+            categories.forEach(category => {
+                const tab = document.createElement('div');
+                tab.className = 'category-tab';
+                tab.textContent = categoryNames[category] || category;
+                tab.onclick = () => switchCategory(category);
+                categoryTabsContainer.appendChild(tab);
+            });
+        }
+
+        // 切换分类
+        function switchCategory(category) {
+            activeCategory = category;
+            
+            // 更新标签样式
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                if ((category === 'all' && tab.textContent === '全部') || 
+                    (category !== 'all' && tab.textContent === (categoryNames[category] || category))) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // 重新渲染服务选项
+            renderServiceOptions();
+            
+            // 分类切换后可能改变容器高度，调整时间显示
+            setTimeout(adjustTimeDisplay, 100);
+        }
+
+        // 按分类分组服务
+        function groupServicesByCategory() {
+            const groups = {};
+            
+            // 初始化所有分类组
+            getUniqueCategories().forEach(category => {
+                groups[category] = [];
+            });
+            
+            // 将服务分配到相应的组
+            services.forEach(service => {
+                if (!groups[service.category]) {
+                    groups[service.category] = [];
+                }
+                groups[service.category].push(service);
+            });
+            
+            return groups;
+        }
+
+        // 渲染服务选项
+        function renderServiceOptions() {
+            serviceOptionsContainer.innerHTML = '';
+            const serviceGroups = groupServicesByCategory();
+            
+            // 确定要显示的分类
+            const categoriesToShow = activeCategory === 'all' 
+                ? getUniqueCategories() 
+                : [activeCategory];
+            
+            // 为每个分类创建服务组
+            categoriesToShow.forEach(category => {
+                const servicesInCategory = serviceGroups[category];
+                if (servicesInCategory.length === 0) return;
+                
+                // 创建服务组容器
+                const groupContainer = document.createElement('div');
+                groupContainer.className = 'service-group';
+                
+                // 添加分类标题
+                const groupTitle = document.createElement('h3');
+                groupTitle.textContent = categoryNames[category] || category;
+                groupContainer.appendChild(groupTitle);
+                
+                // 添加服务选项
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'option-group';
+                
+                servicesInCategory.forEach(service => {
+                    const label = document.createElement('label');
+                    label.innerHTML = `
+                        <input type="radio" name="service" value="${service.id}" 
+                               onclick="selectService('${service.id}')" 
+                               ${selectedServiceId === service.id ? 'checked' : ''}>${service.name}
+                    `;
+                    optionsContainer.appendChild(label);
+                });
+                
+                groupContainer.appendChild(optionsContainer);
+                serviceOptionsContainer.appendChild(groupContainer);
+            });
+        }
+
+        // 选择服务
+        function selectService(serviceId) {
+            selectedServiceId = serviceId;
+        }
+
+        // 显示复制提示
+        function showCopyNotification(message) {
+            copyNotification.textContent = message;
+            copyNotification.style.opacity = '1';
+            
+            setTimeout(() => {
+                copyNotification.style.opacity = '0';
+            }, 2000);
+        }
+
+        // 打开转换后的页面
+        function openConvertedPage() {
+            const url = urlInput.value.trim();
+            if (!url || !selectedServiceId) {
+                alert('请输入链接并选择服务');
+                return;
+            }
+
+            processSingleUrl(url);
+        }
+
+        // 处理单个URL
+        function processSingleUrl(url) {
+            // 找到选中的服务配置
+            const service = services.find(s => s.id === selectedServiceId);
+            if (!service) {
+                alert('所选服务不存在');
+                return;
+            }
+
+            try {
+                // 调用服务的转换函数
+                const convertedUrl = service.convert(url);
+                
+                // 根据服务配置执行相应操作
+                if (service.action === 'copy') {
+                    navigator.clipboard.writeText(convertedUrl)
+                        .then(() => {
+                            showCopyNotification('已复制到剪贴板!');
+                        })
+                        .catch(err => {
+                            console.error('复制失败:', err);
+                            alert('复制失败，请手动复制: ' + convertedUrl);
+                        });
+                } else {
+                    window.open(convertedUrl, '_blank');
+                }
+            } catch (error) {
+                alert(`处理失败: ${error.message}`);
+            }
+        }
+
+        // 批量处理URLs
+        function processBatchUrls() {
+            const urlsText = batchUrlInput.value.trim();
+            if (!urlsText || !selectedServiceId) {
+                alert('请输入链接（每行一个）并选择服务');
+                return;
+            }
+
+            // 按行分割URLs，过滤空行
+            const urls = urlsText.split('\n')
+                .map(url => url.trim())
+                .filter(url => url.length > 0);
+
+            if (urls.length === 0) {
+                alert('请输入有效的链接');
+                return;
+            }
+
+            // 找到选中的服务配置
+            const service = services.find(s => s.id === selectedServiceId);
+            if (!service) {
+                alert('所选服务不存在');
+                return;
+            }
+
+            // 处理所有URL
+            batchResults = [];
+            resultsContainer.innerHTML = '';
+            
+            urls.forEach((url, index) => {
+                try {
+                    const convertedUrl = service.convert(url);
+                    batchResults.push({
+                        original: url,
+                        converted: convertedUrl,
+                        success: true
+                    });
+                    
+                    // 添加到结果显示
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.innerHTML = `
+                        <div class="result-original">原始: ${url}</div>
+                        <div class="result-converted">
+                            转换: <a href="${convertedUrl}" class="result-link" target="_blank">${convertedUrl}</a>
+                            ${service.action !== 'copy' ? 
+                                `<button onclick="window.open('${convertedUrl}', '_blank')" style="margin-left:8px;padding:2px 8px;font-size:12px;">打开</button>` : 
+                                `<button onclick="copyToClipboard('${convertedUrl.replace(/'/g, "\\'")}')" style="margin-left:8px;padding:2px 8px;font-size:12px;">复制</button>`
+                            }
+                        </div>
+                    `;
+                    resultsContainer.appendChild(resultItem);
+                    
+                } catch (error) {
+                    batchResults.push({
+                        original: url,
+                        error: error.message,
+                        success: false
+                    });
+                    
+                    // 添加错误结果
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.innerHTML = `
+                        <div class="result-original">原始: ${url}</div>
+                        <div class="result-converted" style="color:#ff6b6b;">
+                            错误: ${error.message}
+                        </div>
+                    `;
+                    resultsContainer.appendChild(resultItem);
+                }
+            });
+
+            // 显示结果区域和复制全部按钮
+            batchResultsContainer.classList.add('active');
+            copyAllButton.style.display = 'block';
+            
+            // 结果显示后容器高度变化，调整时间显示
+            setTimeout(adjustTimeDisplay, 100);
+        }
+
+        // 复制单个结果到剪贴板
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    showCopyNotification('已复制到剪贴板!');
+                })
+                .catch(err => {
+                    console.error('复制失败:', err);
+                    alert('复制失败，请手动复制');
+                });
+        }
+
+        // 复制所有结果到剪贴板
+        function copyAllResults() {
+            if (batchResults.length === 0) return;
+            
+            // 构建所有转换后的URL文本，每行一个
+            const allConvertedUrls = batchResults
+                .filter(item => item.success)
+                .map(item => item.converted)
+                .join('\n');
+            
+            if (allConvertedUrls.length === 0) {
+                alert('没有可复制的成功结果');
+                return;
+            }
+            
+            navigator.clipboard.writeText(allConvertedUrls)
+                .then(() => {
+                    showCopyNotification(`已复制 ${batchResults.filter(item => item.success).length} 个链接到剪贴板!`);
+                })
+                .catch(err => {
+                    console.error('复制失败:', err);
+                    alert('复制失败，请手动复制');
+                });
+        }
+
+        // 处理回车键
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
                 openConvertedPage();
             }
         }
 
+        // 时间显示相关
         function updateTime() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -447,8 +1094,13 @@
             document.getElementById('timeDisplay').textContent = `${hours}:${minutes}:${seconds}`;
         }
 
-        setInterval(updateTime, 1000);
-        updateTime(); // 初始化时间显示
+        function initTimeDisplay() {
+            setInterval(updateTime, 1000);
+            updateTime(); // 初始化时间显示
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 
