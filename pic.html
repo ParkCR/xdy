@@ -365,6 +365,13 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 2;
         }
+
+        /* 新增：手机端隐藏时间和底部更新说明 */
+        @media (max-width: 768px) {
+            .time-display, .footer-text {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
