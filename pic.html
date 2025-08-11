@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片查看器3.0</title>
+    <title>图片查看器3.0.3.4</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,7 +33,7 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             z-index: 2;
             transition: font-size 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-                        top 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* 使用更平滑的过渡曲线 */
+                        top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .container {
@@ -57,7 +57,7 @@
 
         .mode-tabs {
             display: flex;
-            justify-content: center; /* 标签居中 */
+            justify-content: center;
             margin-bottom: 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -144,7 +144,7 @@
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            justify-content: center; /* 分类居中 */
+            justify-content: center;
         }
 
         .category-tab {
@@ -366,7 +366,6 @@
             z-index: 2;
         }
 
-        /* 新增：手机端隐藏时间和底部更新说明 */
         @media (max-width: 768px) {
             .time-display, .footer-text {
                 display: none !important;
@@ -378,7 +377,7 @@
 <body>
     <div class="time-display" id="timeDisplay"></div>
     <div class="container" id="mainContainer">
-        <h2>图片查看器3.0 2025.8.01</h2>
+        <h2>图片查看器3.0.3.4 2025.8.11</h2>
         
         <!-- 模式切换标签 -->
         <div class="mode-tabs">
@@ -413,9 +412,8 @@
         
         <div class="scrollable-container">
             <div class="options">
-                <!-- 分类标签 -->
+                <!-- 分类标签将通过JavaScript动态生成 -->
                 <div class="category-tabs" id="categoryTabs">
-                    <!-- 分类标签将通过JavaScript动态生成 -->
                 </div>
                 
                 <!-- 服务选项将通过JavaScript动态生成 -->
@@ -425,21 +423,22 @@
         </div>
     </div>
     <div id="copyNotification" class="copy-notification">已复制到剪贴板!</div>
-    <div class="footer-text">2025.8.01，优化了输入框显示，每个模式只显示对应输入框，增加了动态时间调整</div>
+    <div class="footer-text">2025.8.11，支持单个节点属于不同分类，新增部分节点</div>
 
     <script>
         // 服务配置 - 所有服务转换逻辑集中管理
+        // 注意：category现在是数组，可以包含多个分类
         const services = [
             {
                 id: 'daum',
                 name: 'Daum节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => `https://t2.daumcdn.net/thumb/R2000x0/?fname=${encodeURIComponent(url)}`
             },
             {
                 id: 'weserv',
                 name: 'Weserv节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => {
                     let converted = `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
                     return url.toLowerCase().endsWith('.gif') ? converted + '&n=-1' : converted;
@@ -448,7 +447,7 @@
             {
                 id: 'lightspeed',
                 name: 'Lightspeed节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => {
                     let converted = `https://lightspeed.ac/?url=${encodeURIComponent(url)}`;
                     return url.toLowerCase().endsWith('.gif') ? converted + '&n=-1' : converted;
@@ -457,7 +456,7 @@
             {
                 id: 'footballtransfers',
                 name: 'Footballtransfers节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => {
                     let converted = `https://images.footballtransfers.com/?url=${encodeURIComponent(url)}`;
                     return url.toLowerCase().endsWith('.gif') ? converted + '&n=-1' : converted;
@@ -466,7 +465,7 @@
             {
                 id: 'wsrv',
                 name: 'Wsrv节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => {
                     const cleanedUrl = url.replace(/^https?:\/\//, '');
                     let converted = `https://wsrv.nl/?url=${encodeURIComponent(cleanedUrl)}`;
@@ -476,31 +475,31 @@
             {
                 id: 'flyimg',
                 name: 'Flyimg节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => `https://demo.flyimg.io/upload/q_100/${encodeURIComponent(url)}`
             },
             {
                 id: 'imagizer',
                 name: 'Imagizer节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => `https://examples.imagizer.com/?source_url=${encodeURIComponent(url)}`
             },
             {
                 id: 'picseed',
                 name: 'Picseed节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => `https://cdn1.picseed.com/?url=${encodeURIComponent(url)}`
             },
             {
                 id: 'cdnjson',
                 name: 'CDNjson节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => `https://cdn.cdnjson.com/pic.html?url=${encodeURIComponent(url)}`
             },
             {
                 id: 'ezgif',
                 name: 'Ezgif节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => {
                     if (url.toLowerCase().endsWith('.gif')) {
                         return `https://ezgif.com/optimize?url=${encodeURIComponent(url)}`;
@@ -514,13 +513,13 @@
             {
                 id: 'imagecdn',
                 name: 'Imagecdn节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => `https://imagecdn.app/v2/image/${encodeURIComponent(url)}`
             },
             {
                 id: 'wp',
                 name: 'WP节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => {
                     const cleanedUrl = url.replace(/^https?:\/\//, '');
                     return `https://i3.wp.com/${cleanedUrl}`;
@@ -529,7 +528,7 @@
             {
                 id: 'weibo',
                 name: 'weibo节点',
-                category: 'specialized',
+                category: ['specialized'],
                 convert: (url) => {
                     let cleanedUrl = url.replace(/^https?:\/\//, '');
                     cleanedUrl = cleanedUrl.replace(
@@ -542,85 +541,104 @@
             {
                 id: 'blozoo',
                 name: 'Blozoo节点',
-                category: 'direct',
+                category: ['direct'],
                 convert: (url) => `https://image.blozoo.info/v2/thumb/900/1200/?url=${encodeURIComponent(url)}`
+            },
+            // 示例：同时属于代理节点和视频节点的节点
+            {
+                id: 'mp',
+                name: 'MP节点(代)',
+                category: ['proxy', 'videos'],
+                convert: (url) => `https://mp.kkkkkktt.top/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'go',
+                name: 'GO节点(代)',
+                category: ['proxy', 'videos'],
+                convert: (url) => `https://go.cdn-player.top/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'beeg',
+                name: 'BEEG节点(代)',
+                category: ['proxy', 'videos'],
+                convert: (url) => `https://beegplay.8dy.one/?url=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'igram',
+                name: 'IGRAM节点(代)',
+                category: ['proxy', 'videos'],
+                convert: (url) => `https://igram.website/media.php?media=${encodeURIComponent(url)}`
+            },
+            {
+                id: 'missavplay',
+                name: 'MissavPlay节点(代)',
+                category: ['proxy'],
+                convert: (url) => `https://missavplay.8dy.one/?url=${encodeURIComponent(url)}`
             },
             {
                 id: 'st',
                 name: 'ST节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://sitenable.top/o.php?u=${encodeURIComponent(url)}`
             },
             {
                 id: 'sp',
                 name: 'SP节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://sitenable.pw/o.php?u=${encodeURIComponent(url)}`
-            },
-            {
-                id: 'mp',
-                name: 'MP节点(代)',
-                category: 'proxy',
-                convert: (url) => `https://mp.kkkkkktt.top/?url=${encodeURIComponent(url)}`
-            },
-            {
-                id: 'missavplay',
-                name: 'MissavPlay节点(代)',
-                category: 'proxy',
-                convert: (url) => `https://missavplay.8dy.one/?url=${encodeURIComponent(url)}`
             },
             {
                 id: '4get1',
                 name: '4get1节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://4get.ch/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: '4get2',
                 name: '4get2节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://4.nboeck.de/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: '4get3',
                 name: '4get3节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://4get.tux.pizza/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: '4get4',
                 name: '4get4节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://4get.turtlecute.org/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: '4get5',
                 name: '4get5节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://search.yonderly.org/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: '4get6',
                 name: '4get6节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://4get.sudovanilla.org/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: '4get7',
                 name: '4get7节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://4get.lumaeris.com/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: '4get8',
                 name: '4get8节点(代)',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://4get.sijh.net/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: 'dmm',
                 name: 'DMM节点',
-                category: 'specialized',
+                category: ['specialized'],
                 convert: (url) => {
                     const dmmName = url.toLowerCase().replace(/[\s-]/g, '_');
                     return `https://pics.dmm.co.jp/mono/actjpgs/${dmmName}.jpg`;
@@ -629,13 +647,13 @@
             {
                 id: 'yandex',
                 name: 'yandex节点',
-                category: 'proxy',
+                category: ['proxy'],
                 convert: (url) => `https://yandex.ru/images/search?rpt=imageview&url=${encodeURIComponent(url)}`
             },
             {
                 id: 'customBase64',
                 name: 'Base64解码(剪贴板)',
-                category: 'specialized',
+                category: ['specialized'],
                 convert: (url) => {
                     try {
                         const urlObj = new URL(url);
@@ -662,41 +680,39 @@
             {
                 id: 'aliplayer',
                 name: 'Aliplayer',
-                category: 'videos',
+                category: ['videos'],
                 convert: (url) => `https://onepage.czl.net/aliplayer/?url=${encodeURIComponent(url)}`
             },
             {
                 id: 'dplayer',
                 name: 'Dplayer',
-                category: 'videos',
+                category: ['videos'],
                 convert: (url) => `https://onepage.czl.net/dplayer/?url=${encodeURIComponent(url)}`
             },
             {
                 id: 'ckplayer',
                 name: 'CKplayer VIP',
-                category: 'videos',
+                category: ['videos'],
                 convert: (url) => `https://www.ckplayer.vip/jiexi/?url=${encodeURIComponent(url)}`
             },
             {
                 id: 'xmflv',
                 name: 'XMFLV VIP',
-                category: 'videos',
+                category: ['videos'],
                 convert: (url) => `https://jx.xmflv.com/?url=${encodeURIComponent(url)}`
             },
             {
                 id: 'jxm3u8',
                 name: 'JXM3U8 VIP',
-                category: 'videos',
+                category: ['videos'],
                 convert: (url) => `https://jx.m3u8.tv/jiexi/?url=${encodeURIComponent(url)}`
             },
             {
                 id: 'bdjx',
                 name: 'BDJX VIP',
-                category: 'videos',
+                category: ['videos'],
                 convert: (url) => `https://bd.jx.cn/?url=${encodeURIComponent(url)}`
             }
-
-        // 在此处新增节点
         ];
 
         // 分类名称映射
@@ -711,11 +727,11 @@
         // 状态管理
         let selectedServiceId = '';
         let activeCategory = 'all';
-        let batchResults = []; // 存储批量处理结果
-        let originalTimeFontSize = 65; // 原始时间字体大小
-        let originalTimeTop = '10%'; // 原始时间位置
-        let minTimeFontSize = 30; // 最小时间字体大小
-        let maxTimeFontSize = 120; // 最大时间字体大小
+        let batchResults = [];
+        let originalTimeFontSize = 65;
+        let originalTimeTop = '10%';
+        let minTimeFontSize = 30;
+        let maxTimeFontSize = 120;
 
         // DOM 元素
         const serviceOptionsContainer = document.getElementById('serviceOptions');
@@ -736,14 +752,10 @@
             initTimeDisplay();
             initModeTabs();
             
-            // 存储原始时间样式
             originalTimeFontSize = parseInt(window.getComputedStyle(timeDisplay).fontSize);
             originalTimeTop = window.getComputedStyle(timeDisplay).top;
             
-            // 监听窗口大小变化，调整时间显示
             window.addEventListener('resize', adjustTimeDisplay);
-            
-            // 初始调整一次
             setTimeout(adjustTimeDisplay, 100);
         }
 
@@ -753,47 +765,35 @@
                 tab.addEventListener('click', function() {
                     const mode = this.getAttribute('data-mode');
                     
-                    // 更新标签样式
                     document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // 显示对应模式内容，隐藏其他模式
                     document.querySelectorAll('.mode-content').forEach(content => {
                         content.classList.remove('active');
                     });
                     
                     document.getElementById(`${mode}Mode`).classList.add('active');
-                    
-                    // 模式切换后调整时间显示
-                    setTimeout(adjustTimeDisplay, 100); // 稍等一下让布局完成
+                    setTimeout(adjustTimeDisplay, 100);
                 });
             });
         }
 
-        // 根据容器高度和窗口高度调整时间显示
+        // 调整时间显示
         function adjustTimeDisplay() {
             const containerHeight = mainContainer.offsetHeight;
             const windowHeight = window.innerHeight;
             
-            // 计算可用空间 - 窗口高度减去容器高度和页脚高度
             const footerHeight = document.querySelector('.footer-text').offsetHeight;
-            const availableSpace = windowHeight - containerHeight - footerHeight - 40; // 40是边距
+            const availableSpace = windowHeight - containerHeight - footerHeight - 40;
             
-            // 批量模式额外调整因子
             const isBatchMode = document.getElementById('batchMode').classList.contains('active');
             const batchFactor = isBatchMode ? 0.8 : 1;
             
-            // 计算基础字体大小：可用空间越大，字体越大；可用空间越小，字体越小
-            // 使用对数函数让变化更自然，避免极端值
             let baseFontSize = Math.log(Math.max(availableSpace, 50)) * 15 * batchFactor;
-            
-            // 限制在最小和最大字体大小之间
             baseFontSize = Math.max(minTimeFontSize, Math.min(maxTimeFontSize, baseFontSize));
             
-            // 计算位置：字体越大，位置越靠下；字体越小，位置越靠上
-            const topPercentage = 8 + (baseFontSize / maxTimeFontSize) * 0.1; // 8%到8.1%之间
+            const topPercentage = 8 + (baseFontSize / maxTimeFontSize) * 0.1;
             
-            // 应用新样式
             timeDisplay.style.fontSize = `${baseFontSize}px`;
             timeDisplay.style.top = `${topPercentage}%`;
         }
@@ -801,20 +801,21 @@
         // 获取所有唯一的分类
         function getUniqueCategories() {
             const categories = new Set();
-            services.forEach(service => categories.add(service.category));
+            // 遍历所有服务的分类数组
+            services.forEach(service => {
+                service.category.forEach(cat => categories.add(cat));
+            });
             return Array.from(categories);
         }
 
         // 渲染分类标签
         function renderCategoryTabs() {
-            // 添加"全部"选项
             const allTab = document.createElement('div');
             allTab.className = 'category-tab active';
             allTab.textContent = '全部';
             allTab.onclick = () => switchCategory('all');
             categoryTabsContainer.appendChild(allTab);
 
-            // 添加各个分类
             const categories = getUniqueCategories();
             categories.forEach(category => {
                 const tab = document.createElement('div');
@@ -829,7 +830,6 @@
         function switchCategory(category) {
             activeCategory = category;
             
-            // 更新标签样式
             document.querySelectorAll('.category-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -840,10 +840,7 @@
                 }
             });
             
-            // 重新渲染服务选项
             renderServiceOptions();
-            
-            // 分类切换后可能改变容器高度，调整时间显示
             setTimeout(adjustTimeDisplay, 100);
         }
 
@@ -851,17 +848,18 @@
         function groupServicesByCategory() {
             const groups = {};
             
-            // 初始化所有分类组
             getUniqueCategories().forEach(category => {
                 groups[category] = [];
             });
             
-            // 将服务分配到相应的组
+            // 一个服务可能属于多个分类，会被添加到多个组中
             services.forEach(service => {
-                if (!groups[service.category]) {
-                    groups[service.category] = [];
-                }
-                groups[service.category].push(service);
+                service.category.forEach(category => {
+                    if (!groups[category]) {
+                        groups[category] = [];
+                    }
+                    groups[category].push(service);
+                });
             });
             
             return groups;
@@ -872,30 +870,30 @@
             serviceOptionsContainer.innerHTML = '';
             const serviceGroups = groupServicesByCategory();
             
-            // 确定要显示的分类
             const categoriesToShow = activeCategory === 'all' 
                 ? getUniqueCategories() 
                 : [activeCategory];
             
-            // 为每个分类创建服务组
             categoriesToShow.forEach(category => {
                 const servicesInCategory = serviceGroups[category];
                 if (servicesInCategory.length === 0) return;
                 
-                // 创建服务组容器
+                // 去重处理，避免同一服务在同一分类中重复显示
+                const uniqueServices = Array.from(new Map(
+                    servicesInCategory.map(service => [service.id, service])
+                ).values());
+                
                 const groupContainer = document.createElement('div');
                 groupContainer.className = 'service-group';
                 
-                // 添加分类标题
                 const groupTitle = document.createElement('h3');
                 groupTitle.textContent = categoryNames[category] || category;
                 groupContainer.appendChild(groupTitle);
                 
-                // 添加服务选项
                 const optionsContainer = document.createElement('div');
                 optionsContainer.className = 'option-group';
                 
-                servicesInCategory.forEach(service => {
+                uniqueServices.forEach(service => {
                     const label = document.createElement('label');
                     label.innerHTML = `
                         <input type="radio" name="service" value="${service.id}" 
@@ -938,7 +936,6 @@
 
         // 处理单个URL
         function processSingleUrl(url) {
-            // 找到选中的服务配置
             const service = services.find(s => s.id === selectedServiceId);
             if (!service) {
                 alert('所选服务不存在');
@@ -946,10 +943,8 @@
             }
 
             try {
-                // 调用服务的转换函数
                 const convertedUrl = service.convert(url);
                 
-                // 根据服务配置执行相应操作
                 if (service.action === 'copy') {
                     navigator.clipboard.writeText(convertedUrl)
                         .then(() => {
@@ -975,7 +970,6 @@
                 return;
             }
 
-            // 按行分割URLs，过滤空行
             const urls = urlsText.split('\n')
                 .map(url => url.trim())
                 .filter(url => url.length > 0);
@@ -985,14 +979,12 @@
                 return;
             }
 
-            // 找到选中的服务配置
             const service = services.find(s => s.id === selectedServiceId);
             if (!service) {
                 alert('所选服务不存在');
                 return;
             }
 
-            // 处理所有URL
             batchResults = [];
             resultsContainer.innerHTML = '';
             
@@ -1005,7 +997,6 @@
                         success: true
                     });
                     
-                    // 添加到结果显示
                     const resultItem = document.createElement('div');
                     resultItem.className = 'result-item';
                     resultItem.innerHTML = `
@@ -1027,7 +1018,6 @@
                         success: false
                     });
                     
-                    // 添加错误结果
                     const resultItem = document.createElement('div');
                     resultItem.className = 'result-item';
                     resultItem.innerHTML = `
@@ -1040,11 +1030,8 @@
                 }
             });
 
-            // 显示结果区域和复制全部按钮
             batchResultsContainer.classList.add('active');
             copyAllButton.style.display = 'block';
-            
-            // 结果显示后容器高度变化，调整时间显示
             setTimeout(adjustTimeDisplay, 100);
         }
 
@@ -1064,7 +1051,6 @@
         function copyAllResults() {
             if (batchResults.length === 0) return;
             
-            // 构建所有转换后的URL文本，每行一个
             const allConvertedUrls = batchResults
                 .filter(item => item.success)
                 .map(item => item.converted)
@@ -1103,7 +1089,7 @@
 
         function initTimeDisplay() {
             setInterval(updateTime, 1000);
-            updateTime(); // 初始化时间显示
+            updateTime();
         }
 
         // 页面加载完成后初始化
