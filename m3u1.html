@@ -95,9 +95,12 @@
                         placeholder="#EXTINF:-1 group-title=&quot;零碎&quot;,etoland BJ收藏合集&#10;https://example.com/video1.mp4&#10;https://example.com/video2.mp4&#10;..."
                     ></textarea>
                 </div>
-                <div class="text-center">
+                <div class="text-center flex flex-col sm:flex-row justify-center gap-4">
                     <button id="process-paste" class="inline-flex items-center bg-primary hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300">
                         <i class="fa fa-magic mr-2"></i> 生成M3U8文件
+                    </button>
+                    <button id="clear-button" class="inline-flex items-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors duration-300">
+                        <i class="fa fa-trash mr-2"></i> 清除内容
                     </button>
                 </div>
             </div>
@@ -135,9 +138,12 @@
                         </div>
                     </div>
                     
-                    <div class="text-center mb-6">
+                    <div class="text-center flex flex-col sm:flex-row justify-center gap-4 mb-6">
                         <button id="regenerate-button" class="inline-flex items-center bg-primary hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300">
                             <i class="fa fa-refresh mr-2"></i> 重新生成
+                        </button>
+                        <button id="clear-result-button" class="inline-flex items-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors duration-300">
+                            <i class="fa fa-trash mr-2"></i> 清除内容
                         </button>
                     </div>
                 </div>
@@ -233,6 +239,8 @@
         const copyButton = document.getElementById('copy-button');
         const copyMessage = document.getElementById('copy-message');
         const regenerateButton = document.getElementById('regenerate-button');
+        const clearButton = document.getElementById('clear-button');
+        const clearResultButton = document.getElementById('clear-result-button');
         
         // 存储原始数据，用于重新生成
         let originalData = {
@@ -374,6 +382,50 @@
             }
         });
         
+        // 清除按钮事件 - 用于输入区域
+        clearButton.addEventListener('click', clearAllContent);
+        
+        // 清除按钮事件 - 用于结果区域
+        clearResultButton.addEventListener('click', clearAllContent);
+        
+        // 清除所有内容的函数
+        function clearAllContent() {
+            // 清除输入区域
+            contentInput.value = '';
+            fileInput.value = '';
+            fileName.classList.add('hidden');
+            fileName.textContent = '';
+            
+            // 清除结果区域
+            resultArea.classList.add('hidden');
+            extinfInput.value = '';
+            groupInput.value = '';
+            baseTitleInput.value = '';
+            contentPreview.textContent = '';
+            processStats.textContent = '';
+            
+            // 清除错误信息
+            hideError();
+            
+            // 清除加载状态
+            hideLoading();
+            
+            // 重置下载链接
+            downloadLink.href = '#';
+            
+            // 重置存储的数据
+            originalData = {
+                urls: [],
+                extinf: '',
+                group: '',
+                baseTitle: ''
+            };
+            generatedContent = '';
+            
+            // 重置复制消息
+            copyMessage.classList.add('hidden');
+        }
+        
         // 处理文件
         function handleFile(file) {
             // 验证文件类型
@@ -494,7 +546,7 @@
         }
         
         // 显示结果
-        function showResult(extinf, group, baseTitleText, urlCount, m3u8Content) {
+        function showResult(extinf， group， baseTitleText， urlCount, m3u8Content) {
             // 填充可编辑输入框
             extinfInput.value = extinf;
             groupInput.value = group;
@@ -504,13 +556,13 @@
             processStats.textContent = `共处理了 ${urlCount} 个URL，已生成result.m3u8文件`;
             
             // 在预览区域显示生成的内容
-            contentPreview.textContent = m3u8Content;
+            contentPreview。textContent = m3u8Content;
             
             // 生成下载链接
             const blob = new Blob([m3u8Content], { type: 'application/x-mpegURL' });
             const url = URL.createObjectURL(blob);
-            downloadLink.href = url;
-            downloadLink.download = 'result.m3u8';
+            downloadLink。href = url;
+            downloadLink。download = 'result.m3u8';
             
             // 清理状态并显示结果
             hideLoading();
@@ -540,14 +592,14 @@
         
         // 显示加载状态
         function showLoading() {
-            loadingArea.classList.remove('hidden');
-            resultArea.classList.add('hidden');
+            loadingArea.classList。remove('hidden');
+            resultArea.classList。add('hidden');
             hideError();
         }
         
         // 隐藏加载状态
         function hideLoading() {
-            loadingArea.classList.add('hidden');
+            loadingArea.classList。add('hidden');
         }
     </script>
 </body>
