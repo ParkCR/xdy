@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3U8文件生成器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        danger: '#EF4444',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .file-drop-active {
+                @apply border-primary bg-blue-50;
+            }
+            .shadow-custom {
+                @apply shadow-lg hover:shadow-xl transition-shadow duration-300;
+            }
+            .tab-active {
+                @apply bg-primary text-white;
+            }
+            .copy-success {
+                @apply bg-secondary text-white;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-dark">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- 页面标题 -->
+        <header class="text-center mb-12">
+            <h1 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-primary mb-3">
+                <i class="fa fa-file-text-o mr-2"></i>M3U8文件生成器
+            </h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">上传包含URL的文本文件或直接粘贴内容，自动生成格式化的M3U8播放列表文件
+            </p>
+        </header>
+        
+        <!-- 主内容区 -->
+        <main class="bg-white rounded-xl shadow-custom p-6 md:p-8 mb-8">
+            <!-- 操作选项卡 -->
+            <div class="flex border-b border-gray-200 mb-6">
+                <button id="upload-tab" class="px-4 py-2 font-medium text-gray-500 hover:text-gray-700 rounded-t-md transition-colors duration-200">
+                    <i class="fa fa-upload mr-1"></i> 文件上传
+                </button>
+                <button id="paste-tab" class="tab-active px-4 py-2 font-medium rounded-t-md transition-colors duration-200">
+                    <i class="fa fa-paste mr-1"></i> 文本粘贴
+                </button>
+            </div>
+            
+            <!-- 文件上传区域 -->
+            <div id="upload-area" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-300 mb-8 hidden">
+                <i class="fa fa-cloud-upload text-5xl text-gray-400 mb-4"></i>
+                <h2 class="text-xl font-semibold mb-2">拖放文件到此处或点击上传</h2>
+                <p class="text-gray-500 mb-4">支持.txt格式文件，第一行为格式模板</p>
+                <label class="inline-block bg-primary hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg cursor-pointer transition-colors duration-300">
+                    <i class="fa fa-folder-open mr-1"></i> 选择文件
+                    <input type="file" id="file-input" accept=".txt" class="hidden">
+                </label>
+                <p id="file-name" class="mt-3 text-gray-600 hidden"></p>
+            </div>
+            
+            <!-- 文本粘贴区域 -->
+            <div id="paste-area" class="mb-8">
+                <div class="mb-4">
+                    <label for="content-input" class="block text-sm font-medium text-gray-700 mb-2">
+                        粘贴M3U8源内容（第一行为格式模板，后续行为URL）
+                    </label>
+                    <textarea 
+                        id="content-input" 
+                        rows="10" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition duration-200"
+                        placeholder="#EXTINF:-1 group-title=&quot;零碎&quot;,etoland BJ收藏合集&#10;https://example.com/video1.mp4&#10;https://example.com/video2.mp4&#10;..."
+                    ></textarea>
+                </div>
+                <div class="text-center">
+                    <button id="process-paste" class="inline-flex items-center bg-primary hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300">
+                        <i class="fa fa-magic mr-2"></i> 生成M3U8文件
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 处理结果区域 -->
+            <div id="result-area" class="hidden">
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3 flex items-center">
+                        <i class="fa fa-info-circle text-primary mr-2"></i>识别信息（可编辑）
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-500 mb-1">EXTINF值</p>
+                            <input 
+                                type="text" 
+                                id="extinf-input" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition duration-200"
+                            >
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-500 mb-1">分组名称</p>
+                            <input 
+                                type="text" 
+                                id="group-input" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition duration-200"
+                            >
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-500 mb-1">基础标题</p>
+                            <input 
+                                type="text" 
+                                id="base-title-input" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition duration-200"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <button id="regenerate-button" class="inline-flex items-center bg-primary hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300">
+                            <i class="fa fa-refresh mr-2"></i> 重新生成
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 生成内容预览区域 -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold flex items-center">
+                            <i class="fa fa-eye text-primary mr-2"></i>生成内容预览
+                        </h3>
+                        <button id="copy-button" class="inline-flex items-center text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-1 px-3 rounded-lg transition-colors duration-200">
+                            <i class="fa fa-copy mr-1"></i> 复制内容
+                        </button>
+                    </div>
+                    <div class="bg-gray-800 text-gray-200 p-4 rounded-lg font-mono text-sm overflow-x-auto max-h-64">
+                        <pre id="content-preview" class="whitespace-pre-wrap"></pre>
+                    </div>
+                    <p id="copy-message" class="mt-2 text-sm hidden"></p>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3 flex items-center">
+                        <i class="fa fa-check-circle text-secondary mr-2"></i>处理结果
+                    </h3>
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <p id="process-stats" class="text-gray-700"></p>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <a id="download-link" href="#" class="inline-flex items-center bg-secondary hover:bg-green-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300">
+                        <i class="fa fa-download mr-2"></i> 下载M3U8文件
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 错误信息区域 -->
+            <div id="error-area" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <div class="flex items-start">
+                    <i class="fa fa-exclamation-circle text-danger text-xl mt-0.5 mr-3"></i>
+                    <div>
+                        <h3 class="font-semibold text-danger mb-1">处理出错</h3>
+                        <p id="error-message" class="text-red-700"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 加载状态 -->
+            <div id="loading-area" class="hidden text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+                <p class="text-gray-600">正在处理内容...</p>
+            </div>
+        </main>
+        
+        <!-- 格式说明 -->
+        <div class="bg-white rounded-xl shadow-custom p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-3 flex items-center">
+                <i class="fa fa-book text-primary mr-2"></i>格式说明
+            </h3>
+            <p class="text-gray-700 mb-3">输入内容第一行需要符合以下格式：</p>
+            <div class="bg-gray-800 text-gray-200 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-3">
+                #EXTINF:-1 group-title="分组名称",基础标题
+            </div>
+            <p class="text-gray-600 text-sm">后续行应为URL地址，系统将自动为每个URL生成对应的M3U8条目。生成后可修改识别信息并点击重新生成。</p>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="text-center text-gray-500 text-sm py-4">
+            <p>M3U8文件生成器 &copy; 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const uploadTab = document.getElementById('upload-tab');
+        const pasteTab = document.getElementById('paste-tab');
+        const uploadArea = document.getElementById('upload-area');
+        const pasteArea = document.getElementById('paste-area');
+        const contentInput = document.getElementById('content-input');
+        const processPasteBtn = document.getElementById('process-paste');
+        const fileInput = document.getElementById('file-input');
+        const fileName = document.getElementById('file-name');
+        const resultArea = document.getElementById('result-area');
+        const errorArea = document.getElementById('error-area');
+        const errorMessage = document.getElementById('error-message');
+        const loadingArea = document.getElementById('loading-area');
+        const extinfInput = document.getElementById('extinf-input');
+        const groupInput = document.getElementById('group-input');
+        const baseTitleInput = document.getElementById('base-title-input');
+        const processStats = document.getElementById('process-stats');
+        const downloadLink = document.getElementById('download-link');
+        const contentPreview = document.getElementById('content-preview');
+        const copyButton = document.getElementById('copy-button');
+        const copyMessage = document.getElementById('copy-message');
+        const regenerateButton = document.getElementById('regenerate-button');
+        
+        // 存储原始数据，用于重新生成
+        let originalData = {
+            urls: [],
+            extinf: '',
+            group: '',
+            baseTitle: ''
+        };
+        
+        // 存储生成的M3U8内容
+        let generatedContent = '';
+        
+        // 选项卡切换功能
+        uploadTab.addEventListener('click', () => {
+            uploadTab.classList.add('tab-active');
+            pasteTab.classList.remove('tab-active');
+            pasteTab.classList.add('text-gray-500');
+            uploadArea.classList.remove('hidden');
+            pasteArea.classList.add('hidden');
+        });
+        
+        pasteTab.addEventListener('click', () => {
+            pasteTab.classList.add('tab-active');
+            pasteTab.classList.remove('text-gray-500');
+            uploadTab.classList.remove('tab-active');
+            uploadArea.classList.add('hidden');
+            pasteArea.classList.remove('hidden');
+        });
+        
+        // 拖放事件处理
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('file-drop-active');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('file-drop-active');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('file-drop-active');
+            
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // 点击上传区域触发文件选择
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // 文件选择事件
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+        
+        // 粘贴内容处理按钮事件
+        processPasteBtn.addEventListener('click', () => {
+            const content = contentInput.value.trim();
+            if (!content) {
+                showError('请输入或粘贴内容后再处理');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                processFileContent(content);
+            } catch (error) {
+                showError(error.message);
+            }
+        });
+        
+        // 重新生成按钮事件
+        regenerateButton.addEventListener('click', () => {
+            // 获取用户修改后的值
+            const extinf = extinfInput.value.trim();
+            const group = groupInput.value.trim();
+            const baseTitle = baseTitleInput.value.trim();
+            
+            // 验证输入
+            if (!extinf || !/^-?\d+$/.test(extinf)) {
+                showError('请输入有效的EXTINF值（整数）');
+                return;
+            }
+            
+            if (!group) {
+                showError('请输入分组名称');
+                return;
+            }
+            
+            if (!baseTitle) {
+                showError('请输入基础标题');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                // 使用修改后的值重新生成
+                const m3u8Content = generateM3U8Content(extinf, group, baseTitle, originalData.urls);
+                generatedContent = m3u8Content;
+                
+                // 更新原始数据
+                originalData.extinf = extinf;
+                originalData.group = group;
+                originalData.baseTitle = baseTitle;
+                
+                // 显示更新后的结果
+                showResult(extinf, group, baseTitle, originalData.urls.length, m3u8Content);
+            } catch (error) {
+                showError(error.message);
+            }
+        });
+        
+        // 复制按钮事件
+        copyButton.addEventListener('click', () => {
+            if (generatedContent) {
+                navigator.clipboard.writeText(generatedContent).then(() => {
+                    // 显示复制成功消息
+                    copyMessage.textContent = '内容已成功复制到剪贴板！';
+                    copyMessage.classList.remove('hidden', 'text-red-600');
+                    copyMessage.classList.add('text-green-600');
+                    
+                    // 3秒后隐藏消息
+                    setTimeout(() => {
+                        copyMessage.classList.add('hidden');
+                    }, 3000);
+                }).catch(err => {
+                    // 复制失败处理
+                    copyMessage.textContent = '复制失败，请手动复制';
+                    copyMessage.classList.remove('hidden', 'text-green-600');
+                    copyMessage.classList.add('text-red-600');
+                });
+            }
+        });
+        
+        // 处理文件
+        function handleFile(file) {
+            // 验证文件类型
+            if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
+                showError('请上传.txt格式的文本文件');
+                return;
+            }
+            
+            // 显示文件名
+            fileName.textContent = `已选择: ${file.name}`;
+            fileName.classList.remove('hidden');
+            
+            // 显示加载状态
+            showLoading();
+            
+            // 读取文件内容
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    processFileContent(e.target.result);
+                } catch (error) {
+                    showError(error.message);
+                }
+            };
+            
+            reader.onerror = () => {
+                showError('文件读取失败，请重试');
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // 处理文件内容
+        function processFileContent(content) {
+            // 按行分割内容
+            const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
+            
+            // 检查内容是否为空
+            if (lines.length === 0) {
+                throw new Error('内容为空，请输入有效的内容');
+            }
+            
+            // 处理第一行
+            const firstLine = lines[0];
+            validateFirstLine(firstLine);
+            
+            // 提取信息
+            const { extinf, group, baseTitleText } = extractInfoFromFirstLine(firstLine);
+            
+            // 处理剩余行
+            const urls = lines.slice(1);
+            if (urls.length === 0) {
+                throw new Error('没有找到URL，请在第一行后添加URL');
+            }
+            
+            // 保存原始数据
+            originalData = {
+                urls: urls,
+                extinf: extinf,
+                group: group,
+                baseTitle: baseTitleText
+            };
+            
+            // 生成M3U8内容
+            const m3u8Content = generateM3U8Content(extinf, group, baseTitleText, urls);
+            generatedContent = m3u8Content;
+            
+            // 显示结果
+            showResult(extinf, group, baseTitleText, urls.length, m3u8Content);
+        }
+        
+        // 验证第一行格式
+        function validateFirstLine(line) {
+            // 允许EXTINF值为负数（如-1）
+            const regex = /^#EXTINF:-?\d+\s+group-title=".*?",.*$/;
+            if (!regex.test(line)) {
+                throw new Error('第一行格式不正确\n正确格式示例：#EXTINF:-1 group-title="零碎",etoland BJ收藏合集');
+            }
+        }
+        
+        // 从第一行提取信息
+        function extractInfoFromFirstLine(line) {
+            // 提取EXTINF值（支持负数）
+            const extinfMatch = line.match(/#EXTINF:(-?\d+)/);
+            const extinf = extinfMatch ? extinfMatch[1] : '';
+            
+            // 提取分组名称
+            const groupMatch = line.match(/group-title="(.*?)"/);
+            const group = groupMatch ? groupMatch[1] : '';
+            
+            // 提取基础标题
+            let titlePart = line.split(',')[1] || '';
+            
+            // 去除前导空格
+            titlePart = titlePart.trim();
+            
+            // 去除尾部数字
+            while (titlePart && !isNaN(titlePart.slice(-1))) {
+                titlePart = titlePart.slice(0, -1);
+            }
+            
+            const baseTitleText = titlePart.trim();
+            
+            return { extinf, group, baseTitleText };
+        }
+        
+        // 生成M3U8内容
+        function generateM3U8Content(extinf, group, baseTitle, urls) {
+            let content = '';
+            
+            urls.forEach((url, index) => {
+                const count = index + 1;
+                content += `#EXTINF:${extinf} group-title="${group}",${baseTitle}${count}\n`;
+                content += `${url}\n`;
+            });
+            
+            return content;
+        }
+        
+        // 显示结果
+        function showResult(extinf, group, baseTitleText, urlCount, m3u8Content) {
+            // 填充可编辑输入框
+            extinfInput.value = extinf;
+            groupInput.value = group;
+            baseTitleInput.value = baseTitleText;
+            
+            // 更新统计信息
+            processStats.textContent = `共处理了 ${urlCount} 个URL，已生成result.m3u8文件`;
+            
+            // 在预览区域显示生成的内容
+            contentPreview.textContent = m3u8Content;
+            
+            // 生成下载链接
+            const blob = new Blob([m3u8Content], { type: 'application/x-mpegURL' });
+            const url = URL.createObjectURL(blob);
+            downloadLink.href = url;
+            downloadLink.download = 'result.m3u8';
+            
+            // 清理状态并显示结果
+            hideLoading();
+            hideError();
+            resultArea.classList.remove('hidden');
+            
+            // 添加下载链接点击事件，释放URL对象
+            downloadLink.addEventListener('click', () => {
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 100);
+            });
+        }
+        
+        // 显示错误信息
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorArea.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+            hideLoading();
+        }
+        
+        // 隐藏错误信息
+        function hideError() {
+            errorArea.classList.add('hidden');
+        }
+        
+        // 显示加载状态
+        function showLoading() {
+            loadingArea.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+            hideError();
+        }
+        
+        // 隐藏加载状态
+        function hideLoading() {
+            loadingArea.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
