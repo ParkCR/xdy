@@ -546,7 +546,7 @@
         }
         
         // 显示结果
-        function showResult(extinf， group， baseTitleText， urlCount, m3u8Content) {
+        function showResult(extinf, group, baseTitleText, urlCount, m3u8Content) {
             // 填充可编辑输入框
             extinfInput.value = extinf;
             groupInput.value = group;
@@ -556,13 +556,13 @@
             processStats.textContent = `共处理了 ${urlCount} 个URL，已生成result.m3u8文件`;
             
             // 在预览区域显示生成的内容
-            contentPreview。textContent = m3u8Content;
+            contentPreview.textContent = m3u8Content;
             
             // 生成下载链接
             const blob = new Blob([m3u8Content], { type: 'application/x-mpegURL' });
             const url = URL.createObjectURL(blob);
-            downloadLink。href = url;
-            downloadLink。download = 'result.m3u8';
+            downloadLink.href = url;
+            downloadLink.download = 'result.m3u8';
             
             // 清理状态并显示结果
             hideLoading();
@@ -592,14 +592,14 @@
         
         // 显示加载状态
         function showLoading() {
-            loadingArea.classList。remove('hidden');
-            resultArea.classList。add('hidden');
+            loadingArea.classList.remove('hidden');
+            resultArea.classList.add('hidden');
             hideError();
         }
         
         // 隐藏加载状态
         function hideLoading() {
-            loadingArea.classList。add('hidden');
+            loadingArea.classList.add('hidden');
         }
     </script>
 </body>
