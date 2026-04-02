@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片查看器3.0.3.4 2026.03.03</title>
+    <title>图片查看器3.0.3.4 2026.04.02</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -377,7 +377,7 @@
 <body>
     <div class="time-display" id="timeDisplay"></div>
     <div class="container" id="mainContainer">
-        <h2>图片查看器3.0.3.4 2026.03.03</h2>
+        <h2>图片查看器3.0.3.4 2026.04.02</h2>
         
         <!-- 模式切换标签 -->
         <div class="mode-tabs">
@@ -444,15 +444,7 @@
                     return url.toLowerCase().endsWith('.gif') ? converted + '&n=-1' : converted;
                 }
             },
-            {
-                id: 'lightspeed',
-                name: 'Lightspeed节点',
-                category: ['direct'],
-                convert: (url) => {
-                    let converted = `https://lightspeed.ac/?url=${encodeURIComponent(url)}`;
-                    return url.toLowerCase().endsWith('.gif') ? converted + '&n=-1' : converted;
-                }
-            },
+
             {
                 id: 'footballtransfers',
                 name: 'Footballtransfers节点',
@@ -583,15 +575,15 @@
             }, 
             {
                 id: '4get1',
-                name: '4get  based(代)',
+                name: '4get.dcs0.hu节点(代)',
                 category: ['proxy'],
-                convert: (url) => `https://4get.based.pt/proxy?i=${encodeURIComponent(url)}`
+                convert: (url) => `https://4get.dcs0.hu/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: '4get2',
-                name: '4get sijh(代)',
+                name: '4get.edmateo.site节点(代)',
                 category: ['proxy'],
-                convert: (url) => `https://4get.sijh.net/proxy?i=${encodeURIComponent(url)}`
+                convert: (url) => `https://4get.edmateo.site/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: '4get3',
@@ -601,9 +593,15 @@
             },
             {
                 id: '4get4',
-                name: '4get hackliberty节点(代)',
+                name: '4get.canine.tools节点(代)',
                 category: ['proxy'],
-                convert: (url) => `https://4get.hackliberty.org/proxy?i=${encodeURIComponent(url)}`
+                convert: (url) => `https://4get.canine.tools/proxy?i=${encodeURIComponent(url)}`
+            },
+            {
+                id: '4get5',
+                name: '4get.nadeko.net节点(代)',
+                category: ['proxy'],
+                convert: (url) => `https://4get.nadeko.net/proxy?i=${encodeURIComponent(url)}`
             },
             {
                 id: 'dmm',
